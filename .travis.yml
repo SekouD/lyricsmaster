@@ -21,8 +21,11 @@ deploy:
       YVFzMmQ3Qzk5TDNOemlrRGRwQjNIRXJHRWgzaEc5eUFmdlZPZnRWM1MycmNabFZuUVcyNFY3bEpJ
       WmZudEtSNVNETmpPbSs0OU9UV0ViTGNrOU5ueiszTUFHRFpIUjZjSTVMVUhYNWxNNUV4b1laM1k9
   provider: pypi
-install: pip install -U tox-travis
+install:
+- pip install -U tox-travis
+- pip install -r requirements.txt
 language: python
+cache: pip
 python:
 - 3.6
 - 3.5
