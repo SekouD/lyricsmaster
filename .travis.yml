@@ -9,7 +9,7 @@ deploy:
   user: SekouD
   distributions: sdist bdist_wheel
   password:
-    secure:
+    secure: !!binary |
       cGF4VDBsWnp0YW1kdjdyVnVidk55bkFUNXRpbml2Z2VKRkUyNEFSWGF0emNyK0xXTUlYNzB1ME5s
       OUd1dGswTHhNRTI1RmFJalFCbElTTm93WWNaM3lSeTZuNGUwR0xMb1MycmVjelFqTDlnbUZDNkpI
       bHJUczFGUDQyRjFDcnNTRHpPc2JhdEM4dHFOU3hRWlM0azZJWENqSy82MTl5cnkxUmZFUFE1L09M
