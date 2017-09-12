@@ -14,9 +14,12 @@ LyricsMaster
         :alt: Documentation Status
 
 .. image:: https://pyup.io/repos/github/SekouD/lyricsmaster/shield.svg
-     :target: https://pyup.io/repos/github/SekouD/lyricsmaster/
-     :alt: Updates
+        :target: https://pyup.io/repos/github/SekouD/lyricsmaster/
+        :alt: Updates
+        :alt: Coverage Status
 
+.. image:: https://codecov.io/gh/SekouD/lyricsmaster/branch/master/graph/badge.svg
+        :target: https://codecov.io/gh/SekouD/lyricsmaster
 
 LyricsMaster is a library for analyzing lyrics using various Machine Learning algorithms. It includes utilities for downloading lyrics from multiple lyrics providers.
 
