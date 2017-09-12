@@ -23,7 +23,7 @@ deploy:
       ZCtDb3YwMHpmbjlMTlRnMjVqRkdrOEtpUUprYWpVWkUrTnN3YWFhUFJkcDZueDcvSHNMTTNnVm9p
       dnpHOThsY0lpWUo2TmRtZUhhTGs4emRXb1dDNG9xdmVYYkNJRVhEbldPSGxnemRyT1RyRk00dkU9
 install:
-- pip install -U tox-travis
+- pip install -U tox-travis pytest-cov codecov
 - pip install -r requirements.txt
 language: python
 python:
