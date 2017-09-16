@@ -40,7 +40,7 @@ class TestAlbums:
 
     def test_album_isiter(self):
         assert len(self.album) == 4
-        assert [elmt for elmt in self.album] == songs
+        assert [elmt for elmt in self.album] == self.songs
 
 
 class TestDiscography:
