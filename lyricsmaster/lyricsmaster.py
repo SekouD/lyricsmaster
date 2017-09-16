@@ -60,16 +60,3 @@ class Discography:
             self.idx = 0
             raise StopIteration
 
-songs = [Song('Bad Love', 'Bad news is coming','Luther Alison', None),
-             Song('Ragged and dirty', 'Bad news is coming', 'Luther Alison', None),
-             Song('Red rooster', 'Bad news is coming', 'Luther Alison', None),
-             Song('Life is bitch', 'Bad news is coming', 'Luther Alison', None)]
-album = Album('Bad news is coming', 'Luther Alison', songs)
-
-for elmt in album:
-    print(elmt)
-
-for thg in reversed(album):
-    print(thg)
-
-pass
