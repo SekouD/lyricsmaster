@@ -62,3 +62,4 @@ class Discography:
             self.idx = 0
             raise StopIteration
 
+    next = __next__
