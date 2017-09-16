@@ -59,7 +59,7 @@ class TestDiscography:
         assert len(self.discography) == 2
         assert [elmt for elmt in self.discography] == self.albums
 
-def test_command_line_interface(self):
+def test_command_line_interface():
     """Test the CLI."""
     runner = CliRunner()
     result = runner.invoke(cli.main)
