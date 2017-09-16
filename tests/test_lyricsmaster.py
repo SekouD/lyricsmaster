@@ -39,7 +39,6 @@ class TestAlbums:
         assert self.album.author == 'Luther Alison'
 
     def test_album_isiter(self):
-        assert self.album.songs is Iterable
         assert len(self.album) == 4
         assert [elmt for elmt in self.album] == songs
 
@@ -52,7 +51,6 @@ class TestDiscography:
     discography = lyricsmaster.Discography('Luther Allison', albums)
 
     def test_album_isiter(self):
-        assert self.discography.albums is Iterable
         assert len(self.discography) == 2
         assert [elmt for elmt in self.discography] == self.albums
 
