@@ -37,6 +37,8 @@ class Album:
             self.idx = 0
             raise StopIteration
 
+    next = __next__
+
 class Discography:
     def __init__(self, author, albums):
         self.idx = 0
