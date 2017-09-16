@@ -1,3 +1,75 @@
 # -*- coding: utf-8 -*-
 
 """Main module."""
+
+class Song:
+    def __init__(self, title, album, author, lyrics):
+        self.title = title
+        self.album = album
+        self.author = author
+        self.lyrics = lyrics
+
+    def __repr__(self):
+        return self.__class__.__name__ + ": " + self.title
+
+
+class Album:
+    def __init__(self, title, author, songs):
+        self.idx = 0
+        self.title = title
+        self.author = author
+        self.songs = songs
+
+    def __repr__(self):
+        return self.__class__.__name__ + ": " + self.title
+
+    def __len__(self):
+        return len(self.songs)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.idx += 1
+        try:
+            return self.songs[self.idx - 1]
+        except IndexError:
+            self.idx = 0
+            raise StopIteration
+
+class Discography:
+    def __init__(self, author, albums):
+        self.idx = 0
+        self.author = author
+        self.albums = albums
+
+    def __repr__(self):
+        return self.__class__.__name__ + ": " + self.author
+
+    def __len__(self):
+        return len(self.albums)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.idx += 1
+        try:
+            return self.albums[self.idx - 1]
+        except IndexError:
+            self.idx = 0
+            raise StopIteration
+
+songs = [Song('Bad Love', 'Bad news is coming','Luther Alison', None),
+             Song('Ragged and dirty', 'Bad news is coming', 'Luther Alison', None),
+             Song('Red rooster', 'Bad news is coming', 'Luther Alison', None),
+             Song('Life is bitch', 'Bad news is coming', 'Luther Alison', None)]
+album = Album('Bad news is coming', 'Luther Alison', songs)
+
+for elmt in album:
+    print(elmt)
+
+for thg in reversed(album):
+    print(thg)
+
+pass
