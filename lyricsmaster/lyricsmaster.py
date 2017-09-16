@@ -10,7 +10,7 @@ class Song:
         self.lyrics = lyrics
 
     def __repr__(self):
-        return self.__class__.__name__ + ": " + self.title
+        return self.__class__.__name__ + " Object: " + self.title
 
 
 class Album:
@@ -21,7 +21,7 @@ class Album:
         self.songs = songs
 
     def __repr__(self):
-        return self.__class__.__name__ + ": " + self.title
+        return self.__class__.__name__ + " Object: " + self.title
 
     def __len__(self):
         return len(self.songs)
@@ -46,7 +46,7 @@ class Discography:
         self.albums = albums
 
     def __repr__(self):
-        return self.__class__.__name__ + ": " + self.author
+        return self.__class__.__name__ + " Object: " + self.author
 
     def __len__(self):
         return len(self.albums)

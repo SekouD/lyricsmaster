@@ -24,7 +24,7 @@ class TestSongs:
     song = lyricsmaster.Song('Bad Love', 'Bad news is coming','Luther Alison', None)
 
     def test_song(self):
-        assert self.song.__repr__() == 'Song: Bad Love'
+        assert self.song.__repr__() == 'Song Object: Bad Love'
 
 
 class TestAlbums:
@@ -37,6 +37,7 @@ class TestAlbums:
         assert self.album.idx == 0
         assert self.album.title == 'Bad news is coming'
         assert self.album.author == 'Luther Alison'
+        assert self.album.__repr__() == 'Album Object: Bad news is coming'
 
     def test_album_isiter(self):
         assert len(self.album) == 4
@@ -50,7 +51,10 @@ class TestDiscography:
                        lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs)]
     discography = lyricsmaster.Discography('Luther Allison', albums)
 
-    def test_album_isiter(self):
+    def test_discography(self):
+        assert  self.discography.__repr__() == 'Discography Object: Luther Allison'
+
+    def test_discography_isiter(self):
         assert len(self.discography) == 2
         assert [elmt for elmt in self.discography] == self.albums
 
