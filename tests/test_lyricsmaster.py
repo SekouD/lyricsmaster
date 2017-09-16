@@ -21,8 +21,7 @@ def songs():
 
 class TestSongs:
     """Tests for Song Class."""
-    def __init__(self):
-        self.song = lyricsmaster.Song('Bad Love', 'Bad news is coming','Luther Alison', None)
+    song = lyricsmaster.Song('Bad Love', 'Bad news is coming','Luther Alison', None)
 
     def test_song(self):
         assert self.song.__repr__() == 'Song: Bad Love'
@@ -31,9 +30,8 @@ class TestSongs:
 class TestAlbums:
     """Tests for Album Class."""
 
-    def __init__(self, songs):
-        self.songs = songs()
-        self.album = lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs)
+    songs = songs()
+    album = lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs)
 
     def test_album(self):
         assert self.album.idx == 0
@@ -49,10 +47,9 @@ class TestAlbums:
 class TestDiscography:
     """Tests for Album Class."""
 
-    def __init__(self, songs):
-        self.albums = [lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs),
+    albums = [lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs),
                        lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs)]
-        self.discography = lyricsmaster.Discography('Luther Allison', self.albums)
+    discography = lyricsmaster.Discography('Luther Allison', albums)
 
     def test_album_isiter(self):
         assert self.discography.albums is Iterable
