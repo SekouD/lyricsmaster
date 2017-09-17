@@ -8,6 +8,9 @@ coverage==4.4.1
 Sphinx==1.6.3
 cryptography==2.0.3
 PyYAML==3.12
-pytest
-mypy
-hypothesis
+mypy==0.521
+pytest==3.2.2
+hypothesis==3.28.1
+beautifulsoup4==4.6.0
+requests
+
