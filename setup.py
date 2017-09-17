@@ -26,7 +26,7 @@ test_requirements = [
 
 setup(
     name='lyricsmaster',
-    version='1.0.2',
+    version='1.0.3',
     description="LyricsMaster is a library for analyzing lyrics using various Machine Learning algorithms. It includes utilities for downloading lyrics from multiple lyrics providers.",
     long_description=readme + '\n\n' + history,
     author="SekouD",
