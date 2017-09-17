@@ -22,9 +22,9 @@ LyricsMaster
         :target: https://codecov.io/gh/SekouD/lyricsmaster
 
 LyricsMaster is a library for downloading lyrics from multiple lyrics providers. The following Lyrics Providers are supported:
-Lyric Wikia
-The Original Hip-Hop (Rap) Lyrics Archive - OHHLA.com
-And more to come soon.
+* Lyric Wikia
+* The Original Hip-Hop (Rap) Lyrics Archive - OHHLA.com
+* and more to come soon.
 
 
 * Free software: MIT license
