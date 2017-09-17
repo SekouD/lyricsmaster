@@ -14,6 +14,11 @@ from lyricsmaster import lyricsmaster
 from lyricsmaster import cli
 from lyricsmaster import lyricsprovider
 
+try:
+  basestring
+except NameError:
+  basestring = str
+
 @pytest.fixture(scope="module")
 def songs():
     songs = [lyricsmaster.Song('Bad Love', 'Bad news is coming','Luther Alison', None),
@@ -83,7 +88,7 @@ class TestLyricWiki:
     def test_extract_lyrics(self):
         page = self.provider.get_lyrics_page('http://lyrics.wikia.com/wiki/Reggie_Watts:Your_Name')
         lyrics = self.provider.extract_lyrics(page)
-        assert isinstance(lyrics, str)
+        assert isinstance(lyrics, basestring)
         assert 'I recall the day' in lyrics
         assert "And I hope you'll stay." in lyrics
 
