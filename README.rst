@@ -16,10 +16,11 @@ LyricsMaster
 .. image:: https://pyup.io/repos/github/SekouD/lyricsmaster/shield.svg
         :target: https://pyup.io/repos/github/SekouD/lyricsmaster/
         :alt: Updates
-        :alt: Coverage Status
+
 
 .. image:: https://codecov.io/gh/SekouD/lyricsmaster/branch/master/graph/badge.svg
         :target: https://codecov.io/gh/SekouD/lyricsmaster
+        :alt: Coverage Status
 
 LyricsMaster is a library for downloading lyrics from multiple lyrics providers. The following Lyrics Providers are supported:
 
