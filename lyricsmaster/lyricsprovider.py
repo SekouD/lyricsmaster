@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """Lyrics Providers."""
-from lyricsmaster import Song, Album, Discography
+from .lyricsmaster import Song, Album, Discography
 import requests
 import bs4
 from bs4 import BeautifulSoup
