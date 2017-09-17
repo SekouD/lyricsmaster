@@ -8,7 +8,7 @@ from collections import Iterable
 import pytest
 from click.testing import CliRunner
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from lyricsmaster import lyricsmaster
 from lyricsmaster import cli
@@ -66,7 +66,7 @@ class TestLyricWiki:
     author = 'Reggie Watts'
 
     def test_clean_string(self):
-        assert self.provider.clean_string('Reggie Watts {(#5)}') == 'Reggie_Watts_Number_5'
+        assert self.provider.clean_string('Reggie Watts {(#5)}') == 'Reggie_Watts_((Number_5))'
 
     def test_get_artist_page(self):
         page = self.provider.get_artist_page(self.author)
@@ -93,7 +93,7 @@ class TestLyricWiki:
                   tag.attrs['id'] not in ('Additional_information', 'External_links')][0]
         song_links = self.provider.get_songs(album)
         for link in song_links:
-            assert isinstance(link, BeautifulSoup)
+            assert isinstance(link, Tag)
 
     def test_create_song(self):
         author_page = self.provider.get_artist_page(self.author)
@@ -104,7 +104,7 @@ class TestLyricWiki:
         assert fail_song is None
         good_song = self.provider.create_song(song_links[9], self.author, "Simplified (2004)")
         assert isinstance(good_song, lyricsmaster.Song)
-        assert good_song.title == 'Your Name'
+        assert good_song.title == 'Reggie Watts:Your Name'
         assert good_song.album == "Simplified (2004)"
         assert good_song.author == self.author
         assert 'I recall the day' in good_song.lyrics
