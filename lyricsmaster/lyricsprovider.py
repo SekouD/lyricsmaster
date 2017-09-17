@@ -74,8 +74,8 @@ class LyricWiki(LyricsProvider):
         song_title = link.attrs['title']
         if '(page does not exist' in song_title:
             return None
-        lyrics_page = test.get_lyrics_page(self.base_url + link.attrs['href'])
-        lyrics = test.extract_lyrics(lyrics_page)
+        lyrics_page = self.get_lyrics_page(self.base_url + link.attrs['href'])
+        lyrics = self.extract_lyrics(lyrics_page)
         song = Song(song_title, album_title, author, lyrics)
         return song
 
