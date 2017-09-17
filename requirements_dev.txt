@@ -10,4 +10,4 @@ cryptography==2.0.3
 PyYAML==3.12
 pytest
 mypy
-hypothesis
+hypothesis==3.28.1
