@@ -37,6 +37,7 @@ class LyricWiki(LyricsProvider):
 
     def clean_string(self, text):
         text = text.replace('#', 'Number_').replace('[', '(').replace(']', ')').replace('{', '(').replace('}', ')')
+        text = text.replace(' ', '_')
         return text
 
     def get_artist_page(self, author):
@@ -61,6 +62,23 @@ class LyricWiki(LyricsProvider):
         lyrics = lyric_box.text
         return lyrics
 
+    def get_songs(self, album):
+        parent_node = album.parent
+        while parent_node.name != 'ol':
+            parent_node = parent_node.next_sibling
+        song_links = parent_node.find_all('li')
+        return song_links
+
+    def create_song(self, link, author, album_title):
+        link = link.find('a')
+        song_title = link.attrs['title']
+        if '(page does not exist' in song_title:
+            return None
+        lyrics_page = test.get_lyrics_page(self.base_url + link.attrs['href'])
+        lyrics = test.extract_lyrics(lyrics_page)
+        song = Song(song_title, album_title, author, lyrics)
+        return song
+
     def get_lyrics(self, author):
         artist_page = self.get_artist_page(author)
         albums = [tag for tag in artist_page.find_all("span", {'class': 'mw-headline'}) if
@@ -75,22 +93,9 @@ class LyricWiki(LyricsProvider):
         discography = Discography(author, album_objects)
         return discography
 
-    def create_song(self, link, author, album_title):
-        link = link.find('a')
-        song_title = link.attrs['title']
-        if '(page does not exist' in song_title:
-            return None
-        lyrics_page = test.get_lyrics_page(self.base_url + link.attrs['href'])
-        lyrics = test.extract_lyrics(lyrics_page)
-        song = Song(song_title, album_title, author, lyrics)
-        return song
 
-    def get_songs(self, album):
-        parent_node = album.parent
-        while parent_node.name != 'ol':
-            parent_node = parent_node.next_sibling
-        song_links = parent_node.find_all('li')
-        return song_links
+
+
 
 
 class RapProvider(LyricsProvider):
@@ -103,5 +108,5 @@ if __name__ == "__main__":
     album = test.get_album_page('2Pac', 'Me Against The World (1995)')
     lyrics_page = test.get_lyrics_page('http://lyrics.wikia.com/wiki/2Pac:Young_Black_Male')
     lyrics = test.extract_lyrics(lyrics_page)
-    test_wikia = test.get_lyrics('2Pac')
+    test_wikia = test.get_lyrics('Reggie Watts')
     pass
