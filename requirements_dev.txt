@@ -11,3 +11,5 @@ PyYAML==3.12
 pytest==3.2.2
 mypy
 hypothesis==3.28.1
+beautifulsoup4==4.6.0
+requests
