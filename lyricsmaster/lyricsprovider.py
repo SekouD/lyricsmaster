@@ -93,6 +93,10 @@ class LyricWiki(LyricsProvider):
         return song
 
     def create_song_async(self, lyrics_page, author, album_title, song_title):
+        if '(page does not exist' in song_title:
+            return None
+        if not lyrics_page:
+            return None
         lyrics = self.extract_lyrics(lyrics_page)
         song = Song(song_title, album_title, author, lyrics)
         return song
