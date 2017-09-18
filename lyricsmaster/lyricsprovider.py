@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """Lyrics Providers."""
-from .lyricsmaster import Song, Album, Discography
+from lyricsmaster import Song, Album, Discography
 import requests
 from bs4 import BeautifulSoup
 
 import gevent.monkey
 gevent.monkey.patch_socket()
 from gevent.pool import Pool
-
+from timeit import default_timer
 
 
 class LyricsProvider:
@@ -101,6 +101,7 @@ class LyricWiki(LyricsProvider):
                   tag.attrs['id'] not in ('Additional_information', 'External_links')]
         album_objects = []
         for elmt in albums:
+            print('downloading {0}'.format(elmt.text))
             album_title = elmt.text
             song_links = self.get_songs(elmt)
             results = self.get_async(song_links)
