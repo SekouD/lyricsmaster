@@ -3,11 +3,7 @@ cache: pip
 before_install:
 - sudo apt-get update
 - sudo apt-get install -y tor
-- sudo echo "SocksPort 9050" > /etc/tor/torrc
-- sudo echo "SocksListenAddress 127.0.0.1" > /etc/tor/torrc
-- sudo echo "ControlPort 9051" > /etc/tor/torrc
-- sudo echo "HashedControlPassword 16:454108AE0C55A3F360685B75240EA37354277BECB043C1600D07BCEC99" > /etc/tor/torrc
-- sudo tor --controlport 9051
+
 deploy:
   provider: pypi
   true:
