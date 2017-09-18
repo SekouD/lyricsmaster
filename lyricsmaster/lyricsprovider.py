@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 
 """Lyrics Providers."""
-from .lyricsmaster import Song, Album, Discography
+from lyricsmaster import Song, Album, Discography
 import requests
 from bs4 import BeautifulSoup
+
+import gevent.monkey
+
+gevent.monkey.patch_socket()
+from gevent.pool import Pool
+from timeit import default_timer
 
 
 class LyricsProvider:
@@ -86,6 +92,11 @@ class LyricWiki(LyricsProvider):
         song = Song(song_title, album_title, author, lyrics)
         return song
 
+    def create_song_async(self, lyrics_page, author, album_title, song_title):
+        lyrics = self.extract_lyrics(lyrics_page)
+        song = Song(song_title, album_title, author, lyrics)
+        return song
+
     def get_lyrics(self, author):
         artist_page = self.get_artist_page(author)
         if not artist_page:
@@ -96,20 +107,31 @@ class LyricWiki(LyricsProvider):
         for elmt in albums:
             album_title = elmt.text
             song_links = self.get_songs(elmt)
-            songs = [self.create_song(link, author, album_title) for link in song_links]
+            results = self.get_async(song_links)
+            songs = [self.create_song_async(BeautifulSoup(page.value.text, 'lxml'), author, album_title, title) for
+                           title, page in results]
             album = Album(album_title, author, songs)
             album_objects.append(album)
         discography = Discography(author, album_objects)
         return discography
 
-
+    def get_async(self, song_links):
+        pool = Pool(25)
+        results = []
+        for link in song_links:
+            link = link.find('a')
+            song_title = link.attrs['title']
+            url = self.base_url + link.attrs['href']
+            results.append((song_title, pool.spawn(requests.get, url)))
+        pool.join()
+        return results
 
 
 if __name__ == "__main__":
     test = LyricWiki()
-    artist = test.get_artist_page('2Pac')
-    album = test.get_album_page('2Pac', 'Me Against The World (1995)')
-    lyrics_page = test.get_lyrics_page('http://lyrics.wikia.com/wiki/2Pac:Young_Black_Male')
-    lyrics = test.extract_lyrics(lyrics_page)
-    test_wikia = test.get_lyrics('Reggie Watts')
+    # artist = test.get_artist_page('2Pac')
+    # album = test.get_album_page('2Pac', 'Me Against The World (1995)')
+    # lyrics_page = test.get_lyrics_page('http://lyrics.wikia.com/wiki/2Pac:Young_Black_Male')
+    # lyrics = test.extract_lyrics(lyrics_page)
+    test_wikia = test.get_lyrics('2Pac')
     pass
