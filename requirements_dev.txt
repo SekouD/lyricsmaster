@@ -15,4 +15,3 @@ hypothesis==3.28.3
 beautifulsoup4==4.6.0
 requests
 gevent
-

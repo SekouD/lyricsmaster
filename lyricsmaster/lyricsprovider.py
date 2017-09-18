@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """Lyrics Providers."""
-from lyricsmaster import Song, Album, Discography
+from .lyricsmaster import Song, Album, Discography
 import requests
 from bs4 import BeautifulSoup
 
@@ -9,7 +9,6 @@ import gevent.monkey
 gevent.monkey.patch_socket()
 from gevent.pool import Pool
 from timeit import default_timer
-
 
 class LyricsProvider:
     def get_page(self, url):
@@ -69,8 +68,6 @@ class LyricWiki(LyricsProvider):
 
     def extract_lyrics(self, song):
         lyric_box = song.find("div", {'class': 'lyricbox'})
-        if not lyric_box:
-            return None
         lyrics = lyric_box.text
         return lyrics
 
@@ -81,15 +78,15 @@ class LyricWiki(LyricsProvider):
         song_links = parent_node.find_all('li')
         return song_links
 
-
-    def create_song(self, lyrics_page, author, album_title, song_title):
+    def create_song(self, link, author, album_title):
+        link = link.find('a')
+        song_title = link.attrs['title']
         if '(page does not exist' in song_title:
             return None
+        lyrics_page = self.get_lyrics_page(self.base_url + link.attrs['href'])
         if not lyrics_page:
             return None
         lyrics = self.extract_lyrics(lyrics_page)
-        if not lyrics:
-            return None
         song = Song(song_title, album_title, author, lyrics)
         return song
 
@@ -101,34 +98,27 @@ class LyricWiki(LyricsProvider):
                   tag.attrs['id'] not in ('Additional_information', 'External_links')]
         album_objects = []
         for elmt in albums:
-            print('downloading {0}'.format(elmt.text))
+            print('Downloading {0}'.format(elmt.text))
             album_title = elmt.text
             song_links = self.get_songs(elmt)
-            results = self.get_async(song_links)
-            songs = [self.create_song(BeautifulSoup(page.value.text, 'lxml'), author, album_title, title) for
-                           title, page in results]
+            # pool = Pool(25)
+            # results = [pool.spawn(self.create_song, *(link, author, album_title)) for link in song_links]
+            # songs = [song.value for song in results]
+            # pool.join()
+            songs = [self.create_song(link, author, album_title) for link in song_links]
             album = Album(album_title, author, songs)
             album_objects.append(album)
         discography = Discography(author, album_objects)
         return discography
 
-    def get_async(self, song_links):
-        pool = Pool(25)
-        results = []
-        for link in song_links:
-            link = link.find('a')
-            song_title = link.attrs['title']
-            url = self.base_url + link.attrs['href']
-            results.append((song_title, pool.spawn(requests.get, url)))
-        pool.join()
-        return results
+
 
 
 if __name__ == "__main__":
     test = LyricWiki()
-    # artist = test.get_artist_page('2Pac')
-    # album = test.get_album_page('2Pac', 'Me Against The World (1995)')
-    # lyrics_page = test.get_lyrics_page('http://lyrics.wikia.com/wiki/2Pac:Young_Black_Male')
-    # lyrics = test.extract_lyrics(lyrics_page)
-    test_wikia = test.get_lyrics('2Pac')
+    artist = test.get_artist_page('2Pac')
+    album = test.get_album_page('2Pac', 'Me Against The World (1995)')
+    lyrics_page = test.get_lyrics_page('http://lyrics.wikia.com/wiki/2Pac:Young_Black_Male')
+    lyrics = test.extract_lyrics(lyrics_page)
+    test_wikia = test.get_lyrics('Reggie Watts')
     pass
