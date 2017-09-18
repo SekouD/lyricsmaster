@@ -101,11 +101,11 @@ class LyricWiki(LyricsProvider):
             print('Downloading {0}'.format(elmt.text))
             album_title = elmt.text
             song_links = self.get_songs(elmt)
-            # pool = Pool(25)
-            # results = [pool.spawn(self.create_song, *(link, author, album_title)) for link in song_links]
-            # songs = [song.value for song in results]
-            # pool.join()
-            songs = [self.create_song(link, author, album_title) for link in song_links]
+            pool = Pool(25)
+            results = [pool.spawn(self.create_song, *(link, author, album_title)) for link in song_links]
+            songs = [song.value for song in results]
+            pool.join()
+            # songs = [self.create_song(link, author, album_title) for link in song_links]
             album = Album(album_title, author, songs)
             album_objects.append(album)
         discography = Discography(author, album_objects)
