@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """Lyrics Providers."""
-from .lyricsmaster import Song, Album, Discography
+from lyricsmaster import Song, Album, Discography
 import requests
 from bs4 import BeautifulSoup
 
+import gevent.monkey
+gevent.monkey.patch_socket()
+from gevent.pool import Pool
+from timeit import default_timer
 
 class LyricsProvider:
     def get_page(self, url):
@@ -93,12 +97,20 @@ class LyricWiki(LyricsProvider):
         albums = [tag for tag in artist_page.find_all("span", {'class': 'mw-headline'}) if
                   tag.attrs['id'] not in ('Additional_information', 'External_links')]
         album_objects = []
+        start = default_timer()
         for elmt in albums:
+            print('Downloading {0}'.format(elmt.text))
             album_title = elmt.text
             song_links = self.get_songs(elmt)
+            # pool = Pool(25)
+            # results = [pool.spawn(self.create_song, *(link, author, album_title)) for link in song_links]
+            # songs = [song.value for song in results]
+            # pool.join()
             songs = [self.create_song(link, author, album_title) for link in song_links]
             album = Album(album_title, author, songs)
             album_objects.append(album)
+        end = default_timer() - start
+        print(end)
         discography = Discography(author, album_objects)
         return discography
 
@@ -107,9 +119,9 @@ class LyricWiki(LyricsProvider):
 
 if __name__ == "__main__":
     test = LyricWiki()
-    artist = test.get_artist_page('2Pac')
-    album = test.get_album_page('2Pac', 'Me Against The World (1995)')
-    lyrics_page = test.get_lyrics_page('http://lyrics.wikia.com/wiki/2Pac:Young_Black_Male')
-    lyrics = test.extract_lyrics(lyrics_page)
-    test_wikia = test.get_lyrics('Reggie Watts')
+    # artist = test.get_artist_page('2Pac')
+    # album = test.get_album_page('2Pac', 'Me Against The World (1995)')
+    # lyrics_page = test.get_lyrics_page('http://lyrics.wikia.com/wiki/2Pac:Young_Black_Male')
+    # lyrics = test.extract_lyrics(lyrics_page)
+    test_wikia = test.get_lyrics('2Pac')
     pass
