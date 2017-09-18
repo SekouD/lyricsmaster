@@ -6,10 +6,9 @@ import requests
 from bs4 import BeautifulSoup
 
 import gevent.monkey
-
 gevent.monkey.patch_socket()
 from gevent.pool import Pool
-from timeit import default_timer
+
 
 
 class LyricsProvider:
