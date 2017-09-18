@@ -132,15 +132,9 @@ class TestLyricWiki:
         album = [tag for tag in author_page.find_all("span", {'class': 'mw-headline'}) if
                  tag.attrs['id'] not in ('Additional_information', 'External_links')][0]
         song_links = self.provider.get_songs(album)
-        url = self.provider.base_url + song_links[0].find('a').attrs['href']
-        url = url[:url.index('?')]
-        page = BeautifulSoup(self.provider.get_page(url).text, 'lxml')
-        fail_song = self.provider.create_song(page, real_singer['name'], real_singer['album'], real_singer['song'])
+        fail_song = self.provider.create_song(song_links[0], real_singer['name'], real_singer['album'])
         assert fail_song is None
-        url = self.provider.base_url + song_links[9].find('a').attrs['href']
-        page = BeautifulSoup(self.provider.get_page(url).text, 'lxml')
-        title = song_links[9].find('a').attrs['title']
-        good_song = self.provider.create_song(page, real_singer['name'], real_singer['album'], title)
+        good_song = self.provider.create_song(song_links[9], real_singer['name'], real_singer['album'])
         assert isinstance(good_song, lyricsmaster.Song)
         assert good_song.title == 'Reggie Watts:Your Name'
         assert good_song.album == "Simplified (2004)"
