@@ -80,19 +80,8 @@ class LyricWiki(LyricsProvider):
         song_links = parent_node.find_all('li')
         return song_links
 
-    def create_song(self, link, author, album_title):
-        link = link.find('a')
-        song_title = link.attrs['title']
-        if '(page does not exist' in song_title:
-            return None
-        lyrics_page = self.get_lyrics_page(self.base_url + link.attrs['href'])
-        if not lyrics_page:
-            return None
-        lyrics = self.extract_lyrics(lyrics_page)
-        song = Song(song_title, album_title, author, lyrics)
-        return song
 
-    def create_song_async(self, lyrics_page, author, album_title, song_title):
+    def create_song(self, lyrics_page, author, album_title, song_title):
         if '(page does not exist' in song_title:
             return None
         if not lyrics_page:
@@ -112,7 +101,7 @@ class LyricWiki(LyricsProvider):
             album_title = elmt.text
             song_links = self.get_songs(elmt)
             results = self.get_async(song_links)
-            songs = [self.create_song_async(BeautifulSoup(page.value.text, 'lxml'), author, album_title, title) for
+            songs = [self.create_song(BeautifulSoup(page.value.text, 'lxml'), author, album_title, title) for
                            title, page in results]
             album = Album(album_title, author, songs)
             album_objects.append(album)
