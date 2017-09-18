@@ -98,6 +98,8 @@ class TestLyricWiki:
     def test_get_album_page(self):
         page = self.provider.get_album_page(real_singer['name'], real_singer['album'])
         assert page is None
+        page = self.provider.get_album_page(fake_singer['name'], fake_singer['album'])
+        assert page is None
         page = self.provider.get_album_page('2Pac', 'Me Against The World (1995)')
         assert isinstance(page, BeautifulSoup)
 
