@@ -4,7 +4,7 @@ before_install:
 - sudo apt-get update
 - sudo apt-get install -y tor
 - sudo service tor stop
-- sudo service tor --controlport 9051
+- sudo service tor start --controlport 9051
 deploy:
   provider: pypi
   true:
