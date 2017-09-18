@@ -70,6 +70,8 @@ class LyricWiki(LyricsProvider):
 
     def extract_lyrics(self, song):
         lyric_box = song.find("div", {'class': 'lyricbox'})
+        if not lyric_box:
+            return None
         lyrics = lyric_box.text
         return lyrics
 
@@ -87,6 +89,8 @@ class LyricWiki(LyricsProvider):
         if not lyrics_page:
             return None
         lyrics = self.extract_lyrics(lyrics_page)
+        if not lyrics:
+            return None
         song = Song(song_title, album_title, author, lyrics)
         return song
 
