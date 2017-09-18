@@ -183,12 +183,12 @@ def test_tor():
     # Following prints your normal public IP
     print(requests.get("http://httpbin.org/ip").text)
 
-    renew_connection()
-    # Make a request through the Tor connection
-    # IP visible through Tor
-    session = get_tor_session()
-    print(session.get("http://httpbin.org/ip").text)
-    # Above should print an IP different than your public IP
-
-    # Following prints your normal public IP
-    print(requests.get("http://httpbin.org/ip").text)
+    # renew_connection()
+    # # Make a request through the Tor connection
+    # # IP visible through Tor
+    # session = get_tor_session()
+    # print(session.get("http://httpbin.org/ip").text)
+    # # Above should print an IP different than your public IP
+    #
+    # # Following prints your normal public IP
+    # print(requests.get("http://httpbin.org/ip").text)
