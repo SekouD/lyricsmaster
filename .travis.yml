@@ -3,8 +3,8 @@ cache: pip
 before_install:
 - sudo apt-get update
 - sudo apt-get install -y tor
-- sudo service tor stop
-- sudo service tor start -options ControlPort 9051
+- sudo service tor remove
+- sudo service tor install -options ControlPort 9051
 deploy:
   provider: pypi
   true:
