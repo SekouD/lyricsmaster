@@ -3,7 +3,6 @@
 
 """Tests for `lyricsmaster` package."""
 
-
 from collections import Iterable
 import pytest
 from click.testing import CliRunner
@@ -15,21 +14,27 @@ from lyricsmaster import cli
 from lyricsmaster import lyricsprovider
 
 try:
-  basestring
+    basestring
 except NameError:
-  basestring = str
+    basestring = str
+
 
 @pytest.fixture(scope="module")
 def songs():
-    songs = [lyricsmaster.Song('Bad Love', 'Bad news is coming','Luther Alison', None),
+    songs = [lyricsmaster.Song('Bad Love', 'Bad news is coming', 'Luther Alison', None),
              lyricsmaster.Song('Ragged and dirty', 'Bad news is coming', 'Luther Alison', None),
              lyricsmaster.Song('Red rooster', 'Bad news is coming', 'Luther Alison', None),
              lyricsmaster.Song('Life is bitch', 'Bad news is coming', 'Luther Alison', None)]
     return songs
 
+
+real_singer = {'name': 'Reggie Watts', 'album': 'Simplified (2004)', 'song': 'Your_Name'}
+fake_singer = {'name': 'Fake Rapper', 'album': "In my mom's basement", 'song': 'I fap'}
+
+
 class TestSongs:
     """Tests for Song Class."""
-    song = lyricsmaster.Song('Bad Love', 'Bad news is coming','Luther Alison', None)
+    song = lyricsmaster.Song('Bad Love', 'Bad news is coming', 'Luther Alison', None)
 
     def test_song(self):
         assert self.song.__repr__() == 'Song Object: Bad Love'
@@ -50,75 +55,94 @@ class TestAlbums:
     def test_album_isiter(self):
         assert len(self.album) == 4
         assert [elmt for elmt in self.album] == self.songs
+        for x, y in zip(reversed(self.album), reversed(self.album.songs)):
+            assert x == y
 
 
 class TestDiscography:
     """Tests for Album Class."""
 
     albums = [lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs),
-                       lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs)]
+              lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs)]
     discography = lyricsmaster.Discography('Luther Allison', albums)
 
     def test_discography(self):
-        assert  self.discography.__repr__() == 'Discography Object: Luther Allison'
+        assert self.discography.__repr__() == 'Discography Object: Luther Allison'
 
     def test_discography_isiter(self):
         assert len(self.discography) == 2
         assert [elmt for elmt in self.discography] == self.albums
+        for x, y in zip(reversed(self.discography), reversed(self.discography.albums)):
+            assert x == y
+
 
 class TestLyricWiki:
     provider = lyricsprovider.LyricWiki()
-    author = 'Reggie Watts'
+
+    def test_get_page(self):
+        url = 'http://non-existent-url.com'
+        request = self.provider.get_page(url)
+        assert request is None
+        request = self.provider.get_page('http://www.google.com')
+        assert request.status_code == 200
 
     def test_clean_string(self):
         assert self.provider.clean_string('Reggie Watts {(#5)}') == 'Reggie_Watts_((Number_5))'
 
     def test_get_artist_page(self):
-        page = self.provider.get_artist_page(self.author)
+        page = self.provider.get_artist_page(real_singer['name'])
         assert isinstance(page, BeautifulSoup)
+        page = self.provider.get_artist_page(fake_singer['name'])
+        assert page is None
 
     def test_get_album_page(self):
-        page = self.provider.get_album_page('Reggie Watts', 'Simplified (2004)')
+        page = self.provider.get_album_page(real_singer['name'], real_singer['album'])
+        assert page is None
+        page = self.provider.get_album_page('2Pac', 'Me Against The World (1995)')
         assert isinstance(page, BeautifulSoup)
 
     def test_get_lyrics_page(self):
-        page = self.provider.get_lyrics_page('http://lyrics.wikia.com/wiki/Reggie_Watts:Your_Name')
+        page = self.provider.get_lyrics_page(
+            'http://lyrics.wikia.com/wiki/{0}:{1}'.format(real_singer['name'], real_singer['song']))
         assert isinstance(page, BeautifulSoup)
+        page = self.provider.get_lyrics_page(
+            'http://lyrics.wikia.com/wiki/{0}:{1}'.format(fake_singer['name'], fake_singer['song']))
+        assert page is None
 
     def test_extract_lyrics(self):
-        page = self.provider.get_lyrics_page('http://lyrics.wikia.com/wiki/Reggie_Watts:Your_Name')
+        page = self.provider.get_lyrics_page(
+            'http://lyrics.wikia.com/wiki/{0}:{1}'.format(real_singer['name'], real_singer['song']))
         lyrics = self.provider.extract_lyrics(page)
         assert isinstance(lyrics, basestring)
         assert 'I recall the day' in lyrics
         assert "And I hope you'll stay." in lyrics
 
     def test_get_songs(self):
-        author_page = self.provider.get_artist_page(self.author)
+        author_page = self.provider.get_artist_page(real_singer['name'])
         album = [tag for tag in author_page.find_all("span", {'class': 'mw-headline'}) if
-                  tag.attrs['id'] not in ('Additional_information', 'External_links')][0]
+                 tag.attrs['id'] not in ('Additional_information', 'External_links')][0]
         song_links = self.provider.get_songs(album)
         for link in song_links:
             assert isinstance(link, Tag)
 
     def test_create_song(self):
-        author_page = self.provider.get_artist_page(self.author)
+        author_page = self.provider.get_artist_page(real_singer['name'])
         album = [tag for tag in author_page.find_all("span", {'class': 'mw-headline'}) if
                  tag.attrs['id'] not in ('Additional_information', 'External_links')][0]
         song_links = self.provider.get_songs(album)
-        fail_song = self.provider.create_song(song_links[0], self.author, "Simplified (2004)")
+        fail_song = self.provider.create_song(song_links[0], real_singer['name'], real_singer['album'])
         assert fail_song is None
-        good_song = self.provider.create_song(song_links[9], self.author, "Simplified (2004)")
+        good_song = self.provider.create_song(song_links[9], real_singer['name'], real_singer['album'])
         assert isinstance(good_song, lyricsmaster.Song)
         assert good_song.title == 'Reggie Watts:Your Name'
         assert good_song.album == "Simplified (2004)"
-        assert good_song.author == self.author
+        assert good_song.author == 'Reggie Watts'
         assert 'I recall the day' in good_song.lyrics
         assert "And I hope you'll stay." in good_song.lyrics
 
     def test_get_lyrics(self):
-        discography = self.provider.get_lyrics(self.author)
+        discography = self.provider.get_lyrics(real_singer['name'])
         assert isinstance(discography, lyricsmaster.Discography)
-
 
 
 def test_command_line_interface():

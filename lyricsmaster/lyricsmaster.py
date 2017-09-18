@@ -37,6 +37,9 @@ class Album:
             self.idx = 0
             raise StopIteration
 
+    def __reversed__(self):
+        return reversed(self.songs)
+
     next = __next__
 
 class Discography:
@@ -61,5 +64,8 @@ class Discography:
         except IndexError:
             self.idx = 0
             raise StopIteration
+
+    def __reversed__(self):
+        return reversed(self.albums)
 
     next = __next__

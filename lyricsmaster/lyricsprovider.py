@@ -3,7 +3,6 @@
 """Lyrics Providers."""
 from .lyricsmaster import Song, Album, Discography
 import requests
-import bs4
 from bs4 import BeautifulSoup
 
 
@@ -44,6 +43,8 @@ class LyricWiki(LyricsProvider):
         author = self.clean_string(author)
         url = self.base_url + '/wiki/' + author
         artist_page = BeautifulSoup(self.get_page(url).text, 'lxml')
+        if artist_page.find("div", {'class': 'noarticletext'}):
+            return None
         return artist_page
 
     def get_album_page(self, author, album):
@@ -51,10 +52,14 @@ class LyricWiki(LyricsProvider):
         album = self.clean_string(album)
         url = self.base_url + '/wiki/' + author + ':' + album
         album_page = BeautifulSoup(self.get_page(url).text, 'lxml')
+        if album_page.find("div", {'class': 'noarticletext'}):
+            return None
         return album_page
 
     def get_lyrics_page(self, url):
         lyrics_page = BeautifulSoup(self.get_page(url).text, 'lxml')
+        if lyrics_page.find("div", {'class': 'noarticletext'}):
+            return None
         return lyrics_page
 
     def extract_lyrics(self, song):
@@ -75,12 +80,16 @@ class LyricWiki(LyricsProvider):
         if '(page does not exist' in song_title:
             return None
         lyrics_page = self.get_lyrics_page(self.base_url + link.attrs['href'])
+        if not lyrics_page:
+            return None
         lyrics = self.extract_lyrics(lyrics_page)
         song = Song(song_title, album_title, author, lyrics)
         return song
 
     def get_lyrics(self, author):
         artist_page = self.get_artist_page(author)
+        if not artist_page:
+            return None
         albums = [tag for tag in artist_page.find_all("span", {'class': 'mw-headline'}) if
                   tag.attrs['id'] not in ('Additional_information', 'External_links')]
         album_objects = []
@@ -95,12 +104,6 @@ class LyricWiki(LyricsProvider):
 
 
 
-
-
-
-class RapProvider(LyricsProvider):
-    base_url = "http://ohhla.com/all{0}.html"
-    pass
 
 if __name__ == "__main__":
     test = LyricWiki()
