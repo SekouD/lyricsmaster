@@ -3,7 +3,6 @@
 
 """Tests for `lyricsmaster` package."""
 
-from collections import Iterable
 import pytest
 from click.testing import CliRunner
 

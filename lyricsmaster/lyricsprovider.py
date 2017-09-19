@@ -10,7 +10,11 @@ import gevent.monkey
 from gevent.pool import Pool
 
 import socket
-from importlib import reload
+
+try:
+    from importlib import reload
+except ImportError:
+    import reload
 
 from stem import Signal
 from stem.control import Controller
