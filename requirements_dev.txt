@@ -11,7 +11,7 @@ cryptography==2.0.3
 PyYAML==3.12
 mypy==0.521
 pytest==3.2.2
-hypothesis==3.28.3
+hypothesis==3.29.0
 beautifulsoup4==4.6.0
 requests
 gevent==1.2.2
