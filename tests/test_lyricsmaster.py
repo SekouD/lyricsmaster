@@ -9,6 +9,8 @@ from click.testing import CliRunner
 
 from bs4 import BeautifulSoup, Tag
 
+import requests
+
 from lyricsmaster import lyricsmaster
 from lyricsmaster import cli
 from lyricsmaster import lyricsprovider
@@ -60,7 +62,7 @@ class TestAlbums:
 
 
 class TestDiscography:
-    """Tests for Album Class."""
+    """Tests for Discography Class."""
 
     albums = [lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs),
               lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs)]
@@ -132,15 +134,9 @@ class TestLyricWiki:
         album = [tag for tag in author_page.find_all("span", {'class': 'mw-headline'}) if
                  tag.attrs['id'] not in ('Additional_information', 'External_links')][0]
         song_links = self.provider.get_songs(album)
-        url = self.provider.base_url + song_links[0].find('a').attrs['href']
-        url = url[:url.index('?')]
-        page = BeautifulSoup(self.provider.get_page(url).text, 'lxml')
-        fail_song = self.provider.create_song(page, real_singer['name'], real_singer['album'], real_singer['song'])
+        fail_song = self.provider.create_song(song_links[0], real_singer['name'], real_singer['album'])
         assert fail_song is None
-        url = self.provider.base_url + song_links[9].find('a').attrs['href']
-        page = BeautifulSoup(self.provider.get_page(url).text, 'lxml')
-        title = song_links[9].find('a').attrs['title']
-        good_song = self.provider.create_song(page, real_singer['name'], real_singer['album'], title)
+        good_song = self.provider.create_song(song_links[9], real_singer['name'], real_singer['album'])
         assert isinstance(good_song, lyricsmaster.Song)
         assert good_song.title == 'Reggie Watts:Your Name'
         assert good_song.album == "Simplified (2004)"
@@ -153,6 +149,32 @@ class TestLyricWiki:
         assert isinstance(discography, lyricsmaster.Discography)
 
 
+class Test_tor:
+    provider = lyricsprovider.LyricWiki(tor=True, controlport=9051, password='password')
+    def test_anonymisation(self):
+        real_ip = self.provider.get_page("http://httpbin.org/ip").text
+        anonymous_ip = requests.get("http://httpbin.org/ip").text
+        assert real_ip != anonymous_ip
+
+    ## Compatibility issue between renew_tor_circuit() and gevent.
+    # def test_renew_tor_session(self):
+    #     real_ip = self.provider.get_page("http://httpbin.org/ip").text
+    #     anonymous_ip = requests.get("http://httpbin.org/ip").text
+    #     assert real_ip != anonymous_ip
+    #     self.provider.renew_tor_circuit(9051, 'password')
+    #     real_ip2 = self.provider.get_page("http://httpbin.org/ip").text
+    #     anonymous_ip2 = requests.get("http://httpbin.org/ip").text
+    #     assert real_ip2 != anonymous_ip2
+    #     assert anonymous_ip != anonymous_ip2
+
+    def test_get_lyrics(self):
+        discography = self.provider.get_lyrics(real_singer['name'])
+        assert isinstance(discography, lyricsmaster.Discography)
+
+
+
+
+
 def test_command_line_interface():
     """Test the CLI."""
     runner = CliRunner()
@@ -162,3 +184,5 @@ def test_command_line_interface():
     help_result = runner.invoke(cli.main, ['--help'])
     assert help_result.exit_code == 0
     assert '--help  Show this message and exit.' in help_result.output
+
+

@@ -15,4 +15,6 @@ hypothesis==3.28.3
 beautifulsoup4==4.6.0
 requests
 gevent==1.2.2
+requests requests[socks]
+stem
 
