@@ -14,7 +14,10 @@ import socket
 try:
     from importlib import reload
 except ImportError:
-    import reload
+    try:
+        from imp import reload
+    except:
+        pass
 
 from stem import Signal
 from stem.control import Controller
