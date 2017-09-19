@@ -151,6 +151,7 @@ class TestLyricWiki:
 
 class Test_tor:
     provider = lyricsprovider.LyricWiki(tor=True, controlport=9051, password='password')
+    provider2 = lyricsprovider.LyricWiki(tor=True)
     def test_anonymisation(self):
         real_ip = self.provider.get_page("http://httpbin.org/ip").text
         anonymous_ip = requests.get("http://httpbin.org/ip").text
@@ -168,7 +169,7 @@ class Test_tor:
     #     assert new_tor_circuit == True
 
     def test_get_lyrics(self):
-        discography = self.provider.get_lyrics(real_singer['name'])
+        discography = self.provider2.get_lyrics(real_singer['name'])
         assert isinstance(discography, lyricsmaster.Discography)
 
 
