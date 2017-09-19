@@ -6,14 +6,15 @@ flake8==3.4.1
 tox==2.8.2
 coverage==4.4.1
 Sphinx==1.6.3
-docutils
+docutils==0.14
 cryptography==2.0.3
 PyYAML==3.12
 mypy==0.521
 pytest==3.2.2
-hypothesis==3.28.3
+hypothesis==3.29.0
 beautifulsoup4==4.6.0
 requests
+gevent==1.2.2
 requests requests[socks]
-gevent
 stem==1.5.4
+
