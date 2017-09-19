@@ -10,8 +10,6 @@ from click.testing import CliRunner
 from bs4 import BeautifulSoup, Tag
 
 import requests
-from stem import Signal
-from stem.control import Controller
 
 from lyricsmaster import lyricsmaster
 from lyricsmaster import cli
@@ -64,7 +62,7 @@ class TestAlbums:
 
 
 class TestDiscography:
-    """Tests for Album Class."""
+    """Tests for Discography Class."""
 
     albums = [lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs),
               lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs)]
@@ -151,6 +149,32 @@ class TestLyricWiki:
         assert isinstance(discography, lyricsmaster.Discography)
 
 
+class Test_tor:
+    provider = lyricsprovider.LyricWiki(tor=True, controlport=9051, password='password')
+    def test_anonymisation(self):
+        real_ip = self.provider.get_page("http://httpbin.org/ip").text
+        anonymous_ip = requests.get("http://httpbin.org/ip").text
+        assert real_ip != anonymous_ip
+
+    ## Compatibility issue between renew_tor_circuit() and gevent.
+    # def test_renew_tor_session(self):
+    #     real_ip = self.provider.get_page("http://httpbin.org/ip").text
+    #     anonymous_ip = requests.get("http://httpbin.org/ip").text
+    #     assert real_ip != anonymous_ip
+    #     self.provider.renew_tor_circuit(9051, 'password')
+    #     real_ip2 = self.provider.get_page("http://httpbin.org/ip").text
+    #     anonymous_ip2 = requests.get("http://httpbin.org/ip").text
+    #     assert real_ip2 != anonymous_ip2
+    #     assert anonymous_ip != anonymous_ip2
+
+    def test_get_lyrics(self):
+        discography = self.provider.get_lyrics(real_singer['name'])
+        assert isinstance(discography, lyricsmaster.Discography)
+
+
+
+
+
 def test_command_line_interface():
     """Test the CLI."""
     runner = CliRunner()
@@ -161,34 +185,4 @@ def test_command_line_interface():
     assert help_result.exit_code == 0
     assert '--help  Show this message and exit.' in help_result.output
 
-def test_tor():
-    def renew_connection():
-        with Controller.from_port(port=9051) as controller:
-            controller.authenticate(password="password")
-            controller.signal(Signal.NEWNYM)
 
-    def get_tor_session():
-        session = requests.session()
-        # Tor uses the 9050 port as the default socks port
-        session.proxies = {'http': 'socks5://127.0.0.1:9050',
-                           'https': 'socks5://127.0.0.1:9050'}
-        return session
-
-    # Make a request through the Tor connection
-    # IP visible through Tor
-    session = get_tor_session()
-    print(session.get("http://httpbin.org/ip").text)
-    # Above should print an IP different than your public IP
-
-    # Following prints your normal public IP
-    print(requests.get("http://httpbin.org/ip").text)
-
-    # renew_connection()
-    # # Make a request through the Tor connection
-    # # IP visible through Tor
-    # session = get_tor_session()
-    # print(session.get("http://httpbin.org/ip").text)
-    # # Above should print an IP different than your public IP
-    #
-    # # Following prints your normal public IP
-    # print(requests.get("http://httpbin.org/ip").text)

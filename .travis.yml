@@ -2,15 +2,24 @@
 sudo: required
 dist: precise
 cache: pip
+language: python
+python:
+- 3.6
+- 3.5
+- 3.4
+- 3.3
+- 2.7
+
 before_install:
 - sudo apt-get update
 - sudo apt-get install -y tor
-- sudo echo "SocksPort 9050" > /etc/tor/torrc
-- sudo echo "SocksListenAddress 127.0.0.1" > /etc/tor/torrc
-- sudo echo "ControlPort 9051" > /etc/tor/torrc
-- sudo echo "HashedControlPassword 16:454108AE0C55A3F360685B75240EA37354277BECB043C1600D07BCEC99" > /etc/tor/torrc
 - sudo service tor stop
-- sudo service tor start -options -f torrc ControlPort 9051
+- sudo service tor start
+
+install:
+- pip install -U tox-travis
+- pip install -r requirements.txt
+
 deploy:
   provider: pypi
   true:
@@ -33,16 +42,8 @@ deploy:
       cWN1aWhocGhBQUF2bS9vc2V0NHQ2a0hyUnRtVm9oMk1KNCsvSWllV0VoaWZvd0tpei9seDdvTFpt
       ZCtDb3YwMHpmbjlMTlRnMjVqRkdrOEtpUUprYWpVWkUrTnN3YWFhUFJkcDZueDcvSHNMTTNnVm9p
       dnpHOThsY0lpWUo2TmRtZUhhTGs4emRXb1dDNG9xdmVYYkNJRVhEbldPSGxnemRyT1RyRk00dkU9
-install:
-- pip install -U tox-travis
-- pip install -r requirements.txt
-language: python
-python:
-- 3.6
-- 3.5
-- 3.4
-- 3.3
-- 2.7
+
+
 script: tox
 
 after_success:

@@ -2,8 +2,16 @@
 
 """Main module."""
 
+
 class Song:
     def __init__(self, title, album, author, lyrics):
+        """
+
+        :param title: string
+        :param album: string
+        :param author: string
+        :param lyrics: string
+        """
         self.title = title
         self.album = album
         self.author = author
@@ -15,6 +23,12 @@ class Song:
 
 class Album:
     def __init__(self, title, author, songs):
+        """
+
+        :param title: string
+        :param author: string
+        :param songs: string
+        """
         self.idx = 0
         self.title = title
         self.author = author
@@ -42,8 +56,14 @@ class Album:
 
     next = __next__
 
+
 class Discography:
     def __init__(self, author, albums):
+        """
+
+        :param author: string
+        :param albums: string
+        """
         self.idx = 0
         self.author = author
         self.albums = albums
