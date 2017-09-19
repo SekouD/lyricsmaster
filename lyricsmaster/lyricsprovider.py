@@ -7,8 +7,10 @@ import requests
 from bs4 import BeautifulSoup
 
 import gevent.monkey
-gevent.monkey.patch_socket()
 from gevent.pool import Pool
+
+import socket
+from importlib import reload
 
 from stem import Signal
 from stem.control import Controller
@@ -30,8 +32,14 @@ class LyricsProvider:
         self.password = password
         if not tor:
             self.session = requests.session()
+            print('Asynchronous requests enabled. The connexion is not anonymous.')
         else:
             self.session = self.get_tor_session(ip, socksport)
+            print('Anonymous requests enabled.')
+            if not controlport:
+                print('Asynchronous requests enabled but the tor circuit will not change for each album.')
+            else:
+                print('Asynchronous requests disabled to allow the creation of new tor circuits for each album')
 
     def get_page(self, url):
         """
@@ -66,7 +74,14 @@ class LyricsProvider:
         """
         with Controller.from_port(port=port) as controller:
             controller.authenticate(password=password)
-            controller.signal(Signal.NEWNYM)
+            if controller.is_newnym_available():  # true if tor would currently accept a NEWNYM signal
+                controller.signal(Signal.NEWNYM)
+                print('New Tor circuit created')
+                return True
+            else:
+                delay = controller.get_newnym_wait()
+                print('Dealy to create new Tor circuit: {0}s'.format(delay))
+                return False
 
     def get_lyrics(self, author):
         """
@@ -210,23 +225,25 @@ class LyricWiki(LyricsProvider):
         albums = [tag for tag in artist_page.find_all("span", {'class': 'mw-headline'}) if
                   tag.attrs['id'] not in ('Additional_information', 'External_links')]
         album_objects = []
+        if not self.controlport: # cycle circuits
+            gevent.monkey.patch_socket()
         for elmt in albums:
-            ## Renewal of tor session conflicts with gevent
-            ## When executing self.renew_tor_circuit(), the following error occurs
-            ## gevent.hub.LoopExit: ('This operation would block forever', <Hub at 0x1c677090e88 select pending=0 ref=0>)
-            ## Circuit change is disabled for now
-            # if self.controlport:
-            #     self.renew_tor_circuit(self.controlport, self.password)
-            #     self.session = self.get_tor_session(self.ip, self.socksport)
-            print('Downloading {0}'.format(elmt.text))
             album_title = elmt.text
             song_links = self.get_songs(elmt)
-            pool = Pool(25) # Sets the worker pool for async requests
-            results = [pool.spawn(self.create_song, *(link, author, album_title)) for link in song_links]
-            pool.join() # Gathers results from the pool
-            songs = [song.value for song in results]
+            print('Downloading {0}'.format(elmt.text))
+            if self.controlport:
+                self.renew_tor_circuit(self.controlport, self.password)
+                self.session = self.get_tor_session(self.ip, self.socksport)
+                songs = [self.create_song(link, author, album_title) for link in song_links]
+            else:
+                pool = Pool(25)  # Sets the worker pool for async requests
+                results = [pool.spawn(self.create_song, *(link, author, album_title)) for link in song_links]
+                pool.join()  # Gathers results from the pool
+                songs = [song.value for song in results]
             album = Album(album_title, author, songs)
             album_objects.append(album)
+        if not self.controlport:
+            reload(socket)
         discography = Discography(author, album_objects)
         return discography
 

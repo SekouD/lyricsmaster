@@ -156,16 +156,16 @@ class Test_tor:
         anonymous_ip = requests.get("http://httpbin.org/ip").text
         assert real_ip != anonymous_ip
 
-    ## Compatibility issue between renew_tor_circuit() and gevent.
+    # this function is greyed out in travis until i can enable ControlPort on Travis VM.
     # def test_renew_tor_session(self):
-    #     real_ip = self.provider.get_page("http://httpbin.org/ip").text
-    #     anonymous_ip = requests.get("http://httpbin.org/ip").text
+    #     anonymous_ip = self.provider.get_page("http://httpbin.org/ip").text
+    #     real_ip = requests.get("http://httpbin.org/ip").text
     #     assert real_ip != anonymous_ip
-    #     self.provider.renew_tor_circuit(9051, 'password')
-    #     real_ip2 = self.provider.get_page("http://httpbin.org/ip").text
-    #     anonymous_ip2 = requests.get("http://httpbin.org/ip").text
+    #     new_tor_circuit = self.provider.renew_tor_circuit(9051, 'password')
+    #     anonymous_ip2 = self.provider.get_page("http://httpbin.org/ip").text
+    #     real_ip2 = requests.get("http://httpbin.org/ip").text
     #     assert real_ip2 != anonymous_ip2
-    #     assert anonymous_ip != anonymous_ip2
+    #     assert new_tor_circuit == True
 
     def test_get_lyrics(self):
         discography = self.provider.get_lyrics(real_singer['name'])
