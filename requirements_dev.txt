@@ -16,4 +16,4 @@ beautifulsoup4==4.6.0
 requests
 requests requests[socks]
 gevent
-stem
+stem==1.5.4
