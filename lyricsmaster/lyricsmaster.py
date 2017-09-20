@@ -2,9 +2,27 @@
 
 """Main module."""
 
+import os
+import re
+import unicodedata
+
+
+def normalize(value):
+    """
+
+    Normalizes string, converts to lowercase, removes non-alpha characters,
+    and converts spaces to hyphens.
+
+    :param value: string
+    :return: string
+    """
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    value = re.sub('[^\w\s-]', '', value).strip().lower()
+    value = re.sub('[-\s]+', '-', value)
+    return value
 
 class Song:
-    def __init__(self, title, album, author, lyrics):
+    def __init__(self, title, album, author, lyrics=None):
         """
 
         :param title: string
@@ -19,6 +37,22 @@ class Song:
 
     def __repr__(self):
         return self.__class__.__name__ + " Object: " + self.title
+
+    def save(self, folder):
+        """
+
+        :param folder: path to save folder
+        """
+        if self.lyrics:
+            author = normalize(self.author)
+            album = normalize(self.album)
+            save_path = os.path.join(folder, author, album)
+            if not os.path.exists(save_path):
+                os.makedirs(save_path)
+            file_name = normalize(self.title)
+            with open(os.path.join(save_path, file_name + ".txt"), "w", encoding="utf-8") as file:
+                file.write(self.lyrics)
+
 
 
 class Album:
@@ -56,6 +90,14 @@ class Album:
 
     next = __next__
 
+    def save(self, folder):
+        """
+
+        :param folder: path to save folder
+        """
+        for song in self.songs:
+            song.save(folder)
+
 
 class Discography:
     def __init__(self, author, albums):
@@ -89,3 +131,11 @@ class Discography:
         return reversed(self.albums)
 
     next = __next__
+
+    def save(self, folder):
+        """
+
+        :param folder: path to save folder
+        """
+        for album in self.albums:
+            album.save(folder)
