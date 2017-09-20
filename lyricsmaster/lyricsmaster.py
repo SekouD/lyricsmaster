@@ -4,6 +4,7 @@
 
 import os
 import re
+from io import open
 
 
 def normalize(value):
