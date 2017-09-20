@@ -18,5 +18,3 @@ API Reference for classes in lyricsmaster.lyricsprovider
         :undoc-members:
         :inherited-members:
         :show-inheritance:
-
-
