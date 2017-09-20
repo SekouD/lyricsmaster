@@ -3,6 +3,8 @@
 
 """Tests for `lyricsmaster` package."""
 
+import os
+
 import pytest
 from click.testing import CliRunner
 
@@ -22,10 +24,11 @@ except NameError:
 
 @pytest.fixture(scope="module")
 def songs():
-    songs = [lyricsmaster.Song('Bad Love', 'Bad news is coming', 'Luther Alison', None),
-             lyricsmaster.Song('Ragged and dirty', 'Bad news is coming', 'Luther Alison', None),
-             lyricsmaster.Song('Red rooster', 'Bad news is coming', 'Luther Alison', None),
-             lyricsmaster.Song('Life is bitch', 'Bad news is coming', 'Luther Alison', None)]
+    songs = [lyricsmaster.Song('Bad Love', 'Bad news is coming', 'Luther Alison', 'I heard the bad news is coming...'),
+             lyricsmaster.Song('Ragged and dirty', 'Bad news is coming', 'Luther Alison',
+                               'Here I stand, ragged and dirty...'),
+             lyricsmaster.Song('Red rooster', 'Bad news is coming', 'Luther Alison', 'I have a little red rooster...'),
+             lyricsmaster.Song('Life is bitch', 'Bad news is coming', 'Luther Alison', 'Life is bitch, it is...')]
     return songs
 
 
@@ -36,9 +39,21 @@ fake_singer = {'name': 'Fake Rapper', 'album': "In my mom's basement", 'song': '
 class TestSongs:
     """Tests for Song Class."""
     song = lyricsmaster.Song('Bad Love', 'Bad news is coming', 'Luther Alison', None)
+    song2 = lyricsmaster.Song('Bad Love', 'Bad news is coming', 'Luther Alison', 'I heard the bad news is coming...')
 
     def test_song(self):
         assert self.song.__repr__() == 'Song Object: Bad Love'
+
+    def test_song_save(self):
+        self.song2.save()
+        path = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster', 'Luther-Alison', 'Bad-news-is-coming',
+                            'Bad-Love.txt')
+        assert os.path.exists(path)
+        folder = os.path.join(os.path.expanduser("~"), 'Documents', 'test_lyricsmaster_save')
+        self.song2.save(folder)
+        path = os.path.join(folder, 'LyricsMaster', 'Luther-Alison', 'Bad-news-is-coming', 'Bad-Love.txt')
+        assert os.path.exists(path)
+
 
 
 class TestAlbums:
@@ -59,12 +74,23 @@ class TestAlbums:
         for x, y in zip(reversed(self.album), reversed(self.album.songs)):
             assert x == y
 
+    def test_album_save(self):
+        self.album.save()
+        for song in self.album.songs:
+            author = lyricsmaster.normalize(song.author)
+            album = lyricsmaster.normalize(song.album)
+            title = lyricsmaster.normalize(song.title)
+            path = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster', author,
+                                album, title + '.txt')
+            assert os.path.exists(path)
+
+
 
 class TestDiscography:
     """Tests for Discography Class."""
 
-    albums = [lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs),
-              lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs)]
+    albums = [lyricsmaster.Album('Bad news is coming 2', 'Luther Alison', songs()),
+              lyricsmaster.Album('Bad news is coming 3', 'Luther Alison', songs())]
     discography = lyricsmaster.Discography('Luther Allison', albums)
 
     def test_discography(self):
@@ -76,8 +102,22 @@ class TestDiscography:
         for x, y in zip(reversed(self.discography), reversed(self.discography.albums)):
             assert x == y
 
+    def test_discography_save(self):
+        self.discography.save()
+        for album in self.albums:
+            for song in album.songs:
+                author = lyricsmaster.normalize(song.author)
+                album = lyricsmaster.normalize(song.album)
+                title = lyricsmaster.normalize(song.title)
+                path = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster', author,
+                                    album, title + '.txt')
+                assert os.path.exists(path)
+
+
 
 class TestLyricWiki:
+    """Tests for LyricWiki Class."""
+
     provider = lyricsprovider.LyricWiki()
 
     def test_get_page(self):
@@ -137,7 +177,7 @@ class TestLyricWiki:
         assert fail_song is None
         good_song = self.provider.create_song(song_links[9], real_singer['name'], real_singer['album'])
         assert isinstance(good_song, lyricsmaster.Song)
-        assert good_song.title == 'Reggie Watts:Your Name'
+        assert good_song.title == 'Your Name'
         assert good_song.album == "Simplified (2004)"
         assert good_song.author == 'Reggie Watts'
         assert 'I recall the day' in good_song.lyrics
@@ -149,6 +189,8 @@ class TestLyricWiki:
 
 
 class Test_tor:
+    """Tests for Tor functionality."""
+
     provider = lyricsprovider.LyricWiki(tor=True, controlport=9051, password='password')
     provider2 = lyricsprovider.LyricWiki(tor=True)
     def test_anonymisation(self):

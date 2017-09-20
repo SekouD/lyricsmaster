@@ -4,7 +4,6 @@
 
 import os
 import re
-import unicodedata
 
 
 def normalize(value):
@@ -16,10 +15,23 @@ def normalize(value):
     :param value: string
     :return: string
     """
-    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    value = re.sub('[^\w\s-]', '', value).strip().lower()
+    value = re.sub('[^\w\s-]', '', value).strip()
     value = re.sub('[-\s]+', '-', value)
     return value
+
+
+def set_save_folder(folder):
+    """
+
+    :param folder:
+    :return:
+    """
+    if not folder:
+        folder = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster')
+    else:
+        folder = os.path.join(folder, 'LyricsMaster')
+    return folder
+
 
 class Song:
     def __init__(self, title, album, author, lyrics=None):
@@ -38,11 +50,12 @@ class Song:
     def __repr__(self):
         return self.__class__.__name__ + " Object: " + self.title
 
-    def save(self, folder):
+    def save(self, folder=None):
         """
 
         :param folder: path to save folder
         """
+        folder = set_save_folder(folder)
         if self.lyrics:
             author = normalize(self.author)
             album = normalize(self.album)
@@ -52,7 +65,6 @@ class Song:
             file_name = normalize(self.title)
             with open(os.path.join(save_path, file_name + ".txt"), "w", encoding="utf-8") as file:
                 file.write(self.lyrics)
-
 
 
 class Album:
@@ -90,13 +102,14 @@ class Album:
 
     next = __next__
 
-    def save(self, folder):
+    def save(self, folder=None):
         """
 
         :param folder: path to save folder
         """
         for song in self.songs:
-            song.save(folder)
+            if song:
+                song.save(folder)
 
 
 class Discography:
@@ -132,7 +145,7 @@ class Discography:
 
     next = __next__
 
-    def save(self, folder):
+    def save(self, folder=None):
         """
 
         :param folder: path to save folder
