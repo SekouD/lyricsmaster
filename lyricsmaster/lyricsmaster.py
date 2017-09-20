@@ -28,7 +28,7 @@ def set_save_folder(folder):
     Sets the folder in which lyrics will be downloaded and saved.
 
     :param folder: string.
-        Folder path
+        Folder path.
     :return: string.
         Folder path.
     """
@@ -45,12 +45,12 @@ class Song:
 
     :param title: string.
         Song title.
-    :param album: string
+    :param album: string.
         Album title.
-    :param author: string
+    :param author: string.
         Author name.
-    :param lyrics: string
-        Lyrics of the song
+    :param lyrics: string.
+        Lyrics of the song.
     """
     def __init__(self, title, album, author, lyrics=None):
         self.title = title
@@ -67,7 +67,7 @@ class Song:
         The lyrics of a song are saved in folder/author/album/song_title.txt
 
         :param folder: string.
-            path to save folder
+            path to save folder.
         """
         folder = set_save_folder(folder)
         if self.lyrics:
@@ -87,9 +87,9 @@ class Album:
     The Album class follows the Iterable protocol and can be iterated over the songs.
 
     :param title: string.
-        Album title
+        Album title.
     :param author: string.
-        Artist name
+        Artist name.
     :param songs: list.
         List of Songs objects.
     """
@@ -175,7 +175,7 @@ class Discography:
         Saves Discography to disc in the supplied folder.
 
         :param folder: string.
-            path to save folder
+            path to save folder.
         """
         for album in self.albums:
             album.save(folder)
