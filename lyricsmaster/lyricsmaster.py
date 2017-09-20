@@ -4,7 +4,7 @@
 
 import os
 import re
-from io import open
+from codecs import open
 
 
 def normalize(value):
