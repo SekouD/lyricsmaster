@@ -182,10 +182,16 @@ class TestLyricWiki:
         assert good_song.author == 'Reggie Watts'
         assert 'I recall the day' in good_song.lyrics
         assert "And I hope you'll stay." in good_song.lyrics
+        tag = '<a href="http://lyrics.wikia.com/wiki/Reggie_Watts:Feel_The_Same" class="new" title="Reggie Watts:Feel The Same (page does not exist)">Feel the Same</a>'
+        page = BeautifulSoup(tag, 'lxml')
+        non_existent_song = self.provider.create_song(page, real_singer['name'], real_singer['album'])
+        assert non_existent_song == None
 
     def test_get_lyrics(self):
         discography = self.provider.get_lyrics(real_singer['name'])
         assert isinstance(discography, lyricsmaster.Discography)
+        discography = self.provider.get_lyrics(fake_singer['name'])
+        assert discography is None
 
 
 class Test_tor:
