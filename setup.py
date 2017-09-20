@@ -44,8 +44,9 @@ setup(
     zip_safe=False,
     keywords='lyricsmaster',
     classifiers=[
-        'Development Status :: Stable Release',
-        'Intended Audience :: Developers, End Users',
+        'Development Status :: 5 - Production/Stable',
+        'Intended Audience :: Developers',
+        'Intended Audience :: End Users/Desktop',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         "Programming Language :: Python :: 2",
