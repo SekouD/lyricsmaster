@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """Lyrics Providers."""
-from .lyricsmaster import Song, Album, Discography
+from lyricsmaster import Song, Album, Discography
 
 import requests
 from bs4 import BeautifulSoup
@@ -198,7 +198,7 @@ class LyricWiki(LyricsProvider):
         :return: string
         """
         lyric_box = song.find("div", {'class': 'lyricbox'})
-        lyrics = lyric_box.text
+        lyrics = '\n'.join(lyric_box.strings)
         return lyrics
 
     def create_song(self, link, author, album_title):
