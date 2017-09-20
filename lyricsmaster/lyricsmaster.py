@@ -23,8 +23,8 @@ def normalize(value):
 def set_save_folder(folder):
     """
 
-    :param folder:
-    :return:
+    :param folder: string folder path
+    :return: string folder path
     """
     if not folder:
         folder = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster')
