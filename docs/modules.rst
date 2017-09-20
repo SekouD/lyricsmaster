@@ -6,14 +6,14 @@ Package Api Documentation
 API Reference for classes in lyricsmaster.lyricsmaster
 ------------------------------------------------------
 
-.. automodule:: lyricsmaster.lyricsmaster
+.. automodule:: lyricsmaster
 :members:
 
 
 API Reference for classes in lyricsmaster.lyricsprovider
 --------------------------------------------------------
 
-.. automodule:: lyricsmaster.lyricsprovider
+.. automodule:: lyricsprovider
 :members:
         :undoc-members:
         :inherited-members:
