@@ -22,3 +22,13 @@ API Reference for classes in lyricsmaster.lyricsprovider
     :show-inheritance:
 
 
+API Reference for classes in lyricsmaster.utils
+-----------------------------------------------
+
+.. automodule:: lyricsmaster.lyricsprovider
+    :members:
+    :undoc-members:
+    :inherited-members:
+    :show-inheritance:
+
+
