@@ -27,16 +27,16 @@ class TorController:
         """
         session = requests.session()
         session.proxies = {'http': 'socks5://{0}:{1}'.format(self.ip,
-                                                             self.port),
+                                                             self.socksport),
                            'https': 'socks5://{0}:{1}'.format(self.ip,
-                                                              self.port)}
+                                                              self.socksport)}
         return session
 
     def renew_tor_circuit(self):
         """
 
         """
-        with Controller.from_port(port=self.port) as controller:
+        with Controller.from_port(port=self.controlport) as controller:
             controller.authenticate(password=self.password)
             if controller.is_newnym_available():  # true if tor would currently accept a NEWNYM signal
                 controller.signal(Signal.NEWNYM)

@@ -29,14 +29,17 @@ class LyricsProvider:
         self.tor_controller = tor_controller
         if not self.tor_controller:
             self.session = requests.session()
-            print('Asynchronous requests enabled. The connexion is not anonymous.')
+            print(
+                'Asynchronous requests enabled. The connexion is not anonymous.')
         else:
             self.session = self.tor_controller.get_tor_session()
             print('Anonymous requests enabled.')
             if not self.tor_controller.controlport:
-                print('Asynchronous requests enabled but the tor circuit will not change for each album.')
+                print(
+                    'Asynchronous requests enabled but the tor circuit will not change for each album.')
             else:
-                print('Asynchronous requests disabled to allow the creation of new tor circuits for each album')
+                print(
+                    'Asynchronous requests disabled to allow the creation of new tor circuits for each album')
 
     def get_page(self, url):
         """
@@ -97,7 +100,8 @@ class LyricWiki(LyricsProvider):
         :param text: string
         :return: string
         """
-        for elmt in [('#', 'Number_'), ('[', '('), (']', ')'), ('{', '('), ('}', ')'), (' ', '_')]:
+        for elmt in [('#', 'Number_'), ('[', '('), (']', ')'), ('{', '('),
+                     ('}', ')'), (' ', '_')]:
             text = text.replace(*elmt)
         return text
 
@@ -191,27 +195,35 @@ class LyricWiki(LyricsProvider):
         artist_page = self.get_artist_page(author)
         if not artist_page:
             return None
-        albums = [tag for tag in artist_page.find_all("span", {'class': 'mw-headline'}) if
-                  tag.attrs['id'] not in ('Additional_information', 'External_links')]
+        albums = [tag for tag in
+                  artist_page.find_all("span", {'class': 'mw-headline'}) if
+                  tag.attrs['id'] not in (
+                      'Additional_information', 'External_links')]
         album_objects = []
-        if not self.controlport: # cycle circuits
+        if not self.tor_controller or (
+                self.tor_controller and not self.tor_controller.controlport):  #
+            # cycle circuits
             gevent.monkey.patch_socket()
         for elmt in albums:
             album_title = elmt.text
             song_links = self.get_songs(elmt)
             print('Downloading {0}'.format(elmt.text))
-            if self.controlport:
-                self.renew_tor_circuit(self.controlport, self.password)
-                self.session = self.get_tor_session(self.ip, self.socksport)
-                songs = [self.create_song(link, author, album_title) for link in song_links]
+            if self.tor_controller and self.tor_controller.controlport:
+                self.tor_controller.renew_tor_circuit()
+                self.session = self.tor_controller.get_tor_session()
+                songs = [self.create_song(link, author, album_title) for link in
+                         song_links]
             else:
                 pool = Pool(25)  # Sets the worker pool for async requests
-                results = [pool.spawn(self.create_song, *(link, author, album_title)) for link in song_links]
+                results = [
+                    pool.spawn(self.create_song, *(link, author, album_title))
+                    for link in song_links]
                 pool.join()  # Gathers results from the pool
                 songs = [song.value for song in results]
             album = Album(album_title, author, songs)
             album_objects.append(album)
-        if not self.controlport:
+        if not self.tor_controller or (
+                self.tor_controller and not self.tor_controller.controlport):
             reload(socket)
         discography = Discography(author, album_objects)
         return discography
