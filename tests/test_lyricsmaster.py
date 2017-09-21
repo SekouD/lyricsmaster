@@ -219,9 +219,9 @@ class Test_tor:
     #     assert real_ip2 != anonymous_ip2
     #     assert new_tor_circuit == True
 
-    # def test_get_lyrics(self):
-    #     discography = self.provider.get_lyrics(real_singer['name'])
-    #     assert isinstance(discography, lyricsmaster.Discography)
+    def test_get_lyrics(self):
+        discography = self.provider.get_lyrics(real_singer['name'])
+        assert isinstance(discography, lyricsmaster.Discography)
     #     discography = self.provider2.get_lyrics(real_singer['name'])
     #     assert isinstance(discography, lyricsmaster.Discography)
 
