@@ -104,7 +104,7 @@ class Album:
 class Discography:
     """
     Discography Class.
-    The Discography class follows the Iterable protocol and can be iterated over the albumss.
+    The Discography class follows the Iterable protocol and can be iterated over the albums.
 
     :param author: string.
         Artist name.
@@ -143,7 +143,7 @@ class Discography:
         Saves Discography to disc in the supplied folder.
 
         :param folder: string.
-            path to save folder.
+            Path to save folder.
         """
         for album in self.albums:
             album.save(folder)
