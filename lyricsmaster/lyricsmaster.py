@@ -3,46 +3,24 @@
 """Main module."""
 
 import os
-import re
 from codecs import open
-
-
-def normalize(value):
-    """
-
-    Normalizes string, converts to lowercase, removes non-alpha characters,
-    and converts spaces to hyphens.
-
-    :param value: string
-    :return: string
-    """
-    value = re.sub('[^\w\s-]', '', value).strip()
-    value = re.sub('[-\s]+', '-', value)
-    return value
-
-
-def set_save_folder(folder):
-    """
-
-    :param folder: string folder path
-    :return: string folder path
-    """
-    if not folder:
-        folder = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster')
-    else:
-        folder = os.path.join(folder, 'LyricsMaster')
-    return folder
+from .utils import set_save_folder, normalize
 
 
 class Song:
-    def __init__(self, title, album, author, lyrics=None):
-        """
+    """
+    Song class.
 
-        :param title: string
-        :param album: string
-        :param author: string
-        :param lyrics: string
-        """
+    :param title: string.
+        Song title.
+    :param album: string.
+        Album title.
+    :param author: string.
+        Author name.
+    :param lyrics: string.
+        Lyrics of the song.
+    """
+    def __init__(self, title, album, author, lyrics=None):
         self.title = title
         self.album = album
         self.author = author
@@ -53,8 +31,11 @@ class Song:
 
     def save(self, folder=None):
         """
+        Saves the lyrics of the song in the supplied folder.
+        The lyrics of a song are saved in folder/author/album/song_title.txt
 
-        :param folder: path to save folder
+        :param folder: string.
+            path to save folder.
         """
         folder = set_save_folder(folder)
         if self.lyrics:
@@ -69,13 +50,18 @@ class Song:
 
 
 class Album:
-    def __init__(self, title, author, songs):
-        """
+    """
+    Album Class.
+    The Album class follows the Iterable protocol and can be iterated over the songs.
 
-        :param title: string
-        :param author: string
-        :param songs: string
-        """
+    :param title: string.
+        Album title.
+    :param author: string.
+        Artist name.
+    :param songs: list.
+        List of Songs objects.
+    """
+    def __init__(self, title, author, songs):
         self.idx = 0
         self.title = title
         self.author = author
@@ -105,8 +91,10 @@ class Album:
 
     def save(self, folder=None):
         """
+        Saves the album to disc in the supplied folder.
 
-        :param folder: path to save folder
+        :param folder: string.
+            path to save folder.
         """
         for song in self.songs:
             if song:
@@ -114,12 +102,16 @@ class Album:
 
 
 class Discography:
-    def __init__(self, author, albums):
-        """
+    """
+    Discography Class.
+    The Discography class follows the Iterable protocol and can be iterated over the albums.
 
-        :param author: string
-        :param albums: string
-        """
+    :param author: string.
+        Artist name.
+    :param albums: list.
+        List of Album objects.
+    """
+    def __init__(self, author, albums):
         self.idx = 0
         self.author = author
         self.albums = albums
@@ -148,8 +140,10 @@ class Discography:
 
     def save(self, folder=None):
         """
+        Saves Discography to disc in the supplied folder.
 
-        :param folder: path to save folder
+        :param folder: string.
+            Path to save folder.
         """
         for album in self.albums:
             album.save(folder)

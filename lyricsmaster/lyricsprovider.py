@@ -19,13 +19,24 @@ except ImportError:
     except:
         pass
 
+from stem import Signal
+from stem.control import Controller
+
 
 class LyricsProvider:
-    def __init__(self, tor_controller=None):
-        """
+    """
+    This is the base class for all Lyrics Providers. If you wish to sublass this class, you must implement all
+    the methods defined in this class to be compatible with the LyricsMaster API.
+    Requests to fetch songs are executed asynchronously for better performance.
+    TOR anonymisation is provided if tor is installed on the system and a TorController is passed at instance creation.
+    If 'controlport' is None, all tor connexions will use the same tor circuit.
+    If 'controlport' is set, a new tor circuit will be created for each album downloaded and asynchronous requests
+    are disabled for compatibility.
 
-        :param tor_controller: TorController Object
-        """
+    :param tor: boolean.
+        Whether to activate TOR proxying.
+    """
+    def __init__(self, tor_controller=None):
         self.tor_controller = tor_controller
         if not self.tor_controller:
             self.session = requests.session()
@@ -43,9 +54,10 @@ class LyricsProvider:
 
     def get_page(self, url):
         """
+        Fetches the supplied url and returns a request object.
 
-        :param url: string
-        :return: requests.request Object
+        :param url: string.
+        :return: requests.request Object.
         """
         try:
             req = self.session.get(url)
@@ -56,6 +68,7 @@ class LyricsProvider:
 
     def get_lyrics(self, author):
         """
+        Must be implemented by children classes conforming to the LyricsMaster API.
 
         :param author:
         """
@@ -63,6 +76,7 @@ class LyricsProvider:
 
     def get_artist_page(self, author):
         """
+        Must be implemented by children classes conforming to the LyricsMaster API.
 
         :param author:
         """
@@ -70,6 +84,7 @@ class LyricsProvider:
 
     def get_album_page(self, author, album):
         """
+        Must be implemented by children classes conforming to the LyricsMaster API.
 
         :param author:
         :param album:
@@ -78,6 +93,7 @@ class LyricsProvider:
 
     def get_lyrics_page(self, url):
         """
+        Must be implemented by children classes conforming to the LyricsMaster API.
 
         :param url:
         """
@@ -85,6 +101,7 @@ class LyricsProvider:
 
     def extract_lyrics(self, song):
         """
+        Must be implemented by children classes conforming to the LyricsMaster API.
 
         :param song:
         """
@@ -92,24 +109,34 @@ class LyricsProvider:
 
 
 class LyricWiki(LyricsProvider):
+    """
+    Class interfacing with http://lyrics.wikia.com
+    This class is used to retrieve lyrics from LyricWiki.
+
+    """
     base_url = 'http://lyrics.wikia.com'
 
     def clean_string(self, text):
         """
+        Cleans the supplied string and formats it to use in a url.
 
-        :param text: string
-        :return: string
+        :param text: string.
+            Text to be cleaned.
+        :return: string.
+            Cleaned text.
         """
-        for elmt in [('#', 'Number_'), ('[', '('), (']', ')'), ('{', '('),
-                     ('}', ')'), (' ', '_')]:
+        for elmt in [('#', 'Number_'), ('[', '('), (']', ')'), ('{', '('), ('}', ')'), (' ', '_')]:
             text = text.replace(*elmt)
         return text
 
     def get_artist_page(self, author):
         """
+        Fetches the web page for the supplied artist.
 
-        :param author: string
-        :return: BeautifulSoup Object
+        :param author: string.
+            Artist name.
+        :return: BeautifulSoup Object.
+            Artist page.
         """
         author = self.clean_string(author)
         url = self.base_url + '/wiki/' + author
@@ -120,10 +147,14 @@ class LyricWiki(LyricsProvider):
 
     def get_album_page(self, author, album):
         """
+        Fetches the album page for the supplied artist and album.
 
-        :param author: string
-        :param album: string
-        :return: BeautifulSoup Object or None
+        :param author: string.
+            Artist name.
+        :param album: string.
+            Album title.
+        :return: BeautifulSoup Object or None.
+            Album page.
         """
         author = self.clean_string(author)
         album = self.clean_string(album)
@@ -135,9 +166,12 @@ class LyricWiki(LyricsProvider):
 
     def get_lyrics_page(self, url):
         """
+        Fetches the web page containing the lyrics at the supplied url.
 
-        :param url: string
+        :param url: string.
+            Lyrics url.
         :return: BeautifulSoup Object or None.
+            Lyrics page.
         """
         lyrics_page = BeautifulSoup(self.get_page(url).text, 'lxml')
         if lyrics_page.find("div", {'class': 'noarticletext'}):
@@ -146,9 +180,10 @@ class LyricWiki(LyricsProvider):
 
     def get_songs(self, album):
         """
+        Fetches the links to the songs of the supplied album.
 
-        :param album: BeautifulSoup Object
-        :return: List of BeautifulSoup Link Objects
+        :param album: BeautifulSoup Object.
+        :return: List of BeautifulSoup Tag Objects.
         """
         parent_node = album.parent
         while parent_node.name != 'ol':
@@ -158,9 +193,12 @@ class LyricWiki(LyricsProvider):
 
     def extract_lyrics(self, song):
         """
+        Extracts the lyrics from the lyrics page of the supplied song.
 
-        :param song: BeautifulSoup Object
-        :return: string
+        :param song: BeautifulSoup Object.
+            Lyrics page.
+        :return: string.
+            Formatted lyrics.
         """
         lyric_box = song.find("div", {'class': 'lyricbox'})
         lyrics = '\n'.join(lyric_box.strings)
@@ -168,10 +206,11 @@ class LyricWiki(LyricsProvider):
 
     def create_song(self, link, author, album_title):
         """
+        Creates a Song object
 
-        :param link: BeautifulSoup Link Object
-        :param author: string
-        :param album_title: string
+        :param link: BeautifulSoup Link Object.
+        :param author: string.
+        :param album_title: string.
         :return: lyricsmaster.Song Object or None.
         """
         link = link.find('a')
@@ -188,8 +227,12 @@ class LyricWiki(LyricsProvider):
 
     def get_lyrics(self, author):
         """
+        This is the main method of this class.
+        Connects to LyricWiki and downloads lyrics for all the albums of the supplied artist.
+        Returns a Discography Object or None if the artist was not found on LyricWiki.
 
         :param author: string
+            Artist name.
         :return: lyricsmaster.Discography Object or None.
         """
         artist_page = self.get_artist_page(author)

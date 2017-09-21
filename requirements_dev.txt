@@ -16,8 +16,7 @@ beautifulsoup4==4.6.0
 requests
 gevent==1.2.2
 requests[socks]
-PySocks
 stem==1.5.4
+PySocks
 click
 lxml
-
