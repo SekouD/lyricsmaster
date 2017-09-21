@@ -18,5 +18,5 @@ gevent==1.2.2
 requests[socks]
 stem==1.5.4
 PySocks
-click
+click==6.7
 lxml
