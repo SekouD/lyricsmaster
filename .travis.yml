@@ -45,7 +45,7 @@ deploy:
 
 
 script:
-- sudo tox
+- tox
 
 after_success:
 
