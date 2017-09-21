@@ -15,6 +15,9 @@ hypothesis==3.29.0
 beautifulsoup4==4.6.0
 requests
 gevent==1.2.2
-requests requests[socks]
+requests[socks]
+PySocks
 stem==1.5.4
+click
+lxml
 

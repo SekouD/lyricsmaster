@@ -19,31 +19,21 @@ except ImportError:
     except:
         pass
 
-from stem import Signal
-from stem.control import Controller
-
 
 class LyricsProvider:
-    def __init__(self, tor=False, ip='127.0.0.1', socksport=9050, controlport=None, password=''):
+    def __init__(self, tor_controller=None):
         """
 
-        :param tor: boolean
-        :param ip: string
-        :param socksport: integer
-        :param controlport: integer
-        :param password: string
+        :param tor_controller: TorController Object
         """
-        self.socksport = socksport
-        self.ip = ip
-        self.controlport = controlport
-        self.password = password
-        if not tor:
+        self.tor_controller = tor_controller
+        if not self.tor_controller:
             self.session = requests.session()
             print('Asynchronous requests enabled. The connexion is not anonymous.')
         else:
-            self.session = self.get_tor_session(ip, socksport)
+            self.session = self.tor_controller.get_tor_session()
             print('Anonymous requests enabled.')
-            if not controlport:
+            if not self.tor_controller.controlport:
                 print('Asynchronous requests enabled but the tor circuit will not change for each album.')
             else:
                 print('Asynchronous requests disabled to allow the creation of new tor circuits for each album')
@@ -60,35 +50,6 @@ class LyricsProvider:
             req = None
             print('Unable to download url ' + url)
         return req
-
-    def get_tor_session(self, ip, port):
-        """
-
-        :param ip: integer
-        :param port: integer
-        :return: requests.session Object
-        """
-        session = requests.session()
-        session.proxies = {'http': 'socks5://{0}:{1}'.format(ip, port),
-                           'https': 'socks5://{0}:{1}'.format(ip, port)}
-        return session
-
-    def renew_tor_circuit(self, port, password):
-        """
-
-        :param port: integer
-        :param password: string
-        """
-        with Controller.from_port(port=port) as controller:
-            controller.authenticate(password=password)
-            if controller.is_newnym_available():  # true if tor would currently accept a NEWNYM signal
-                controller.signal(Signal.NEWNYM)
-                print('New Tor circuit created')
-                return True
-            else:
-                delay = controller.get_newnym_wait()
-                print('Dealy to create new Tor circuit: {0}s'.format(delay))
-                return False
 
     def get_lyrics(self, author):
         """
