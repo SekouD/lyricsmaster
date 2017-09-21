@@ -15,6 +15,7 @@ import requests
 from lyricsmaster import lyricsmaster
 from lyricsmaster import cli
 from lyricsmaster import lyricsprovider
+from lyricsmaster.utils import TorController
 
 try:
     basestring
@@ -196,26 +197,30 @@ class TestLyricWiki:
 
 class Test_tor:
     """Tests for Tor functionality."""
+    tor_basic = TorController()
+    tor_advanced = TorController(controlport='/var/run/tor/control', password='password')
 
-    provider = lyricsprovider.LyricWiki(tor=True, controlport=9051, password='password')
-    provider2 = lyricsprovider.LyricWiki(tor=True)
+    provider = lyricsprovider.LyricWiki(tor_basic)
+    provider2 = lyricsprovider.LyricWiki(tor_advanced)
     def test_anonymisation(self):
-        real_ip = self.provider.get_page("http://httpbin.org/ip").text
-        anonymous_ip = requests.get("http://httpbin.org/ip").text
+        anonymous_ip = self.provider.get_page("http://httpbin.org/ip").text
+        real_ip = requests.get("http://httpbin.org/ip").text
         assert real_ip != anonymous_ip
 
-    # this function is greyed out in travis until i can enable ControlPort on Travis VM.
-    # def test_renew_tor_session(self):
-    #     anonymous_ip = self.provider.get_page("http://httpbin.org/ip").text
-    #     real_ip = requests.get("http://httpbin.org/ip").text
-    #     assert real_ip != anonymous_ip
-    #     new_tor_circuit = self.provider.renew_tor_circuit(9051, 'password')
-    #     anonymous_ip2 = self.provider.get_page("http://httpbin.org/ip").text
-    #     real_ip2 = requests.get("http://httpbin.org/ip").text
-    #     assert real_ip2 != anonymous_ip2
-    #     assert new_tor_circuit == True
+    # this function is tested out in travis using a unix path as a control port instead of port 9051
+    def test_renew_tor_session(self):
+        anonymous_ip = self.provider2.get_page("http://httpbin.org/ip").text
+        real_ip = requests.get("http://httpbin.org/ip").text
+        assert real_ip != anonymous_ip
+        new_tor_circuit = self.provider2.tor_controller.renew_tor_circuit()
+        anonymous_ip2 = self.provider2.get_page("http://httpbin.org/ip").text
+        real_ip2 = requests.get("http://httpbin.org/ip").text
+        assert real_ip2 != anonymous_ip2
+        assert new_tor_circuit == True
 
     def test_get_lyrics(self):
+        discography = self.provider.get_lyrics(real_singer['name'])
+        assert isinstance(discography, lyricsmaster.Discography)
         discography = self.provider2.get_lyrics(real_singer['name'])
         assert isinstance(discography, lyricsmaster.Discography)
 

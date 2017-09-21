@@ -3,40 +3,8 @@
 """Main module."""
 
 import os
-import re
 from codecs import open
-
-
-def normalize(value):
-    """
-
-    Normalizes string, converts to lowercase, removes non-alpha characters,
-    and converts spaces to hyphens.
-
-    :param value: string.
-        String.
-    :return: string.
-        Cleaned string.
-    """
-    value = re.sub('[^\w\s-]', '', value).strip()
-    value = re.sub('[-\s]+', '-', value)
-    return value
-
-
-def set_save_folder(folder):
-    """
-    Sets the folder in which lyrics will be downloaded and saved.
-
-    :param folder: string.
-        Folder path.
-    :return: string.
-        Folder path.
-    """
-    if not folder:
-        folder = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster')
-    else:
-        folder = os.path.join(folder, 'LyricsMaster')
-    return folder
+from .utils import set_save_folder, normalize
 
 
 class Song:
