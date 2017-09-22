@@ -1,5 +1,5 @@
-Welcome to LyricsMaster's documentation!
-======================================
+Welcome to LyricsMaster's documentation
+=======================================
 
 Contents:
 
