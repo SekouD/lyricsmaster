@@ -18,9 +18,9 @@ def normalize(value):
     Normalizes string, converts to lowercase, removes non-alpha characters,
     and converts spaces to hyphens.
 
-    :param value string:
+    :param value: string.
         String.
-    :return string:
+    :return: string.
         Cleaned string.
     """
     value = re.sub('[^\w\s-]', '', value).strip()
@@ -32,9 +32,9 @@ def set_save_folder(folder):
     """
     Sets the folder in which lyrics will be downloaded and saved.
 
-    :param folder string:
+    :param folder: string.
         Folder path.
-    :return string:
+    :return: string.
         Folder path.
     """
     if not folder:
@@ -46,13 +46,13 @@ def set_save_folder(folder):
 class TorController:
     """
 
-    :param ip string:
+    :param ip: string.
         The IP adress of the TOR proxy.
-    :param socksport integer:
+    :param socksport: integer.
         The SOCKSPORT port number for TOR.
-    :param controlport integer or string:
-        The CONTROLPORT port number for TOR or CONTROLPATH unix path.
-    :param password string:
+    :param controlport: integer.
+        The CONTROLPORT port number for TOR.
+    :param password: string.
         The password to authenticate on the TOR CONTROLPORT.
     """
     def __init__(self, ip='127.0.0.1', socksport=9050, controlport=None, password=''):
@@ -64,7 +64,7 @@ class TorController:
     def get_tor_session(self):
         """
 
-        :return requests.session Object:
+        :return: requests.session Object
         """
         session = requests.session()
         session.proxies = {'http': 'socks5://{0}:{1}'.format(self.ip,
