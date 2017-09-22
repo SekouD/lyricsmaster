@@ -36,10 +36,13 @@ LyricsMaster is a library for downloading lyrics from multiple lyrics providers.
 Features
 --------
 
-* TODO
+- Downloads Lyrics from LyricWiki.
+- Downloads Lyrics Asynchronously.
+- Can make requests over Tor for anonymous downloading of songs.
+- Easily save the lyrics on your computer.
 
 Credits
----------
+-------
 
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
