@@ -139,15 +139,16 @@ class LyricWiki(LyricsProvider):
 
         :param author: string.
             Artist name.
-        :return: BeautifulSoup Object.
-            Artist page.
+        :return: string.
+            Artist's raw html page.
         """
         author = self.clean_string(author)
         url = self.base_url + '/wiki/' + author
-        artist_page = BeautifulSoup(self.get_page(url).text, 'lxml')
+        raw_html = self.get_page(url).text
+        artist_page = BeautifulSoup(raw_html, 'lxml')
         if artist_page.find("div", {'class': 'noarticletext'}):
             return None
-        return artist_page
+        return raw_html
 
     def get_album_page(self, author, album):
         """
@@ -157,16 +158,17 @@ class LyricWiki(LyricsProvider):
             Artist name.
         :param album: string.
             Album title.
-        :return: BeautifulSoup Object or None.
-            Album page.
+        :return: string or None.
+            Album's raw html page.
         """
         author = self.clean_string(author)
         album = self.clean_string(album)
         url = self.base_url + '/wiki/' + author + ':' + album
-        album_page = BeautifulSoup(self.get_page(url).text, 'lxml')
+        raw_html = self.get_page(url).text
+        album_page = BeautifulSoup(raw_html, 'lxml')
         if album_page.find("div", {'class': 'noarticletext'}):
             return None
-        return album_page
+        return raw_html
 
     def get_lyrics_page(self, url):
         """
@@ -174,13 +176,14 @@ class LyricWiki(LyricsProvider):
 
         :param url: string.
             Lyrics url.
-        :return: BeautifulSoup Object or None.
-            Lyrics page.
+        :return: string or None.
+            Lyrics's raw html page.
         """
-        lyrics_page = BeautifulSoup(self.get_page(url).text, 'lxml')
+        raw_html = self.get_page(url).text
+        lyrics_page = BeautifulSoup(raw_html, 'lxml')
         if lyrics_page.find("div", {'class': 'noarticletext'}):
             return None
-        return lyrics_page
+        return raw_html
 
     def get_songs(self, album):
         """
@@ -194,19 +197,6 @@ class LyricWiki(LyricsProvider):
             parent_node = parent_node.next_sibling
         song_links = parent_node.find_all('li')
         return song_links
-
-    def extract_lyrics(self, song):
-        """
-        Extracts the lyrics from the lyrics page of the supplied song.
-
-        :param song: BeautifulSoup Object.
-            Lyrics page.
-        :return: string.
-            Formatted lyrics.
-        """
-        lyric_box = song.find("div", {'class': 'lyricbox'})
-        lyrics = '\n'.join(lyric_box.strings)
-        return lyrics
 
     def create_song(self, link, author, album_title):
         """
@@ -229,6 +219,20 @@ class LyricWiki(LyricsProvider):
         song = Song(song_title, album_title, author, lyrics)
         return song
 
+    def extract_lyrics(self, song):
+        """
+        Extracts the lyrics from the lyrics page of the supplied song.
+
+        :param song: string.
+            Lyrics's raw html page.
+        :return: string.
+            Formatted lyrics.
+        """
+        lyrics_page = BeautifulSoup(song, 'lxml')
+        lyric_box = lyrics_page.find("div", {'class': 'lyricbox'})
+        lyrics = '\n'.join(lyric_box.strings)
+        return lyrics
+
     def get_lyrics(self, author):
         """
         This is the main method of this class.
@@ -239,9 +243,11 @@ class LyricWiki(LyricsProvider):
             Artist name.
         :return: lyricsmaster.Discography Object or None.
         """
-        artist_page = self.get_artist_page(author)
-        if not artist_page:
+        raw_html = self.get_artist_page(author)
+
+        if not raw_html:
             return None
+        artist_page = BeautifulSoup(raw_html, 'lxml')
         albums = [tag for tag in
                   artist_page.find_all("span", {'class': 'mw-headline'}) if
                   tag.attrs['id'] not in (
