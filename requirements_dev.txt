@@ -19,4 +19,4 @@ requests[socks]
 stem==1.5.4
 PySocks==1.6.7
 click
-lxml
+lxml==4.0.0
