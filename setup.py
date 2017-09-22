@@ -13,7 +13,13 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'Click>=6.0',
-    # TODO: put package requirements here
+    'lxml',
+    'beautifulsoup4',
+    'requests',
+    'requests[socks]',
+    'pysocks',
+    'gevent',
+    'stem'
 ]
 
 setup_requirements = [
