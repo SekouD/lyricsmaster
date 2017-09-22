@@ -11,13 +11,13 @@ class Song:
     """
     Song class.
 
-    :param title: string.
+    :param title string:
         Song title.
-    :param album: string.
+    :param album string:
         Album title.
-    :param author: string.
+    :param author string:
         Author name.
-    :param lyrics: string.
+    :param lyrics string:
         Lyrics of the song.
     """
     __slots__ = ('title', 'album', 'author', 'lyrics')
@@ -36,7 +36,7 @@ class Song:
         Saves the lyrics of the song in the supplied folder.
         The lyrics of a song are saved in folder/author/album/song_title.txt
 
-        :param folder: string.
+        :param folder string:
             path to save folder.
         """
         folder = set_save_folder(folder)
@@ -56,11 +56,11 @@ class Album:
     Album Class.
     The Album class follows the Iterable protocol and can be iterated over the songs.
 
-    :param title: string.
+    :param title string:
         Album title.
-    :param author: string.
+    :param author string:
         Artist name.
-    :param songs: list.
+    :param songs string:
         List of Songs objects.
     """
     __slots__ = ('__idx__', 'title', 'author', 'songs')
@@ -97,7 +97,7 @@ class Album:
         """
         Saves the album to disc in the supplied folder.
 
-        :param folder: string.
+        :param folder string:
             path to save folder.
         """
         for song in self.songs:
@@ -110,9 +110,9 @@ class Discography:
     Discography Class.
     The Discography class follows the Iterable protocol and can be iterated over the albums.
 
-    :param author: string.
+    :param author string:
         Artist name.
-    :param albums: list.
+    :param albums list:
         List of Album objects.
     """
     __slots__ = ('__idx__', 'author', 'albums')
@@ -148,7 +148,7 @@ class Discography:
         """
         Saves Discography to disc in the supplied folder.
 
-        :param folder: string.
+        :param folder string:
             Path to save folder.
         """
         for album in self.albums:
