@@ -44,7 +44,8 @@ deploy:
       dnpHOThsY0lpWUo2TmRtZUhhTGs4emRXb1dDNG9xdmVYYkNJRVhEbldPSGxnemRyT1RyRk00dkU9
 
 
-script: tox
+script:
+- tox
 
 after_success:
 

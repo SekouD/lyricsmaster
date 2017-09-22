@@ -22,6 +22,7 @@ try:
 except NameError:
     basestring = str
 
+is_travis = 'TRAVIS' in os.environ
 
 @pytest.fixture(scope="module")
 def songs():
@@ -64,7 +65,7 @@ class TestAlbums:
     album = lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs)
 
     def test_album(self):
-        assert self.album.idx == 0
+        assert self.album.__idx__ == 0
         assert self.album.title == 'Bad news is coming'
         assert self.album.author == 'Luther Alison'
         assert self.album.__repr__() == 'Album Object: Bad news is coming'
@@ -98,6 +99,7 @@ class TestDiscography:
         assert self.discography.__repr__() == 'Discography Object: Luther Allison'
 
     def test_discography_isiter(self):
+        assert self.discography.__idx__ == 0
         assert len(self.discography) == 2
         assert [elmt for elmt in self.discography] == self.albums
         for x, y in zip(reversed(self.discography), reversed(self.discography.albums)):
@@ -198,7 +200,10 @@ class TestLyricWiki:
 class Test_tor:
     """Tests for Tor functionality."""
     tor_basic = TorController()
-    tor_advanced = TorController(controlport='/var/run/tor/control', password='password')
+    if is_travis:
+        tor_advanced = TorController(controlport='/var/run/tor/control', password='password')
+    else:
+        tor_advanced = TorController(controlport=9051, password='password')
 
     provider = lyricsprovider.LyricWiki(tor_basic)
     provider2 = lyricsprovider.LyricWiki(tor_advanced)
@@ -207,7 +212,9 @@ class Test_tor:
         real_ip = requests.get("http://httpbin.org/ip").text
         assert real_ip != anonymous_ip
 
-    # this function is tested out in travis using a unix path as a control port instead of port 9051
+    # this function is tested out in travis using a unix path as a control port instead of port 9051.
+    # for now gets permission denied on '/var/run/tor/control' in Travis CI
+    @pytest.mark.skipif(is_travis, reason="Permission denied to /var/run/tor/control on Travis CI")
     def test_renew_tor_session(self):
         anonymous_ip = self.provider2.get_page("http://httpbin.org/ip").text
         real_ip = requests.get("http://httpbin.org/ip").text
@@ -218,9 +225,12 @@ class Test_tor:
         assert real_ip2 != anonymous_ip2
         assert new_tor_circuit == True
 
-    def test_get_lyrics(self):
+    def test_get_lyrics_tor_basic(self):
         discography = self.provider.get_lyrics(real_singer['name'])
         assert isinstance(discography, lyricsmaster.Discography)
+
+    @pytest.mark.skipif(is_travis, reason="Permission denied to /var/run/tor/control on Travis CI")
+    def test_get_lyricstor_advanced(self):
         discography = self.provider2.get_lyrics(real_singer['name'])
         assert isinstance(discography, lyricsmaster.Discography)
 

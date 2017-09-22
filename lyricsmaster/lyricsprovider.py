@@ -52,6 +52,10 @@ class LyricsProvider:
                 print(
                     'Asynchronous requests disabled to allow the creation of new tor circuits for each album')
 
+    @property
+    def __async_enabled__(self):
+        return not self.tor_controller or (self.tor_controller and not self.tor_controller.controlport)
+
     def get_page(self, url):
         """
         Fetches the supplied url and returns a request object.
@@ -243,8 +247,7 @@ class LyricWiki(LyricsProvider):
                   tag.attrs['id'] not in (
                       'Additional_information', 'External_links')]
         album_objects = []
-        if not self.tor_controller or (
-                self.tor_controller and not self.tor_controller.controlport):  #
+        if self.__async_enabled__:  #
             # cycle circuits
             gevent.monkey.patch_socket()
         for elmt in albums:
@@ -265,8 +268,7 @@ class LyricWiki(LyricsProvider):
                 songs = [song.value for song in results]
             album = Album(album_title, author, songs)
             album_objects.append(album)
-        if not self.tor_controller or (
-                self.tor_controller and not self.tor_controller.controlport):
+        if self.__async_enabled__:
             reload(socket)
         discography = Discography(author, album_objects)
         return discography

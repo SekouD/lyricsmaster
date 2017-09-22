@@ -25,7 +25,7 @@ API Reference for classes in lyricsmaster.lyricsprovider
 API Reference for classes in lyricsmaster.utils
 -----------------------------------------------
 
-.. automodule:: lyricsmaster.lyricsprovider
+.. automodule:: lyricsmaster.utils
     :members:
     :undoc-members:
     :inherited-members:

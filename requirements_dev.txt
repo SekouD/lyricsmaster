@@ -11,12 +11,12 @@ cryptography==2.0.3
 PyYAML==3.12
 mypy==0.521
 pytest==3.2.2
-hypothesis==3.29.0
+hypothesis==3.30.1
 beautifulsoup4==4.6.0
 requests
 gevent==1.2.2
 requests[socks]
 stem==1.5.4
-PySocks
+lxml==4.0.0
 click==6.7
-lxml
+PySocks==1.6.7

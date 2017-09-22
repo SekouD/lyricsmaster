@@ -62,7 +62,7 @@ class Album:
         List of Songs objects.
     """
     def __init__(self, title, author, songs):
-        self.idx = 0
+        self.__idx__ = 0
         self.title = title
         self.author = author
         self.songs = songs
@@ -77,11 +77,11 @@ class Album:
         return self
 
     def __next__(self):
-        self.idx += 1
+        self.__idx__ += 1
         try:
-            return self.songs[self.idx - 1]
+            return self.songs[self.__idx__ - 1]
         except IndexError:
-            self.idx = 0
+            self.__idx__ = 0
             raise StopIteration
 
     def __reversed__(self):
@@ -104,7 +104,7 @@ class Album:
 class Discography:
     """
     Discography Class.
-    The Discography class follows the Iterable protocol and can be iterated over the albumss.
+    The Discography class follows the Iterable protocol and can be iterated over the albums.
 
     :param author: string.
         Artist name.
@@ -112,7 +112,7 @@ class Discography:
         List of Album objects.
     """
     def __init__(self, author, albums):
-        self.idx = 0
+        self.__idx__ = 0
         self.author = author
         self.albums = albums
 
@@ -126,11 +126,11 @@ class Discography:
         return self
 
     def __next__(self):
-        self.idx += 1
+        self.__idx__ += 1
         try:
-            return self.albums[self.idx - 1]
+            return self.albums[self.__idx__ - 1]
         except IndexError:
-            self.idx = 0
+            self.__idx__ = 0
             raise StopIteration
 
     def __reversed__(self):
@@ -143,7 +143,7 @@ class Discography:
         Saves Discography to disc in the supplied folder.
 
         :param folder: string.
-            path to save folder.
+            Path to save folder.
         """
         for album in self.albums:
             album.save(folder)

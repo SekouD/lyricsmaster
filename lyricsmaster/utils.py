@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 
+"""Utilities."""
+
 import os
 import re
 from stem import Signal
 from stem.control import Controller
 import requests
-
+try:
+    basestring
+except NameError:
+    basestring = str
 
 def normalize(value):
     """
@@ -72,8 +77,8 @@ class TorController:
         """
 
         """
-        with Controller.from_port(port=self.controlport) as controller:
-            controller.authenticate(password=self.password)
+        def renew_circuit(password):
+            controller.authenticate(password=password)
             if controller.is_newnym_available():  # true if tor would currently accept a NEWNYM signal
                 controller.signal(Signal.NEWNYM)
                 print('New Tor circuit created')
@@ -81,4 +86,13 @@ class TorController:
             else:
                 delay = controller.get_newnym_wait()
                 print('Dealy to create new Tor circuit: {0}s'.format(delay))
-                return False
+            return False
+
+        if isinstance(self.controlport, int):
+            with Controller.from_port(port=self.controlport) as controller:
+                return renew_circuit(self.password)
+        elif isinstance(self.controlport, basestring):
+            with Controller.from_socket_file(path=self.controlport) as controller:
+                return renew_circuit(self.password)
+
+
