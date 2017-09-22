@@ -4,4 +4,4 @@
 
 __author__ = """SekouD"""
 __email__ = 'sekoud.python@gmail.com'
-__version__ = '2.3.3'
+__version__ = '2.3.4'
