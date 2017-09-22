@@ -135,7 +135,7 @@ class TestLyricWiki:
 
     def test_get_artist_page(self):
         page = self.provider.get_artist_page(real_singer['name'])
-        assert isinstance(page, BeautifulSoup)
+        assert '<!doctype html>' in page
         page = self.provider.get_artist_page(fake_singer['name'])
         assert page is None
 
@@ -145,12 +145,12 @@ class TestLyricWiki:
         page = self.provider.get_album_page(fake_singer['name'], fake_singer['album'])
         assert page is None
         page = self.provider.get_album_page('2Pac', 'Me Against The World (1995)')
-        assert isinstance(page, BeautifulSoup)
+        assert '<!doctype html>' in page
 
     def test_get_lyrics_page(self):
         page = self.provider.get_lyrics_page(
             'http://lyrics.wikia.com/wiki/{0}:{1}'.format(real_singer['name'], real_singer['song']))
-        assert isinstance(page, BeautifulSoup)
+        assert '<!doctype html>' in page
         page = self.provider.get_lyrics_page(
             'http://lyrics.wikia.com/wiki/{0}:{1}'.format(fake_singer['name'], fake_singer['song']))
         assert page is None
@@ -164,7 +164,7 @@ class TestLyricWiki:
         assert "And I hope you'll stay." in lyrics
 
     def test_get_songs(self):
-        author_page = self.provider.get_artist_page(real_singer['name'])
+        author_page = BeautifulSoup(self.provider.get_artist_page(real_singer['name']), 'lxml')
         album = [tag for tag in author_page.find_all("span", {'class': 'mw-headline'}) if
                  tag.attrs['id'] not in ('Additional_information', 'External_links')][0]
         song_links = self.provider.get_songs(album)
@@ -172,7 +172,7 @@ class TestLyricWiki:
             assert isinstance(link, Tag)
 
     def test_create_song(self):
-        author_page = self.provider.get_artist_page(real_singer['name'])
+        author_page = BeautifulSoup(self.provider.get_artist_page(real_singer['name']), 'lxml')
         album = [tag for tag in author_page.find_all("span", {'class': 'mw-headline'}) if
                  tag.attrs['id'] not in ('Additional_information', 'External_links')][0]
         song_links = self.provider.get_songs(album)
