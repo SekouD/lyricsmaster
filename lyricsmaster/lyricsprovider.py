@@ -19,9 +19,6 @@ except ImportError:
     except:
         pass
 
-from stem import Signal
-from stem.control import Controller
-
 
 class LyricsProvider:
     """
@@ -33,8 +30,8 @@ class LyricsProvider:
     If 'controlport' is set, a new tor circuit will be created for each album downloaded and asynchronous requests
     are disabled for compatibility.
 
-    :param tor: boolean.
-        Whether to activate TOR proxying.
+    :param tor TorController:
+        TorController to activate TOR proxying.
     """
     def __init__(self, tor_controller=None):
         self.tor_controller = tor_controller
@@ -60,8 +57,8 @@ class LyricsProvider:
         """
         Fetches the supplied url and returns a request object.
 
-        :param url: string.
-        :return: requests.request Object.
+        :param url string:
+        :return requests.request Object:
         """
         try:
             req = self.session.get(url)
@@ -124,9 +121,9 @@ class LyricWiki(LyricsProvider):
         """
         Cleans the supplied string and formats it to use in a url.
 
-        :param text: string.
+        :param text string:
             Text to be cleaned.
-        :return: string.
+        :return string:
             Cleaned text.
         """
         for elmt in [('#', 'Number_'), ('[', '('), (']', ')'), ('{', '('), ('}', ')'), (' ', '_')]:
@@ -137,9 +134,9 @@ class LyricWiki(LyricsProvider):
         """
         Fetches the web page for the supplied artist.
 
-        :param author: string.
+        :param author string:
             Artist name.
-        :return: string.
+        :return string:
             Artist's raw html page.
         """
         author = self.clean_string(author)
@@ -154,11 +151,11 @@ class LyricWiki(LyricsProvider):
         """
         Fetches the album page for the supplied artist and album.
 
-        :param author: string.
+        :param author string:
             Artist name.
-        :param album: string.
+        :param album string:
             Album title.
-        :return: string or None.
+        :return string or None:
             Album's raw html page.
         """
         author = self.clean_string(author)
@@ -174,9 +171,9 @@ class LyricWiki(LyricsProvider):
         """
         Fetches the web page containing the lyrics at the supplied url.
 
-        :param url: string.
+        :param url string:
             Lyrics url.
-        :return: string or None.
+        :return string or None:
             Lyrics's raw html page.
         """
         raw_html = self.get_page(url).text
@@ -189,8 +186,8 @@ class LyricWiki(LyricsProvider):
         """
         Fetches the links to the songs of the supplied album.
 
-        :param album: BeautifulSoup Object.
-        :return: List of BeautifulSoup Tag Objects.
+        :param album BeautifulSoup Object:
+        :return List of BeautifulSoup Tag Objects:
         """
         parent_node = album.parent
         while parent_node.name != 'ol':
@@ -202,10 +199,10 @@ class LyricWiki(LyricsProvider):
         """
         Creates a Song object
 
-        :param link: BeautifulSoup Link Object.
-        :param author: string.
-        :param album_title: string.
-        :return: lyricsmaster.Song Object or None.
+        :param link BeautifulSoup Link Object:
+        :param author string:
+        :param album_title string:
+        :return lyricsmaster.Song Object or None:
         """
         link = link.find('a')
         song_title = link.attrs['title']
@@ -223,9 +220,9 @@ class LyricWiki(LyricsProvider):
         """
         Extracts the lyrics from the lyrics page of the supplied song.
 
-        :param song: string.
+        :param song string:
             Lyrics's raw html page.
-        :return: string.
+        :return string:
             Formatted lyrics.
         """
         lyrics_page = BeautifulSoup(song, 'lxml')
@@ -239,9 +236,9 @@ class LyricWiki(LyricsProvider):
         Connects to LyricWiki and downloads lyrics for all the albums of the supplied artist.
         Returns a Discography Object or None if the artist was not found on LyricWiki.
 
-        :param author: string
+        :param author string:
             Artist name.
-        :return: lyricsmaster.Discography Object or None.
+        :return lyricsmaster.Discography Object or None:
         """
         raw_html = self.get_artist_page(author)
 
