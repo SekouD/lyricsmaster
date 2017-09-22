@@ -20,6 +20,8 @@ class Song:
     :param lyrics: string.
         Lyrics of the song.
     """
+    __slots__ = ('title', 'album', 'author', 'lyrics')
+
     def __init__(self, title, album, author, lyrics=None):
         self.title = title
         self.album = album
@@ -61,6 +63,8 @@ class Album:
     :param songs: list.
         List of Songs objects.
     """
+    __slots__ = ('__idx__', 'title', 'author', 'songs')
+
     def __init__(self, title, author, songs):
         self.__idx__ = 0
         self.title = title
@@ -111,6 +115,8 @@ class Discography:
     :param albums: list.
         List of Album objects.
     """
+    __slots__ = ('__idx__', 'author', 'albums')
+
     def __init__(self, author, albums):
         self.__idx__ = 0
         self.author = author
