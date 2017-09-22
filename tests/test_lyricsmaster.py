@@ -65,7 +65,7 @@ class TestAlbums:
     album = lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs)
 
     def test_album(self):
-        assert self.album.idx == 0
+        assert self.album.__idx__ == 0
         assert self.album.title == 'Bad news is coming'
         assert self.album.author == 'Luther Alison'
         assert self.album.__repr__() == 'Album Object: Bad news is coming'
@@ -99,6 +99,7 @@ class TestDiscography:
         assert self.discography.__repr__() == 'Discography Object: Luther Allison'
 
     def test_discography_isiter(self):
+        assert self.discography.__idx__ == 0
         assert len(self.discography) == 2
         assert [elmt for elmt in self.discography] == self.albums
         for x, y in zip(reversed(self.discography), reversed(self.discography.albums)):
