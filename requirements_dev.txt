@@ -13,7 +13,7 @@ mypy==0.521
 pytest==3.2.2
 hypothesis==3.30.1
 beautifulsoup4==4.6.0
-requests
+requests==2.18.4
 gevent==1.2.2
 requests[socks]
 stem==1.5.4
