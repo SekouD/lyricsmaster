@@ -45,26 +45,32 @@ def set_save_folder(folder):
 
 class TorController:
     """
+    Controller class for Tor client.
+
+    Allows the Api to make requests over the Tor network.
+    If 'controlport' is None, the library will use the default timing to create a new Tor circuit.
+    If 'controlport' is passed as an argument, the library will create a new Tor circuit for each new album downloaded.
 
     :param ip: string.
-        The IP adress of the TOR proxy.
+        The IP adress of the Tor proxy.
     :param socksport: integer.
-        The SOCKSPORT port number for TOR.
-    :param controlport: integer.
-        The CONTROLPORT port number for TOR.
+        The SOCKSPORT port number for Tor.
+    :param controlport: integer or string.
+        The CONTROLPORT port number for Tor or the unix path to the CONTROLPATH.
     :param password: string.
-        The password to authenticate on the TOR CONTROLPORT.
+        The password or control_auth_cookie to authenticate on the Tor CONTROLPORT.
     """
     def __init__(self, ip='127.0.0.1', socksport=9050, controlport=None, password=''):
-        self.socksport = socksport
         self.ip = ip
+        self.socksport = socksport
         self.controlport = controlport
         self.password = password
 
     def get_tor_session(self):
         """
+        Configures the session to use a Tor proxy.
 
-        :return: requests.session Object
+        :return: requests.session Object.
         """
         session = requests.session()
         session.proxies = {'http': 'socks5://{0}:{1}'.format(self.ip,
@@ -75,11 +81,15 @@ class TorController:
 
     def renew_tor_circuit(self):
         """
+        Sends a NEWNYM message to the Tor network to create a new circuit.
+
+        :return: bool.
+            Whether a new tor ciruit was created.
 
         """
         def renew_circuit(password):
             controller.authenticate(password=password)
-            if controller.is_newnym_available():  # true if tor would currently accept a NEWNYM signal
+            if controller.is_newnym_available():  # true if tor would currently accept a NEWNYM signal.
                 controller.signal(Signal.NEWNYM)
                 print('New Tor circuit created')
                 return True
