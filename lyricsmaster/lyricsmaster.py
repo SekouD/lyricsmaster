@@ -3,9 +3,10 @@
 """Main module.
 
 This module defines the Api interface for the various Lyrics providers.
-All lyrics providers inherit from the base class LyricsProvider.
+All lyrics providers inherit from the base class LyricProvider.
 
 """
+
 from .models import Song, Album, Discography
 
 import requests
