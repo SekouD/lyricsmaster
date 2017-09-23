@@ -10,15 +10,15 @@ API Reference for classes in lyricsmaster.lyricsmaster
     :members:
     :undoc-members:
     :inherited-members:
+    :inherited-members:
 
 
-API Reference for classes in lyricsmaster.lyricsprovider
---------------------------------------------------------
+API Reference for classes in lyricsmaster.models
+------------------------------------------------
 
-.. automodule:: lyricsmaster.lyricsprovider
+.. automodule:: lyricsmaster.models
     :members:
     :undoc-members:
-    :inherited-members:
     :show-inheritance:
 
 
