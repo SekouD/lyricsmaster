@@ -5,9 +5,15 @@ LyricsMaster
 
 .. image:: https://img.shields.io/pypi/v/lyricsmaster.svg
         :target: https://pypi.python.org/pypi/lyricsmaster
+        :alt: PyPi Status
 
 .. image:: https://img.shields.io/travis/SekouD/lyricsmaster.svg
         :target: https://travis-ci.org/SekouD/lyricsmaster
+        :alt: Linux Continuous Integration Status
+
+.. image:: https://ci.appveyor.com/api/projects/status/73bd1ct4revmlk42/branch/master?svg=true
+        :target: https://ci.appveyor.com/project/SekouD/lyricsmaster
+        :alt: Windows Continuous Integration Status
 
 .. image:: https://readthedocs.org/projects/lyricsmaster/badge/?version=latest
         :target: https://lyricsmaster.readthedocs.io/en/latest/?badge=latest
@@ -15,8 +21,7 @@ LyricsMaster
 
 .. image:: https://pyup.io/repos/github/SekouD/lyricsmaster/shield.svg
         :target: https://pyup.io/repos/github/SekouD/lyricsmaster/
-        :alt: Updates
-
+        :alt: Dependencies Update Status
 
 .. image:: https://codecov.io/gh/SekouD/lyricsmaster/branch/master/graph/badge.svg
         :target: https://codecov.io/gh/SekouD/lyricsmaster
