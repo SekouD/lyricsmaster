@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Lyrics Providers.
+"""Main module.
 
 This module defines the Api interface for the various Lyrics providers.
 All lyrics providers inherit from the base class LyricsProvider.
@@ -139,18 +139,51 @@ class LyricWiki(LyricsProvider):
     """
     base_url = 'http://lyrics.wikia.com'
 
-    def clean_string(self, text):
+    def get_lyrics(self, author):
         """
-        Cleans the supplied string and formats it to use in a url.
+        This is the main method of this class.
+        Connects to LyricWiki and downloads lyrics for all the albums of the supplied artist.
+        Returns a Discography Object or None if the artist was not found on LyricWiki.
 
-        :param text: string.
-            Text to be cleaned.
-        :return: string.
-            Cleaned text.
+        :param author: string
+            Artist name.
+        :return: lyricsmaster.Discography Object or None.
         """
-        for elmt in [('#', 'Number_'), ('[', '('), (']', ')'), ('{', '('), ('}', ')'), (' ', '_')]:
-            text = text.replace(*elmt)
-        return text
+        raw_html = self.get_artist_page(author)
+
+        if not raw_html:
+            return None
+        artist_page = BeautifulSoup(raw_html, 'lxml')
+        albums = [tag for tag in
+                  artist_page.find_all("span", {'class': 'mw-headline'}) if
+                  tag.attrs['id'] not in (
+                      'Additional_information', 'External_links')]
+        album_objects = []
+        if self.__async_enabled__:
+            # cycle circuits
+            gevent.monkey.patch_socket()
+        for elmt in albums:
+            album_title = elmt.text
+            song_links = self.get_songs(elmt)
+            print('Downloading {0}'.format(elmt.text))
+            if self.tor_controller and self.tor_controller.controlport:
+                self.tor_controller.renew_tor_circuit()
+                self.session = self.tor_controller.get_tor_session()
+                songs = [self.create_song(link, author, album_title) for link in
+                         song_links]
+            else:
+                pool = Pool(25)  # Sets the worker pool for async requests
+                results = [
+                    pool.spawn(self.create_song, *(link, author, album_title))
+                    for link in song_links]
+                pool.join()  # Gathers results from the pool
+                songs = [song.value for song in results]
+            album = Album(album_title, author, songs)
+            album_objects.append(album)
+        if self.__async_enabled__:
+            reload(socket)
+        discography = Discography(author, album_objects)
+        return discography
 
     def get_artist_page(self, author):
         """
@@ -158,8 +191,8 @@ class LyricWiki(LyricsProvider):
 
         :param author: string.
             Artist name.
-        :return: string.
-            Artist's raw html page.
+        :return: string or None.
+            Artist's raw html page. None if the artist page was not found.
         """
         author = self.clean_string(author)
         url = self.base_url + '/wiki/' + author
@@ -178,7 +211,7 @@ class LyricWiki(LyricsProvider):
         :param album: string.
             Album title.
         :return: string or None.
-            Album's raw html page.
+            Album's raw html page. None if the album page was not found.
         """
         author = self.clean_string(author)
         album = self.clean_string(album)
@@ -196,7 +229,7 @@ class LyricWiki(LyricsProvider):
         :param url: string.
             Lyrics url.
         :return: string or None.
-            Lyrics's raw html page.
+            Lyrics's raw html page. None if the lyrics page was not found.
         """
         raw_html = self.get_page(url).text
         lyrics_page = BeautifulSoup(raw_html, 'lxml')
@@ -233,7 +266,7 @@ class LyricWiki(LyricsProvider):
 
     def create_song(self, link, author, album_title):
         """
-        Creates a Song object
+        Creates a Song object.
 
         :param link: BeautifulSoup Link Object.
         :param author: string.
@@ -252,51 +285,18 @@ class LyricWiki(LyricsProvider):
         song = Song(song_title, album_title, author, lyrics)
         return song
 
-    def get_lyrics(self, author):
+    def clean_string(self, text):
         """
-        This is the main method of this class.
-        Connects to LyricWiki and downloads lyrics for all the albums of the supplied artist.
-        Returns a Discography Object or None if the artist was not found on LyricWiki.
+        Cleans the supplied string and formats it to use in a url.
 
-        :param author: string
-            Artist name.
-        :return: lyricsmaster.Discography Object or None.
+        :param text: string.
+            Text to be cleaned.
+        :return: string.
+            Cleaned text.
         """
-        raw_html = self.get_artist_page(author)
-
-        if not raw_html:
-            return None
-        artist_page = BeautifulSoup(raw_html, 'lxml')
-        albums = [tag for tag in
-                  artist_page.find_all("span", {'class': 'mw-headline'}) if
-                  tag.attrs['id'] not in (
-                      'Additional_information', 'External_links')]
-        album_objects = []
-        if self.__async_enabled__:  #
-            # cycle circuits
-            gevent.monkey.patch_socket()
-        for elmt in albums:
-            album_title = elmt.text
-            song_links = self.get_songs(elmt)
-            print('Downloading {0}'.format(elmt.text))
-            if self.tor_controller and self.tor_controller.controlport:
-                self.tor_controller.renew_tor_circuit()
-                self.session = self.tor_controller.get_tor_session()
-                songs = [self.create_song(link, author, album_title) for link in
-                         song_links]
-            else:
-                pool = Pool(25)  # Sets the worker pool for async requests
-                results = [
-                    pool.spawn(self.create_song, *(link, author, album_title))
-                    for link in song_links]
-                pool.join()  # Gathers results from the pool
-                songs = [song.value for song in results]
-            album = Album(album_title, author, songs)
-            album_objects.append(album)
-        if self.__async_enabled__:
-            reload(socket)
-        discography = Discography(author, album_objects)
-        return discography
+        for elmt in [('#', 'Number_'), ('[', '('), (']', ')'), ('{', '('), ('}', ')'), (' ', '_')]:
+            text = text.replace(*elmt)
+        return text
 
 
 if __name__ == "__main__":
