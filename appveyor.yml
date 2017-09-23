@@ -33,7 +33,7 @@ install:
   - ps: copy C:\projects\lyricsmaster\torrc %APPDATA%\tor\
   - ps: dir %APPDATA%\tor\
   - ps: dir
-  - tor --service install -options ControlPort 9051
+  - tor --service install -options -f C:\projects\lyricsmaster\torrc ControlPort 9051
   - "%PYTHON%\\python.exe -m pip install wheel"
   - "%PYTHON%\\python.exe -m pip install -U tox"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
