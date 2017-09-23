@@ -32,6 +32,7 @@ install:
   - ps: mkdir tor
   - ps: copy C:\projects\lyricsmaster\torrc C:\Users\appveyor\AppData\Roaming\tor\
   - ps: cd C:\Users\appveyor\Downloads\
+  - ps: runas /showtrustlevels
   - tor --service install
   - tor --service start
   - ps: cd C:\projects\lyricsmaster
