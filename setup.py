@@ -62,6 +62,9 @@ setup(
     keywords='lyricsmaster',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
+        'Topic :: Communications',
+        'Topic :: Internet :: WWW/HTTP :: Indexing/Search',
+        'Topic :: Software Development :: Libraries :: Python Modules',
         'Intended Audience :: Developers',
         'Intended Audience :: End Users/Desktop',
         'License :: OSI Approved :: MIT License',
