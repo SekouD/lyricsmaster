@@ -25,7 +25,9 @@ install:
   - "%PYTHON%\\python.exe -m pip install wheel"
   - "%PYTHON%\\python.exe -m pip install -U tox-travis"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
-  - cinst tor --version 0.3.0.10
+  # tor version on chocolatey is outdated
+  # - cinst tor --version 0.3.0.10
+  - WebPICMD.exe /Install /Application:tor
 
 build: off
 
