@@ -134,7 +134,7 @@ class LyricsProvider:
 
 class LyricWiki(LyricsProvider):
     """
-    Class interfacing with http://lyrics.wikia.com
+    Class interfacing with http://lyrics.wikia.com .
     This class is used to retrieve lyrics from LyricWiki.
 
     """
@@ -148,7 +148,7 @@ class LyricWiki(LyricsProvider):
 
         :param author: string
             Artist name.
-        :return: lyricsmaster.Discography Object or None.
+        :return: lyricsmaster.Discography object or None.
         """
         raw_html = self.get_artist_page(author)
 
@@ -256,8 +256,8 @@ class LyricWiki(LyricsProvider):
         """
         Fetches the links to the songs of the supplied album.
 
-        :param album: BeautifulSoup Object.
-        :return: List of BeautifulSoup Tag Objects.
+        :param album: BeautifulSoup object.
+        :return: List of BeautifulSoup Tag objects.
         """
         parent_node = album.parent
         while parent_node.name != 'ol':
@@ -269,10 +269,10 @@ class LyricWiki(LyricsProvider):
         """
         Creates a Song object.
 
-        :param link: BeautifulSoup Link Object.
+        :param link: BeautifulSoup Link object.
         :param author: string.
         :param album_title: string.
-        :return: lyricsmaster.Song Object or None.
+        :return: lyricsmaster.Song object or None.
         """
         link = link.find('a')
         song_title = link.attrs['title']
