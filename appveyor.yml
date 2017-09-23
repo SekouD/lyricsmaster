@@ -23,7 +23,7 @@ environment:
 
 install:
   - ps: Invoke-WebRequest 'https://dist.torproject.org/torbrowser/7.0.5/tor-win32-0.3.0.10.zip' -OutFile C:\Users\appveyor\Downloads\tor-win32-0.3.0.10.zip
-  - ps: copy torrc C:\Users\appveyor\AppData\Roaming\tor\torrc
+  - ps: copy torrc C:\Users\appveyor\AppData\Roaming\tor\
   - ps: cd $($env:USERPROFILE)
   - ps: cd Downloads
   - ps: 7z e tor-win32-0.3.0.10.zip
