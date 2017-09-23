@@ -32,7 +32,7 @@ install:
   - ps: dir
   - ps: cd Downloads
   - ps: dir
-  - ps: 7z e tor-win32-0.3.0.10.zip
+  - ps: 7z e tor-win32-0.3.0.10.zip tor-win32-0.3.0.10
   - ps: dir
   - ps: cd tor-win32-0.3.0.10
   - ps: tor.exe start -options ControlPort 9051
