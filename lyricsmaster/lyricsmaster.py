@@ -7,7 +7,7 @@ All lyrics providers inherit from the base class LyricsProvider.
 
 """
 
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 
 from .models import Song, Album, Discography
 
@@ -28,7 +28,7 @@ except ImportError:
         pass
 
 
-class LyricsProvider(ABC):
+class LyricsProvider:
     """
     This is the base class for all Lyrics Providers. If you wish to subclass this class, you must implement all
     the methods defined in this class to be compatible with the LyricsMaster API.
@@ -38,6 +38,8 @@ class LyricsProvider(ABC):
     :param tor_controller: TorController Object.
 
     """
+    __metaclass__ = ABCMeta
+
     def __init__(self, tor_controller=None):
         self.tor_controller = tor_controller
         if not self.tor_controller:
