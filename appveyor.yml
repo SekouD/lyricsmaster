@@ -22,20 +22,13 @@ environment:
     - PYTHON: "C:\\Python36-x64"
 
 install:
-  # We need wheel installed to build wheels
-  # tor version on chocolatey is outdated
-  # - cinst tor --version 0.3.0.10
   - ps: Invoke-WebRequest 'https://dist.torproject.org/torbrowser/7.0.5/tor-win32-0.3.0.10.zip' -OutFile C:\Users\appveyor\Downloads\tor-win32-0.3.0.10.zip
-#  - ps: (new-object net.webclient).DownloadFile('https://dist.torproject.org/torbrowser/7.0.5/tor-win32-0.3.0.10.zip', '$($env:USERPROFILE)\tor-win32-0.3.0.10.zip')
-  - ps: dir
   - ps: copy torrc C:\Users\appveyor\Downloads\
   - ps: cd $($env:USERPROFILE)
-  - ps: dir
   - ps: cd Downloads
-  - ps: dir
   - ps: 7z e tor-win32-0.3.0.10.zip
-  - ps: dir
   - tor
+  - ps: cd C:\projects\lyricsmaster
   - "%PYTHON%\\python.exe -m pip install wheel"
   - "%PYTHON%\\python.exe -m pip install -U tox"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
