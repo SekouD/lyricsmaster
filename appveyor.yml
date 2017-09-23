@@ -28,6 +28,10 @@ install:
   - ps: copy C:\projects\lyricsmaster\torrc C:\Users\appveyor\AppData\Roaming\tor\
   - ps: mkdir %LOCALAPPDATA%\tor
   - ps: copy C:\projects\lyricsmaster\torrc %LOCALAPPDATA%\tor\
+  - ps: dir %LOCALAPPDATA%\tor\
+  - ps: mkdir %APPDATA%\tor
+  - ps: copy C:\projects\lyricsmaster\torrc %APPDATA%\tor\
+  - ps: dir %APPDATA%\tor\
   - ps: dir
   - tor --service install -options ControlPort 9051
   - "%PYTHON%\\python.exe -m pip install wheel"
