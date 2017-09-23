@@ -215,6 +215,8 @@ class Test_tor:
 
     provider = lyricsmaster.LyricWiki(tor_basic)
     provider2 = lyricsmaster.LyricWiki(tor_advanced)
+
+    @pytest.mark.skipif(is_appveyor, reason="Tor version on chocolatey is outdated.")
     def test_anonymisation(self):
         anonymous_ip = self.provider.get_page("http://httpbin.org/ip").text
         real_ip = requests.get("http://httpbin.org/ip").text
