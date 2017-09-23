@@ -32,8 +32,9 @@ install:
   - ps: dir
   - ps: cd Downloads
   - ps: dir
-#  - ps: 7z e tor-win32-0.3.0.10.zip
-#  - ps: tor-win32-0.3.0.10/tor.exe start -options ControlPort 9051
+  - ps: 7z e tor-win32-0.3.0.10.zip
+  - ps: cd tor-win32-0.3.0.10
+  - ps: tor.exe start -options ControlPort 9051
   - "%PYTHON%\\python.exe -m pip install wheel"
   - "%PYTHON%\\python.exe -m pip install -U tox"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
