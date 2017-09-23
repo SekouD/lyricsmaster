@@ -148,7 +148,7 @@ class LyricWiki(LyricsProvider):
 
         :param author: string
             Artist name.
-        :return: lyricsmaster.Discography object or None.
+        :return: models.Discography object or None.
         """
         raw_html = self.get_artist_page(author)
 
@@ -272,7 +272,7 @@ class LyricWiki(LyricsProvider):
         :param link: BeautifulSoup Link object.
         :param author: string.
         :param album_title: string.
-        :return: lyricsmaster.Song object or None.
+        :return: models.Song object or None.
         """
         link = link.find('a')
         song_title = link.attrs['title']
