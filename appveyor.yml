@@ -25,7 +25,7 @@ install:
   # We need wheel installed to build wheels
   # tor version on chocolatey is outdated
   # - cinst tor --version 0.3.0.10
-  - Invoke-WebRequest 'https://dist.torproject.org/torbrowser/7.0.5/tor-win32-0.3.0.10.zip' -OutFile C:\Users\appveyorDownloads\tor-win32-0.3.0.10.zip
+  - ps: Invoke-WebRequest 'https://dist.torproject.org/torbrowser/7.0.5/tor-win32-0.3.0.10.zip' -OutFile C:\Users\appveyor\Downloads\tor-win32-0.3.0.10.zip
 #  - ps: (new-object net.webclient).DownloadFile('https://dist.torproject.org/torbrowser/7.0.5/tor-win32-0.3.0.10.zip', '$($env:USERPROFILE)\tor-win32-0.3.0.10.zip')
   - ps: dir
   - ps: cd $($env:USERPROFILE)
