@@ -7,25 +7,20 @@ environment:
     # The list here is complete (excluding Python 2.6, which
     # isn't covered by this document) at the time of writing.
 
-    - PYTHON: "C:\\Python34"
-    - PYTHON: "C:\\Python35"
-    - PYTHON: "C:\\Python27-x64"
-    - PYTHON: "C:\\Python33-x64"
-      DISTUTILS_USE_SDK: "1"
-    - PYTHON: "C:\\Python34-x64"
-      DISTUTILS_USE_SDK: "1"
-    - PYTHON: "C:\\Python35-x64"
-    - PYTHON: "C:\Python36"
-    - PYTHON: "C:\Python36-x64"
+    - TOXENV: py27
+    - TOXENV: py33
+    - TOXENV: py34
+    - TOXENV: py35
+    - TOXENV: py36
 
 install:
   # We need wheel installed to build wheels
+  # tor version on chocolatey is outdated
+  # - cinst tor --version 0.3.0.10
+  - ps: (new-object net.webclient).DownloadFile('https://dist.torproject.org/torbrowser/7.0.5/tor-win32-0.3.0.10.zip', 'tor-win32-0.3.0.10.zip')
   - "%PYTHON%\\python.exe -m pip install wheel"
   - "%PYTHON%\\python.exe -m pip install -U tox"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
-  # tor version on chocolatey is outdated
-  # - cinst tor --version 0.3.0.10
-  - WebPICMD.exe /Install /Application:tor
 
 build: off
 
