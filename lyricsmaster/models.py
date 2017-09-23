@@ -95,7 +95,7 @@ class Album:
     def __reversed__(self):
         return reversed(self.songs)
 
-    next = __next__
+    next = __next__ # Python 2.7 compatibility for iterator protocol
 
     def save(self, folder=None):
         """
@@ -146,7 +146,7 @@ class Discography:
     def __reversed__(self):
         return reversed(self.albums)
 
-    next = __next__
+    next = __next__ # Python 2.7 compatibility for iterator protocol
 
     def save(self, folder=None):
         """
