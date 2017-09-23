@@ -7,6 +7,8 @@ All lyrics providers inherit from the base class LyricsProvider.
 
 """
 
+from abc import ABC, abstractmethod
+
 from .models import Song, Album, Discography
 
 import requests
@@ -26,12 +28,12 @@ except ImportError:
         pass
 
 
-class LyricsProvider:
+class LyricsProvider(ABC):
     """
-    This is the base class for all Lyrics Providers. If you wish to sublass this class, you must implement all
+    This is the base class for all Lyrics Providers. If you wish to subclass this class, you must implement all
     the methods defined in this class to be compatible with the LyricsMaster API.
     Requests to fetch songs are executed asynchronously for better performance.
-    TOR anonymisation is provided if tor is installed on the system and a TorController is passed at instance creation.
+    Tor anonymisation is provided if tor is installed on the system and a TorController is passed at instance creation.
 
     :param tor_controller: TorController Object.
 
@@ -70,15 +72,23 @@ class LyricsProvider:
             print('Unable to download url ' + url)
         return req
 
+    @abstractmethod
     def get_lyrics(self, author):
         """
         This is the main method of the Api.
         Must be implemented by children classes conforming to the LyricsMaster API.
 
-        :param author:
+        Connects to LyricWiki and downloads lyrics for all the albums of the supplied artist.
+        Returns a Discography Object or None if the artist was not found on LyricWiki.
+
+        :param author: string
+            Artist name.
+        :return: models.Discography object or None.
+
         """
         pass
 
+    @abstractmethod
     def get_artist_page(self, author):
         """
         Must be implemented by children classes conforming to the LyricsMaster API.
@@ -92,6 +102,7 @@ class LyricsProvider:
         """
         pass
 
+    @abstractmethod
     def get_album_page(self, author, album):
         """
         Must be implemented by children classes conforming to the LyricsMaster API.
@@ -105,6 +116,7 @@ class LyricsProvider:
         """
         pass
 
+    @abstractmethod
     def get_lyrics_page(self, url):
         """
         Must be implemented by children classes conforming to the LyricsMaster API.
@@ -118,6 +130,7 @@ class LyricsProvider:
         """
         pass
 
+    @abstractmethod
     def extract_lyrics(self, song):
         """
         Must be implemented by children classes conforming to the LyricsMaster API.
