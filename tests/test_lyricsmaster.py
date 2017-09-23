@@ -44,7 +44,7 @@ class TestSongs:
     song2 = models.Song('Bad Love', 'Bad news is coming', 'Luther Alison', 'I heard the bad news is coming...')
 
     def test_song(self):
-        assert self.song.__repr__() == 'Song Object: Bad Love'
+        assert self.song.__repr__() == 'lyricsmaster.models.Song(Bad Love, Bad news is coming, Luther Alison)'
 
     def test_song_save(self):
         self.song2.save()
@@ -68,7 +68,7 @@ class TestAlbums:
         assert self.album.__idx__ == 0
         assert self.album.title == 'Bad news is coming'
         assert self.album.author == 'Luther Alison'
-        assert self.album.__repr__() == 'Album Object: Bad news is coming'
+        assert self.album.__repr__() == 'lyricsmaster.models.Album(Bad news is coming, Luther Alison)'
 
     def test_album_isiter(self):
         assert len(self.album) == 4
@@ -96,7 +96,7 @@ class TestDiscography:
     discography = models.Discography('Luther Allison', albums)
 
     def test_discography(self):
-        assert self.discography.__repr__() == 'Discography Object: Luther Allison'
+        assert self.discography.__repr__() == 'lyricsmaster.models.Discography(Luther Allison)'
 
     def test_discography_isiter(self):
         assert self.discography.__idx__ == 0

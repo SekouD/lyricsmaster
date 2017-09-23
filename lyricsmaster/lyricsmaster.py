@@ -56,6 +56,9 @@ class LyricsProvider:
                 print(
                     'Asynchronous requests disabled to allow the creation of new tor circuits for each album')
 
+    def __repr__(self):
+        return '{0}.{1}({2})'.format(__name__, self.__class__.__name__, self.tor_controller.__repr__())
+
     @property
     def __async_enabled__(self):
         return not self.tor_controller or (self.tor_controller and not self.tor_controller.controlport)

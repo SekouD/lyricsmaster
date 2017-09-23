@@ -67,6 +67,9 @@ class TorController:
         self.controlport = controlport
         self.password = password
 
+    def __repr__(self):
+        return '{0}.{1}({2}, {3}, {4}, {5})'.format(__name__, self.__class__.__name__, self.ip, self.socksport, self.controlport, self.password)
+
     def get_tor_session(self):
         """
         Configures the session to use a Tor proxy.
