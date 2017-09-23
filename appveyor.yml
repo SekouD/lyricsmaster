@@ -29,7 +29,7 @@ install:
   - ps: 7z e tor-win32-0.3.0.10.zip
   - ps: cd C:\Users\appveyor\AppData\Roaming\
   - ps: dir
-  - ps: cd mkdir tor
+  - ps: mkdir tor
   - ps: copy C:\projects\lyricsmaster\torrc C:\Users\appveyor\AppData\Roaming\tor\
   - ps: cd C:\Users\appveyor\Downloads\
   - tor
