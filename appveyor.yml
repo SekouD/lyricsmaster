@@ -32,8 +32,11 @@ install:
   - ps: mkdir %APPDATA%\tor
   - ps: copy C:\projects\lyricsmaster\torrc %APPDATA%\tor\
   - ps: dir %APPDATA%\tor\
+  - ps: mkdir C:\Windows\ServiceProfiles\LocalService\AppData\Roaming\tor\
+  - ps: copy C:\projects\lyricsmaster\torrc C:\Windows\ServiceProfiles\LocalService\AppData\Roaming\tor\
+  - ps: dir C:\projects\lyricsmaster\torrc C:\Windows\ServiceProfiles\LocalService\AppData\Roaming\tor\
   - ps: dir
-  - tor --service install -options -f C:\projects\lyricsmaster\torrc ControlPort 9051
+  - tor --service install
   - "%PYTHON%\\python.exe -m pip install wheel"
   - "%PYTHON%\\python.exe -m pip install -U tox"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
