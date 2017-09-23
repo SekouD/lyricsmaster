@@ -10,7 +10,7 @@ API Reference for classes in lyricsmaster.lyricsmaster
     :members:
     :undoc-members:
     :inherited-members:
-    :inherited-members:
+    :show-inheritance:
 
 
 API Reference for classes in lyricsmaster.models
