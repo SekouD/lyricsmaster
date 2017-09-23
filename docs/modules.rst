@@ -29,6 +29,5 @@ API Reference for classes in lyricsmaster.utils
     :members:
     :undoc-members:
     :inherited-members:
-    :show-inheritance:
 
 
