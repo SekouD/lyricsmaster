@@ -12,6 +12,7 @@ try:
 except NameError:
     basestring = str
 
+
 def normalize(value):
     """
 
