@@ -22,17 +22,14 @@ environment:
     - PYTHON: "C:\\Python36-x64"
 
 install:
-  - ps: Invoke-WebRequest 'https://dist.torproject.org/torbrowser/7.0.5/tor-win32-0.3.0.10.zip' -OutFile C:\Users\appveyor\Downloads\tor-win32-0.3.0.10.zip
-  - ps: dir
-  - ps: cd $($env:USERPROFILE)
-  - ps: cd Downloads
+  - ps: Invoke-WebRequest 'https://dist.torproject.org/torbrowser/7.0.5/tor-win32-0.3.0.10.zip' -OutFile C:\projects\lyricsmaster\tor-win32-0.3.0.10.zip
   - ps: 7z e tor-win32-0.3.0.10.zip
   - ps: cd C:\Users\appveyor\AppData\Roaming\
   - ps: dir
   - ps: mkdir tor
   - ps: copy C:\projects\lyricsmaster\torrc C:\Users\appveyor\AppData\Roaming\tor\
-  - ps: cd C:\Users\appveyor\Downloads\
-  - runas /showtrustlevels
+  - ps: cd C:\projects\lyricsmaster
+  - runas /user:administrator
   - tor --service install
   - tor --service start
   - ps: cd C:\projects\lyricsmaster
