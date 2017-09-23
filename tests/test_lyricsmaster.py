@@ -4,6 +4,7 @@
 """Tests for `lyricsmaster` package."""
 
 import os
+import codecs
 
 import pytest
 from click.testing import CliRunner
@@ -55,6 +56,8 @@ class TestSongs:
         self.song2.save(folder)
         path = os.path.join(folder, 'LyricsMaster', 'Luther-Alison', 'Bad-news-is-coming', 'Bad-Love.txt')
         assert os.path.exists(path)
+        with codecs.open(path, 'r', encoding='utf-8') as file:
+            assert self.song2.lyrics == file.readlines()[0]
 
 
 
@@ -85,6 +88,8 @@ class TestAlbums:
             path = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster', author,
                                 album, title + '.txt')
             assert os.path.exists(path)
+            with codecs.open(path, 'r', encoding='utf-8') as file:
+                assert song.lyrics == '\n'.join(file.readlines())
 
 
 
@@ -115,6 +120,8 @@ class TestDiscography:
                 path = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster', author,
                                     album, title + '.txt')
                 assert os.path.exists(path)
+                with codecs.open(path, 'r', encoding='utf-8') as file:
+                    assert song.lyrics == '\n'.join(file.readlines())
 
 
 
