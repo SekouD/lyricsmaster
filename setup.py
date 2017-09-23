@@ -23,6 +23,7 @@ requirements = [
 ]
 
 setup_requirements = [
+    'pytest'
     # TODO(SekouD): put setup requirements (distutils extensions, etc.) here
 ]
 
