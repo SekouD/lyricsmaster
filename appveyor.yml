@@ -22,7 +22,8 @@ install:
   # We need wheel installed to build wheels
   # tor version on chocolatey is outdated
   # - cinst tor --version 0.3.0.10
-  - ps: (new-object net.webclient).DownloadFile('https://dist.torproject.org/torbrowser/7.0.5/tor-win32-0.3.0.10.zip', 'c:/application/tor-win32-0.3.0.10.zip')
+  - ps: (new-object net.webclient).DownloadFile('https://dist.torproject.org/torbrowser/7.0.5/tor-win32-0.3.0.10.zip', 'tor-win32-0.3.0.10.zip')
+  - ps: dir
   - ps: 7z e c:/application/tor-win32-0.3.0.10.zip
   - ps: c:/application/tor-win32-0.3.0.10/tor.exe start -options ControlPort 9051
   - "%PYTHON%\\python.exe -m pip install wheel"
