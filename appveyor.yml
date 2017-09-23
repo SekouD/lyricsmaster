@@ -29,9 +29,8 @@ install:
   - ps: mkdir tor
   - ps: copy C:\projects\lyricsmaster\torrc C:\Users\appveyor\AppData\Roaming\tor\
   - ps: cd C:\projects\lyricsmaster
-  - runas /user:administrator
-  - tor --service install
-  - tor --service start
+  - runas /user:administrator tor --service install
+#  - tor --service start
   - ps: cd C:\projects\lyricsmaster
   - "%PYTHON%\\python.exe -m pip install wheel"
   - "%PYTHON%\\python.exe -m pip install -U tox"
