@@ -33,7 +33,7 @@ class Song:
         self.lyrics = lyrics
 
     def __repr__(self):
-        return self.__class__.__name__ + " Object: " + self.title
+        return '{0}.{1}({2}, {3}, {4})'.format(__name__, self.__class__.__name__, self.title, self.album, self.author)
 
     def save(self, folder=None):
         """
@@ -76,7 +76,7 @@ class Album:
         self.songs = songs
 
     def __repr__(self):
-        return self.__class__.__name__ + " Object: " + self.title
+        return '{0}.{1}({2}, {3})'.format(__name__, self.__class__.__name__, self.title,self.author)
 
     def __len__(self):
         return len(self.songs)
@@ -127,7 +127,7 @@ class Discography:
         self.albums = albums
 
     def __repr__(self):
-        return self.__class__.__name__ + " Object: " + self.author
+        return '{0}.{1}({2})'.format(__name__, self.__class__.__name__, self.author)
 
     def __len__(self):
         return len(self.albums)
