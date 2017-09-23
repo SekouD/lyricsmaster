@@ -12,9 +12,9 @@ from bs4 import BeautifulSoup, Tag
 
 import requests
 
-from lyricsmaster import lyricsmaster
+from lyricsmaster import models
 from lyricsmaster import cli
-from lyricsmaster import lyricsprovider
+from lyricsmaster import lyricsmaster
 from lyricsmaster.utils import TorController
 
 try:
@@ -26,11 +26,11 @@ is_travis = 'TRAVIS' in os.environ
 
 @pytest.fixture(scope="module")
 def songs():
-    songs = [lyricsmaster.Song('Bad Love', 'Bad news is coming', 'Luther Alison', 'I heard the bad news is coming...'),
-             lyricsmaster.Song('Ragged and dirty', 'Bad news is coming', 'Luther Alison',
+    songs = [models.Song('Bad Love', 'Bad news is coming', 'Luther Alison', 'I heard the bad news is coming...'),
+             models.Song('Ragged and dirty', 'Bad news is coming', 'Luther Alison',
                                'Here I stand, ragged and dirty...'),
-             lyricsmaster.Song('Red rooster', 'Bad news is coming', 'Luther Alison', 'I have a little red rooster...'),
-             lyricsmaster.Song('Life is bitch', 'Bad news is coming', 'Luther Alison', 'Life is bitch, it is...')]
+             models.Song('Red rooster', 'Bad news is coming', 'Luther Alison', 'I have a little red rooster...'),
+             models.Song('Life is bitch', 'Bad news is coming', 'Luther Alison', 'Life is bitch, it is...')]
     return songs
 
 
@@ -40,8 +40,8 @@ fake_singer = {'name': 'Fake Rapper', 'album': "In my mom's basement", 'song': '
 
 class TestSongs:
     """Tests for Song Class."""
-    song = lyricsmaster.Song('Bad Love', 'Bad news is coming', 'Luther Alison', None)
-    song2 = lyricsmaster.Song('Bad Love', 'Bad news is coming', 'Luther Alison', 'I heard the bad news is coming...')
+    song = models.Song('Bad Love', 'Bad news is coming', 'Luther Alison', None)
+    song2 = models.Song('Bad Love', 'Bad news is coming', 'Luther Alison', 'I heard the bad news is coming...')
 
     def test_song(self):
         assert self.song.__repr__() == 'Song Object: Bad Love'
@@ -62,7 +62,7 @@ class TestAlbums:
     """Tests for Album Class."""
 
     songs = songs()
-    album = lyricsmaster.Album('Bad news is coming', 'Luther Alison', songs)
+    album = models.Album('Bad news is coming', 'Luther Alison', songs)
 
     def test_album(self):
         assert self.album.__idx__ == 0
@@ -79,9 +79,9 @@ class TestAlbums:
     def test_album_save(self):
         self.album.save()
         for song in self.album.songs:
-            author = lyricsmaster.normalize(song.author)
-            album = lyricsmaster.normalize(song.album)
-            title = lyricsmaster.normalize(song.title)
+            author = models.normalize(song.author)
+            album = models.normalize(song.album)
+            title = models.normalize(song.title)
             path = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster', author,
                                 album, title + '.txt')
             assert os.path.exists(path)
@@ -91,9 +91,9 @@ class TestAlbums:
 class TestDiscography:
     """Tests for Discography Class."""
 
-    albums = [lyricsmaster.Album('Bad news is coming 2', 'Luther Alison', songs()),
-              lyricsmaster.Album('Bad news is coming 3', 'Luther Alison', songs())]
-    discography = lyricsmaster.Discography('Luther Allison', albums)
+    albums = [models.Album('Bad news is coming 2', 'Luther Alison', songs()),
+              models.Album('Bad news is coming 3', 'Luther Alison', songs())]
+    discography = models.Discography('Luther Allison', albums)
 
     def test_discography(self):
         assert self.discography.__repr__() == 'Discography Object: Luther Allison'
@@ -109,9 +109,9 @@ class TestDiscography:
         self.discography.save()
         for album in self.albums:
             for song in album.songs:
-                author = lyricsmaster.normalize(song.author)
-                album = lyricsmaster.normalize(song.album)
-                title = lyricsmaster.normalize(song.title)
+                author = models.normalize(song.author)
+                album = models.normalize(song.album)
+                title = models.normalize(song.title)
                 path = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster', author,
                                     album, title + '.txt')
                 assert os.path.exists(path)
@@ -121,7 +121,7 @@ class TestDiscography:
 class TestLyricWiki:
     """Tests for LyricWiki Class."""
 
-    provider = lyricsprovider.LyricWiki()
+    provider = lyricsmaster.LyricWiki()
 
     def test_get_page(self):
         url = 'http://non-existent-url.com'
@@ -179,7 +179,7 @@ class TestLyricWiki:
         fail_song = self.provider.create_song(song_links[0], real_singer['name'], real_singer['album'])
         assert fail_song is None
         good_song = self.provider.create_song(song_links[9], real_singer['name'], real_singer['album'])
-        assert isinstance(good_song, lyricsmaster.Song)
+        assert isinstance(good_song, models.Song)
         assert good_song.title == 'Your Name'
         assert good_song.album == "Simplified (2004)"
         assert good_song.author == 'Reggie Watts'
@@ -192,7 +192,7 @@ class TestLyricWiki:
 
     def test_get_lyrics(self):
         discography = self.provider.get_lyrics(real_singer['name'])
-        assert isinstance(discography, lyricsmaster.Discography)
+        assert isinstance(discography, models.Discography)
         discography = self.provider.get_lyrics(fake_singer['name'])
         assert discography is None
 
@@ -205,8 +205,8 @@ class Test_tor:
     else:
         tor_advanced = TorController(controlport=9051, password='password')
 
-    provider = lyricsprovider.LyricWiki(tor_basic)
-    provider2 = lyricsprovider.LyricWiki(tor_advanced)
+    provider = lyricsmaster.LyricWiki(tor_basic)
+    provider2 = lyricsmaster.LyricWiki(tor_advanced)
     def test_anonymisation(self):
         anonymous_ip = self.provider.get_page("http://httpbin.org/ip").text
         real_ip = requests.get("http://httpbin.org/ip").text
@@ -227,12 +227,12 @@ class Test_tor:
 
     def test_get_lyrics_tor_basic(self):
         discography = self.provider.get_lyrics(real_singer['name'])
-        assert isinstance(discography, lyricsmaster.Discography)
+        assert isinstance(discography, models.Discography)
 
     @pytest.mark.skipif(is_travis, reason="Permission denied to /var/run/tor/control on Travis CI")
     def test_get_lyricstor_advanced(self):
         discography = self.provider2.get_lyrics(real_singer['name'])
-        assert isinstance(discography, lyricsmaster.Discography)
+        assert isinstance(discography, models.Discography)
 
 
 
