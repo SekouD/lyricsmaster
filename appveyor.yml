@@ -47,9 +47,6 @@ after_test:
   # interpreter
   - "build.cmd %PYTHON%\\python.exe setup.py bdist_wheel"
 
-after_failure:
-  - "cat C:\\ProgramData\\chocolatey\\logs\\chocolatey.log"
-
 artifacts:
   # bdist_wheel puts your built wheel in the dist directory
   - path: dist\*
