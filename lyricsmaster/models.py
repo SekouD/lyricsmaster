@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Models the domain object.
+"""Models the domain objects.
 
 Defines classes for Song, Album and Discography.
 
