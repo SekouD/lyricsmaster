@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
-"""Main module."""
+"""Models the domain object.
+
+Defines classes for Song, Album and Discography.
+
+"""
 
 import os
 from codecs import open
@@ -95,7 +99,7 @@ class Album:
 
     def save(self, folder=None):
         """
-        Saves the album to disc in the supplied folder.
+        Saves the album in the supplied folder.
 
         :param folder: string.
             path to save folder.
@@ -146,7 +150,7 @@ class Discography:
 
     def save(self, folder=None):
         """
-        Saves Discography to disc in the supplied folder.
+        Saves Discography in the supplied folder.
 
         :param folder: string.
             Path to save folder.
