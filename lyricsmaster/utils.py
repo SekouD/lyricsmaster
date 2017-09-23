@@ -71,7 +71,7 @@ class TorController:
         """
         Configures the session to use a Tor proxy.
 
-        :return: requests.session Object.
+        :return: requests.session object.
         """
         session = requests.session()
         session.proxies = {'http': 'socks5://{0}:{1}'.format(self.ip,
