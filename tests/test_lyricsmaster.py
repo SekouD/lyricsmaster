@@ -197,6 +197,8 @@ class TestLyricWiki:
         assert "And I hope you'll stay." in good_song.lyrics
         tag = '<a href="http://lyrics.wikia.com/wiki/Reggie_Watts:Feel_The_Same" class="new" title="Reggie Watts:Feel The Same (page does not exist)">Feel the Same</a>'
         page = BeautifulSoup(tag, 'lxml')
+        page.attrs['title'] = "Reggie Watts:Feel The Same (page does not exist)"
+        page.attrs['href'] = "http://lyrics.wikia.com/wiki/Reggie_Watts:Feel_The_Same"
         non_existent_song = self.provider.create_song(page, real_singer['name'], real_singer['album'])
         assert non_existent_song == None
 
