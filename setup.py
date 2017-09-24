@@ -37,7 +37,8 @@ test_requirements = [
     'beautifulsoup4',
     'requests',
     'requests[socks]',
-    'pysocks',
+    'urllib3'
+    'PySocks',
     'gevent',
     'stem'
 ]

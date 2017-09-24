@@ -1,4 +1,5 @@
 requests==2.18.4
+urllib3
 beautifulsoup4==4.6.0
 requests[socks]
 PySocks==1.6.7
