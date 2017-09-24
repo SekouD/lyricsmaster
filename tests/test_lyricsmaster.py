@@ -145,7 +145,7 @@ class TestLyricWiki:
 
     def test_get_artist_page(self):
         page = self.provider.get_artist_page(real_singer['name'])
-        assert '<!doctype html>' in basestring(page)
+        assert '<!doctype html>' in str(page)
         page = self.provider.get_artist_page(fake_singer['name'])
         assert page is None
 
@@ -155,12 +155,12 @@ class TestLyricWiki:
         page = self.provider.get_album_page(fake_singer['name'], fake_singer['album'])
         assert page is None
         page = self.provider.get_album_page('2Pac', 'Me Against The World (1995)')
-        assert '<!doctype html>' in basestring(page)
+        assert '<!doctype html>' in str(page)
 
     def test_get_lyrics_page(self):
         page = self.provider.get_lyrics_page(
             'http://lyrics.wikia.com/wiki/{0}:{1}'.format(real_singer['name'], real_singer['song']))
-        assert '<!doctype html>' in basestring(page)
+        assert '<!doctype html>' in str(page)
         page = self.provider.get_lyrics_page(
             'http://lyrics.wikia.com/wiki/{0}:{1}'.format(fake_singer['name'], fake_singer['song']))
         assert page is None
