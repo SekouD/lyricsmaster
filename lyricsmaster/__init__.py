@@ -5,3 +5,6 @@
 __author__ = """SekouD"""
 __email__ = 'sekoud.python@gmail.com'
 __version__ = '2.4.1'
+
+from .lyricsmaster import LyricWiki, AzLyrics
+from .utils import TorController
