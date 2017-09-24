@@ -360,6 +360,11 @@ class LyricWiki(LyricsProvider):
 
 
 class AzLyrics(LyricsProvider):
+    """
+    Class interfacing with https://azlyrics.com .
+    This class is used to retrieve lyrics from AzLyrics.
+
+    """
     base_url = 'https://www.azlyrics.com'
 
     def get_artist_page(self, author):
