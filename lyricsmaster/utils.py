@@ -6,7 +6,7 @@ import os
 import re
 from stem import Signal
 from stem.control import Controller
-import requests
+from urllib3.contrib.socks import SOCKSProxyManager
 try:
     basestring
 except NameError:
@@ -76,11 +76,10 @@ class TorController:
 
         :return: requests.session object.
         """
-        session = requests.session()
-        session.proxies = {'http': 'socks5://{0}:{1}'.format(self.ip,
-                                                             self.socksport),
-                           'https': 'socks5://{0}:{1}'.format(self.ip,
-                                                              self.socksport)}
+        session = SOCKSProxyManager('socks5://{0}:{1}'.format(self.ip, self.socksport))
+        # session = requests.session()
+        # session.proxies = {'http': 'socks5://{0}:{1}'.format(self.ip, self.socksport),
+        #                    'https': 'socks5://{0}:{1}'.format(self.ip, self.socksport)}
         return session
 
     def renew_tor_circuit(self):

@@ -17,7 +17,7 @@ import requests
 from lyricsmaster import models
 from lyricsmaster import cli
 from lyricsmaster import lyricsmaster
-from lyricsmaster.utils import TorController
+from lyricsmaster.utils import TorController, normalize
 
 try:
     basestring
@@ -38,8 +38,8 @@ def songs():
     return songs
 
 
-real_singer = {'name': 'Reggie Watts', 'album': 'Simplified (2004)', 'song': 'Your_Name'}
-fake_singer = {'name': 'Fake Rapper', 'album': "In my mom's basement", 'song': 'I fap'}
+real_singer = {'name': 'Reggie_Watts', 'album': 'Simplified (2004)', 'song': 'Your_Name'}
+fake_singer = {'name': 'Fake_Rapper', 'album': "In my mom's basement", 'song': 'I fap'}
 
 
 class TestSongs:
@@ -85,9 +85,9 @@ class TestAlbums:
     def test_album_save(self):
         self.album.save()
         for song in self.album.songs:
-            author = models.normalize(song.author)
-            album = models.normalize(song.album)
-            title = models.normalize(song.title)
+            author = normalize(song.author)
+            album = normalize(song.album)
+            title = normalize(song.title)
             path = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster', author,
                                 album, title + '.txt')
             assert os.path.exists(path)
@@ -117,9 +117,9 @@ class TestDiscography:
         self.discography.save()
         for album in self.albums:
             for song in album.songs:
-                author = models.normalize(song.author)
-                album = models.normalize(song.album)
-                title = models.normalize(song.title)
+                author = normalize(song.author)
+                album = normalize(song.album)
+                title = normalize(song.title)
                 path = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster', author,
                                     album, title + '.txt')
                 assert os.path.exists(path)
@@ -138,14 +138,14 @@ class TestLyricWiki:
         request = self.provider.get_page(url)
         assert request is None
         request = self.provider.get_page('http://www.google.com')
-        assert request.status_code == 200
+        assert request.status == 200
 
     def test_clean_string(self):
         assert self.provider.clean_string('Reggie Watts {(#5)}') == 'Reggie_Watts_((Number_5))'
 
     def test_get_artist_page(self):
         page = self.provider.get_artist_page(real_singer['name'])
-        assert '<!doctype html>' in page
+        assert '<!doctype html>' in basestring(page)
         page = self.provider.get_artist_page(fake_singer['name'])
         assert page is None
 
@@ -155,12 +155,12 @@ class TestLyricWiki:
         page = self.provider.get_album_page(fake_singer['name'], fake_singer['album'])
         assert page is None
         page = self.provider.get_album_page('2Pac', 'Me Against The World (1995)')
-        assert '<!doctype html>' in page
+        assert '<!doctype html>' in basestring(page)
 
     def test_get_lyrics_page(self):
         page = self.provider.get_lyrics_page(
             'http://lyrics.wikia.com/wiki/{0}:{1}'.format(real_singer['name'], real_singer['song']))
-        assert '<!doctype html>' in page
+        assert '<!doctype html>' in basestring(page)
         page = self.provider.get_lyrics_page(
             'http://lyrics.wikia.com/wiki/{0}:{1}'.format(fake_singer['name'], fake_singer['song']))
         assert page is None
@@ -192,7 +192,7 @@ class TestLyricWiki:
         assert isinstance(good_song, models.Song)
         assert good_song.title == 'Your Name'
         assert good_song.album == "Simplified (2004)"
-        assert good_song.author == 'Reggie Watts'
+        assert good_song.author == 'Reggie_Watts'
         assert 'I recall the day' in good_song.lyrics
         assert "And I hope you'll stay." in good_song.lyrics
         tag = '<a href="http://lyrics.wikia.com/wiki/Reggie_Watts:Feel_The_Same" class="new" title="Reggie Watts:Feel The Same (page does not exist)">Feel the Same</a>'
@@ -220,7 +220,7 @@ class Test_tor:
 
     @pytest.mark.skipif(is_appveyor and python_is_outdated, reason="Tor error on 2.7 and 3.3.")
     def test_anonymisation(self):
-        anonymous_ip = self.provider.get_page("http://httpbin.org/ip").text
+        anonymous_ip = self.provider.get_page("http://httpbin.org/ip").data
         real_ip = requests.get("http://httpbin.org/ip").text
         assert real_ip != anonymous_ip
 
@@ -228,11 +228,11 @@ class Test_tor:
     # for now gets permission denied on '/var/run/tor/control' in Travis CI
     @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated), reason="Skip this Tor test when in CI")
     def test_renew_tor_session(self):
-        anonymous_ip = self.provider2.get_page("http://httpbin.org/ip").text
+        anonymous_ip = self.provider2.get_page("http://httpbin.org/ip").data
         real_ip = requests.get("http://httpbin.org/ip").text
         assert real_ip != anonymous_ip
         new_tor_circuit = self.provider2.tor_controller.renew_tor_circuit()
-        anonymous_ip2 = self.provider2.get_page("http://httpbin.org/ip").text
+        anonymous_ip2 = self.provider2.get_page("http://httpbin.org/ip").data
         real_ip2 = requests.get("http://httpbin.org/ip").text
         assert real_ip2 != anonymous_ip2
         assert new_tor_circuit == True
