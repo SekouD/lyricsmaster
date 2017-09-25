@@ -141,7 +141,7 @@ class TestLyricWiki:
         assert request.status == 200
 
     def test_clean_string(self):
-        assert self.provider.clean_string('Reggie Watts {(#5)}') == 'Reggie_Watts_((Number_5))'
+        assert self.provider._clean_string('Reggie Watts {(#5)}') == 'Reggie_Watts_((Number_5))'
 
     def test_get_artist_page(self):
         page = self.provider.get_artist_page(real_singer['name'])
