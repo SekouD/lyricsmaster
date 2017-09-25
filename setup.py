@@ -82,4 +82,5 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     setup_requires=setup_requirements,
+    autodoc_member_order = 'bysource',
 )
