@@ -138,21 +138,6 @@ class LyricsProvider:
         discography = Discography(author, album_objects)
         return discography
 
-    def get_lyrics_page(self, url):
-        """
-        Fetches the web page containing the lyrics at the supplied url.
-
-        :param url: string.
-            Lyrics url.
-        :return: string or None.
-            Lyrics's raw html page. None if the lyrics page was not found.
-        """
-        raw_html = self.get_page(url).data
-        lyrics_page = BeautifulSoup(raw_html, 'lxml')
-        if not self._has_lyrics(lyrics_page):
-            return None
-        return raw_html
-
     def get_artist_page(self, author):
         """
         Fetches the web page for the supplied artist.
@@ -167,6 +152,21 @@ class LyricsProvider:
         raw_html = self.get_page(url).data
         artist_page = BeautifulSoup(raw_html, 'lxml')
         if not self._has_artist(artist_page):
+            return None
+        return raw_html
+
+    def get_lyrics_page(self, url):
+        """
+        Fetches the web page containing the lyrics at the supplied url.
+
+        :param url: string.
+            Lyrics url.
+        :return: string or None.
+            Lyrics's raw html page. None if the lyrics page was not found.
+        """
+        raw_html = self.get_page(url).data
+        lyrics_page = BeautifulSoup(raw_html, 'lxml')
+        if not self._has_lyrics(lyrics_page):
             return None
         return raw_html
 
