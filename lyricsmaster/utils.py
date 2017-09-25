@@ -7,6 +7,7 @@ import re
 from stem import Signal
 from stem.control import Controller
 from urllib3.contrib.socks import SOCKSProxyManager
+import certifi
 try:
     basestring
 except NameError:
@@ -76,7 +77,7 @@ class TorController:
 
         :return: requests.session object.
         """
-        session = SOCKSProxyManager('socks5://{0}:{1}'.format(self.ip, self.socksport))
+        session = SOCKSProxyManager('socks5://{0}:{1}'.format(self.ip, self.socksport), cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
         # session = requests.session()
         # session.proxies = {'http': 'socks5://{0}:{1}'.format(self.ip, self.socksport),
         #                    'https': 'socks5://{0}:{1}'.format(self.ip, self.socksport)}

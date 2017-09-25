@@ -13,6 +13,7 @@ from .models import Song, Album, Discography
 
 import re
 import urllib3
+import certifi
 from bs4 import BeautifulSoup
 
 import gevent.monkey
@@ -44,7 +45,7 @@ class LyricsProvider:
     def __init__(self, tor_controller=None):
         self.tor_controller = tor_controller
         if not self.tor_controller:
-            self.session = urllib3.PoolManager(maxsize=10)
+            self.session = urllib3.PoolManager(maxsize=10, cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
             # self.session = requests.session()
             print(
                 'Asynchronous requests enabled. The connexion is not anonymous.')
