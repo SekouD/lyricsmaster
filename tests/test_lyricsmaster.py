@@ -20,7 +20,7 @@ from lyricsmaster import lyricsmaster
 from lyricsmaster.utils import TorController, normalize
 
 try:
-    basestring # Python 2.7 compatibility
+    basestring  # Python 2.7 compatibility
 except NameError:
     basestring = str
 
@@ -132,11 +132,19 @@ class TestDiscography:
                     assert song.lyrics == '\n'.join(file.readlines())
 
 
+provider_strings = {
+    'LyricWiki': {'artist_name': 'The_Notorious_B.I.G.',
+                  'artist_url': 'http://lyrics.wikia.com/wiki/The_Notorious_B.I.G.',
+                  'song_url': 'http://lyrics.wikia.com/wiki/The_Notorious_B.I.G.:Things_Done_Changed',
+                  'fake_url': 'http://lyrics.wikia.com/wiki/Things_Done_Changed:Things_Done_Changed_fake_url'},
+    'AzLyrics': {'artist_name': 'notorious',
+                 'artist_url': 'https://www.azlyrics.com/n/notorious.html',
+                 'song_url': 'https://www.azlyrics.com/lyrics/notoriousbig/thingsdonechanged.html',
+                 'fake_url': 'https://www.azlyrics.com/lyrics/notoriousbig/thingsdonechanged_fake.html'}}
+
+
 class TestLyricsProviders:
     """Tests for LyricWiki Class."""
-
-    # provider = lyricsmaster.LyricWiki()
-    # clean = provider._clean_string
 
     @pytest.mark.parametrize('provider', providers)
     def test_get_page(self, provider):
@@ -148,15 +156,15 @@ class TestLyricsProviders:
 
     @pytest.mark.parametrize('provider', providers)
     def test_clean_string(self, provider):
-        assert provider._clean_string(real_singer['name']) == 'The_Notorious_B.I.G.'
+        assert provider._clean_string(real_singer['name']) == provider_strings[provider.name]['artist_name']
 
     @pytest.mark.parametrize('provider', providers)
     def test_has_artist(self, provider):
         clean = provider._clean_string
-        url = 'http://lyrics.wikia.com/wiki/{0}'.format(clean(real_singer['name']))
+        url = provider._make_artist_url(clean(real_singer['name']))
         page = BeautifulSoup(requests.get(url).text, 'lxml')
         assert provider._has_artist(page)
-        url = 'http://lyrics.wikia.com/wiki/{0}'.format(clean(fake_singer['name']))
+        url = provider._make_artist_url(clean(fake_singer['name']))
         page = BeautifulSoup(requests.get(url).text, 'lxml')
         assert not provider._has_artist(page)
 
@@ -164,7 +172,7 @@ class TestLyricsProviders:
     def test_make_artist_url(self, provider):
         clean = provider._clean_string
         assert provider._make_artist_url(
-            clean(real_singer['name'])) == 'http://lyrics.wikia.com/wiki/The_Notorious_B.I.G.'
+            clean(real_singer['name'])) == provider_strings[provider.name]['artist_url']
 
     @pytest.mark.parametrize('provider', providers)
     def test_get_artist_page(self, provider):
@@ -184,32 +192,23 @@ class TestLyricsProviders:
 
     @pytest.mark.parametrize('provider', providers)
     def test_has_lyrics(self, provider):
-        clean = provider._clean_string
-        url = 'http://lyrics.wikia.com/wiki/{0}:{1}'.format(clean(real_singer['name']),
-                                                            clean(real_singer['songs'][0]['song']))
+        url = provider_strings[provider.name]['song_url']
         page = BeautifulSoup(requests.get(url).text, 'lxml')
         assert provider._has_lyrics(page)
-        url = 'http://lyrics.wikia.com/wiki/{0}:{1}'.format(clean(real_singer['name']),
-                                                            clean(fake_singer['song']))
+        url = provider_strings[provider.name]['fake_url']
         page = BeautifulSoup(requests.get(url).text, 'lxml')
         assert not provider._has_lyrics(page)
 
     @pytest.mark.parametrize('provider', providers)
     def test_get_lyrics_page(self, provider):
-        clean = provider._clean_string
-        page = provider.get_lyrics_page(
-            'http://lyrics.wikia.com/wiki/{0}:{1}'.format(clean(real_singer['name']),
-                                                          clean(real_singer['songs'][0]['song'])))
+        page = provider.get_lyrics_page(provider_strings[provider.name]['song_url'])
         assert '<!doctype html>' in str(page)
-        page = provider.get_lyrics_page(
-            'http://lyrics.wikia.com/wiki/{0}:{1}'.format(clean(fake_singer['name']),
-                                                          clean(fake_singer['song'])))
+        page = provider.get_lyrics_page(provider_strings[provider.name]['fake_url'])
         assert page is None
 
     @pytest.mark.parametrize('provider', providers)
     def test_get_albums(self, provider):
-        clean = provider._clean_string
-        url = 'http://lyrics.wikia.com/wiki/{0}'.format(clean(real_singer['name']))
+        url = provider_strings[provider.name]['artist_url']
         page = requests.get(url).text
         albums = provider.get_albums(page)
         for album in albums:
@@ -217,8 +216,7 @@ class TestLyricsProviders:
 
     @pytest.mark.parametrize('provider', providers)
     def test_get_album_title(self, provider):
-        clean = provider._clean_string
-        url = 'http://lyrics.wikia.com/wiki/{0}'.format(clean(real_singer['name']))
+        url = provider_strings[provider.name]['artist_url']
         page = requests.get(url).text
         album = provider.get_albums(page)[0]
         album_title = provider.get_album_title(album)
@@ -226,10 +224,7 @@ class TestLyricsProviders:
 
     @pytest.mark.parametrize('provider', providers)
     def test_extract_lyrics(self, provider):
-        clean = provider._clean_string
-        page = provider.get_lyrics_page(
-            'http://lyrics.wikia.com/wiki/{0}:{1}'.format(clean(real_singer['name']),
-                                                          clean(real_singer['songs'][0]['song'])))
+        page = provider.get_lyrics_page(provider_strings[provider.name]['song_url'])
         lyrics = provider.extract_lyrics(page)
         assert isinstance(lyrics, basestring)
         assert 'Remember back in the days' in lyrics
@@ -246,13 +241,11 @@ class TestLyricsProviders:
 
     @pytest.mark.parametrize('provider', providers)
     def test_create_song(self, provider):
-        clean = provider._clean_string
         author_page = BeautifulSoup(provider.get_artist_page(real_singer['name']), 'lxml')
         album = [tag for tag in author_page.find_all("span", {'class': 'mw-headline'}) if
                  tag.attrs['id'] not in ('Additional_information', 'External_links')][0]
         song_links = provider.get_songs(album)
-        song_links[-1].attrs['href'] = '/wiki/{0}:{1}_fake_url'.format(clean(real_singer['name']), clean(
-            real_singer['songs'][0]['song']))  # add fake url to valid tag
+        song_links[-1].attrs['href'] = provider_strings[provider.name]['fake_url'].replace(provider.base_url, '')
         fail_song = provider.create_song(song_links[-1], real_singer['name'], real_singer['album'])
         assert fail_song is None
         good_song = provider.create_song(song_links[1], real_singer['name'], real_singer['album'])
@@ -263,16 +256,18 @@ class TestLyricsProviders:
         assert 'Remember back in the days' in good_song.lyrics
         assert "Don't ask me why I'm motherfuckin stressed" in good_song.lyrics
         # Tests existing song with empty lyrics
-        tag = '<a href="http://lyrics.wikia.com/wiki/Reggie_Watts:Feel_The_Same" class="new" title="Reggie Watts:Feel The Same (page does not exist)">Feel the Same</a>'
-        page = BeautifulSoup(tag, 'lxml')
-        page.attrs['title'] = "Reggie Watts:Feel The Same (page does not exist)"
-        page.attrs['href'] = "http://lyrics.wikia.com/wiki/Reggie_Watts:Feel_The_Same"
-        non_existent_song = provider.create_song(page, real_singer['name'], real_singer['album'])
-        assert non_existent_song == None
+        if provider.name == 'LyricWiki':
+            tag = '<a href="http://lyrics.wikia.com/wiki/Reggie_Watts:Feel_The_Same" class="new" title="Reggie Watts:Feel The Same (page does not exist)">Feel the Same</a>'
+            page = BeautifulSoup(tag, 'lxml')
+            page.attrs['title'] = "Reggie Watts:Feel The Same (page does not exist)"
+            page.attrs['href'] = "http://lyrics.wikia.com/wiki/Reggie_Watts:Feel_The_Same"
+            non_existent_song = provider.create_song(page, real_singer['name'], real_singer['album'])
+            assert non_existent_song == None
 
     @pytest.mark.parametrize('provider', providers)
     def test_get_lyrics(self, provider):
-        discography = provider.get_lyrics('Reggie Watts')  # put another realsinger who has not so many songs to speed up testing.
+        discography = provider.get_lyrics(
+            'Reggie Watts')  # put another realsinger who has not so many songs to speed up testing.
         assert isinstance(discography, models.Discography)
         discography = provider.get_lyrics(fake_singer['name'])
         assert discography is None
