@@ -69,18 +69,38 @@ class LyricsProvider:
 
     @abstractmethod
     def _has_lyrics(self, page):
+        """
+        Must be implemented by children classes conforming to the LyricsMaster API.
+
+        :param page:
+        """
         pass
 
     @abstractmethod
     def _has_artist(self, page):
+        """
+        Must be implemented by children classes conforming to the LyricsMaster API.
+
+        :param page:
+        """
         pass
 
     @abstractmethod
     def _make_artist_url(self, author):
+        """
+        Must be implemented by children classes conforming to the LyricsMaster API.
+
+        :param author:
+        """
         pass
 
     @abstractmethod
     def _clean_string(self, text):
+        """
+        Must be implemented by children classes conforming to the LyricsMaster API.
+
+        :param text:
+        """
         pass
 
     def get_page(self, url):
@@ -101,8 +121,8 @@ class LyricsProvider:
     def get_lyrics(self, author):
         """
         This is the main method of this class.
-        Connects to LyricWiki and downloads lyrics for all the albums of the supplied artist.
-        Returns a Discography Object or None if the artist was not found on LyricWiki.
+        Connects to the Lyrics Provider and downloads lyrics for all the albums of the supplied artist.
+        Returns a Discography Object or None if the artist was not found on the Lyrics Provider.
 
         :param author: string
             Artist name.
@@ -174,6 +194,8 @@ class LyricsProvider:
     @abstractmethod
     def get_albums(self, raw_artist_page):
         """
+        Must be implemented by children classes conforming to the LyricsMaster API.
+
         Fetches the albums section in the supplied html page.
 
         :param raw_artist_page: Artist's raw html page.
