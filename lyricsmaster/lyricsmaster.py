@@ -243,6 +243,7 @@ class LyricWiki(LyricsProvider):
 
     """
     base_url = 'http://lyrics.wikia.com'
+    name = 'LyricWiki'
 
     def _has_lyrics(self, lyrics_page):
         return not lyrics_page.find("div", {'class': 'noarticletext'})
@@ -365,6 +366,7 @@ class AzLyrics(LyricsProvider):
 
     """
     base_url = 'https://www.azlyrics.com'
+    name = 'AzLyrics'
 
     def _has_lyrics(self, lyrics_page):
         return lyrics_page.find("div", {'class': 'lyricsh'})
