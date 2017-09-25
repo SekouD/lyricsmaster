@@ -8,8 +8,9 @@ from stem import Signal
 from stem.control import Controller
 from urllib3.contrib.socks import SOCKSProxyManager
 import certifi
+
 try:
-    basestring
+    basestring # Python 2.7 compatibility
 except NameError:
     basestring = str
 

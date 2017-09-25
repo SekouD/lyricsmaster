@@ -20,7 +20,7 @@ from lyricsmaster import lyricsmaster
 from lyricsmaster.utils import TorController, normalize
 
 try:
-    basestring
+    basestring # Python 2.7 compatibility
 except NameError:
     basestring = str
 
