@@ -249,7 +249,7 @@ class TestLyricWiki:
 
     def test_get_lyrics(self):
         discography = self.provider.get_lyrics(
-            real_singer['name'])  # put another realsinger who has not so many songs to speed up testing.
+            'Reggie Watts')  # put another realsinger who has not so many songs to speed up testing.
         assert isinstance(discography, models.Discography)
         discography = self.provider.get_lyrics(fake_singer['name'])
         assert discography is None
@@ -288,13 +288,13 @@ class Test_tor:
     @pytest.mark.skipif(is_appveyor and python_is_outdated, reason="Tor error on 2.7 and 3.3.")
     def test_get_lyrics_tor_basic(self):
         discography = self.provider.get_lyrics(
-            real_singer['name'])  # put another realsinger who has not so many songs to speed up testing.
+            'Reggie Watts')  # put another realsinger who has not so many songs to speed up testing.
         assert isinstance(discography, models.Discography)
 
     @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated), reason="Skip this Tor test when in CI")
     def test_get_lyricstor_advanced(self):
         discography = self.provider2.get_lyrics(
-            real_singer['name'])  # put another realsinger who has not so many songs to speed up testing.
+            'Reggie Watts')  # put another realsinger who has not so many songs to speed up testing.
         assert isinstance(discography, models.Discography)
 
 
