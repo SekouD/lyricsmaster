@@ -66,6 +66,22 @@ class LyricsProvider:
     def __async_enabled__(self):
         return not self.tor_controller or (self.tor_controller and not self.tor_controller.controlport)
 
+    @abstractmethod
+    def _has_lyrics(self, page):
+        pass
+
+    @abstractmethod
+    def _has_artist(self, page):
+        pass
+
+    @abstractmethod
+    def _make_artist_url(self, author):
+        pass
+
+    @abstractmethod
+    def _clean_string(self, text):
+        pass
+
     def get_page(self, url):
         """
         Fetches the supplied url and returns a request object.
@@ -122,33 +138,37 @@ class LyricsProvider:
         discography = Discography(author, album_objects)
         return discography
 
-    @abstractmethod
-    def get_artist_page(self, author):
-        """
-        Must be implemented by children classes conforming to the LyricsMaster API.
-
-        Fetches the web page for the supplied artist.
-
-        :param author: string.
-            Artist name.
-        :return: string.
-            Artist's raw html page.
-        """
-        pass
-
-    @abstractmethod
     def get_lyrics_page(self, url):
         """
-        Must be implemented by children classes conforming to the LyricsMaster API.
-
         Fetches the web page containing the lyrics at the supplied url.
 
         :param url: string.
             Lyrics url.
         :return: string or None.
-            Lyrics's raw html page.
+            Lyrics's raw html page. None if the lyrics page was not found.
         """
-        pass
+        raw_html = self.get_page(url).data
+        lyrics_page = BeautifulSoup(raw_html, 'lxml')
+        if not self._has_lyrics(lyrics_page):
+            return None
+        return raw_html
+
+    def get_artist_page(self, author):
+        """
+        Fetches the web page for the supplied artist.
+
+        :param author: string.
+            Artist name.
+        :return: string or None.
+            Artist's raw html page. None if the artist page was not found.
+        """
+        author = self._clean_string(author)
+        url = self._make_artist_url(author)
+        raw_html = self.get_page(url).data
+        artist_page = BeautifulSoup(raw_html, 'lxml')
+        if not self._has_artist(artist_page):
+            return None
+        return raw_html
 
     @abstractmethod
     def get_albums(self, raw_artist_page):
@@ -223,22 +243,14 @@ class LyricWiki(LyricsProvider):
     """
     base_url = 'http://lyrics.wikia.com'
 
-    def get_artist_page(self, author):
-        """
-        Fetches the web page for the supplied artist.
+    def _has_lyrics(self, lyrics_page):
+        return not lyrics_page.find("div", {'class': 'noarticletext'})
 
-        :param author: string.
-            Artist name.
-        :return: string or None.
-            Artist's raw html page. None if the artist page was not found.
-        """
-        author = self.clean_string(author)
+    _has_artist = _has_lyrics
+
+    def _make_artist_url(self, author):
         url = self.base_url + '/wiki/' + author
-        raw_html = self.get_page(url).data
-        artist_page = BeautifulSoup(raw_html, 'lxml')
-        if artist_page.find("div", {'class': 'noarticletext'}):
-            return None
-        return raw_html
+        return url
 
     def get_album_page(self, author, album):
         """
@@ -251,27 +263,12 @@ class LyricWiki(LyricsProvider):
         :return: string or None.
             Album's raw html page. None if the album page was not found.
         """
-        author = self.clean_string(author)
-        album = self.clean_string(album)
+        author = self._clean_string(author)
+        album = self._clean_string(album)
         url = self.base_url + '/wiki/' + author + ':' + album
         raw_html = self.get_page(url).data
         album_page = BeautifulSoup(raw_html, 'lxml')
         if album_page.find("div", {'class': 'noarticletext'}):
-            return None
-        return raw_html
-
-    def get_lyrics_page(self, url):
-        """
-        Fetches the web page containing the lyrics at the supplied url.
-
-        :param url: string.
-            Lyrics url.
-        :return: string or None.
-            Lyrics's raw html page. None if the lyrics page was not found.
-        """
-        raw_html = self.get_page(url).data
-        lyrics_page = BeautifulSoup(raw_html, 'lxml')
-        if lyrics_page.find("div", {'class': 'noarticletext'}):
             return None
         return raw_html
 
@@ -346,7 +343,7 @@ class LyricWiki(LyricsProvider):
         lyrics = '\n'.join(lyric_box.strings)
         return lyrics
 
-    def clean_string(self, text):
+    def _clean_string(self, text):
         """
         Cleans the supplied string and formats it to use in a url.
 
@@ -368,41 +365,19 @@ class AzLyrics(LyricsProvider):
     """
     base_url = 'https://www.azlyrics.com'
 
-    def get_artist_page(self, author):
-        """
-        Fetches the web page for the supplied artist.
+    def _has_lyrics(self, lyrics_page):
+        return lyrics_page.find("div", {'class': 'lyricsh'})
 
-        :param author: string.
-            Artist name.
-        :return: string or None.
-            Artist's raw html page. None if the artist page was not found.
-        """
-        author = self.clean_string(author)
+    def _has_artist(self, page):
+        return page.find("div", {'id': 'listAlbum'})
+
+    def _make_artist_url(self, author):
         if author[0].isalpha():
             prefix = author[0]
         else:
             prefix = '19'
         url = self.base_url + '/{0}/{1}.html'.format(prefix, author)
-        raw_html = self.get_page(url).data
-        artist_page = BeautifulSoup(raw_html, 'lxml')
-        if not artist_page.find("div", {'id': 'listAlbum'}):
-            return None
-        return raw_html
-
-    def get_lyrics_page(self, url):
-        """
-        Fetches the web page containing the lyrics at the supplied url.
-
-        :param url: string.
-            Lyrics url.
-        :return: string or None.
-            Lyrics's raw html page. None if the lyrics page was not found.
-        """
-        raw_html = self.get_page(url).data
-        lyrics_page = BeautifulSoup(raw_html, 'lxml')
-        if not lyrics_page.find("div", {'class': 'lyricsh'}):
-            return None
-        return raw_html
+        return url
 
     def get_albums(self, raw_artist_page):
         """
@@ -470,7 +445,7 @@ class AzLyrics(LyricsProvider):
         lyrics = ''.join(lyric_box.strings)
         return lyrics
 
-    def clean_string(self, text):
+    def _clean_string(self, text):
         """
         Cleans the supplied string and formats it to use in a url.
 
