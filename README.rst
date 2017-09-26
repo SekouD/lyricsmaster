@@ -31,6 +31,7 @@ LyricsMaster is a library for downloading lyrics from multiple lyrics providers.
 
 - Lyric Wikia
 - AzLyrics
+- Genius
 - The Original Hip-Hop (Rap) Lyrics Archive - OHHLA.com
 - and more to come soon.
 
@@ -42,8 +43,8 @@ LyricsMaster is a library for downloading lyrics from multiple lyrics providers.
 Features
 --------
 
-- Downloads Lyrics from LyricWiki, AzLyrics, OHHLA and more.
-- Downloads Lyrics Asynchronously.
+- Download Lyrics from LyricWiki, AzLyrics, Genius OHHLA and more.
+- Download Lyrics Asynchronously.
 - Can make requests over Tor for anonymous downloading of songs and evading anti scraping tools.
 - Easily save the lyrics on your computer.
 
