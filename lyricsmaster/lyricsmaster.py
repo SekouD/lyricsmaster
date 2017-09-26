@@ -10,6 +10,7 @@ All lyrics providers inherit from the base class LyricsProvider.
 from abc import ABCMeta, abstractmethod
 
 from .models import Song, Album, Discography
+from .utils import normalize
 
 import re
 import urllib3
@@ -46,8 +47,9 @@ class LyricsProvider:
     def __init__(self, tor_controller=None):
         self.tor_controller = tor_controller
         if not self.tor_controller:
-            self.session = urllib3.PoolManager(maxsize=10, cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
-            # self.session = requests.session()
+            user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
+            self.session = urllib3.PoolManager(maxsize=10, cert_reqs='CERT_REQUIRED', ca_certs=certifi.where(),
+                                               headers=user_agent)
             print(
                 'Asynchronous requests enabled. The connexion is not anonymous.')
         else:
@@ -342,11 +344,15 @@ class LyricWiki(LyricsProvider):
         :param album_title: string.
         :return: models.Song object or None.
         """
+        if not link.attrs['href'].startswith(self.base_url):
+            song_url = self.base_url + link.attrs['href']
+        else:
+            song_url = link.attrs['href']
         song_title = link.attrs['title']
         song_title = song_title[song_title.index(':') + 1:]
         if '(page does not exist' in song_title:
             return None
-        lyrics_page = self.get_lyrics_page(self.base_url + link.attrs['href'])
+        lyrics_page = self.get_lyrics_page(song_url)
         if not lyrics_page:
             return None
         lyrics = self.extract_lyrics(lyrics_page)
@@ -391,10 +397,16 @@ class AzLyrics(LyricsProvider):
     name = 'AzLyrics'
 
     def _has_lyrics(self, lyrics_page):
-        return lyrics_page.find("div", {'class': 'lyricsh'})
+        if lyrics_page.find("div", {'class': 'lyricsh'}):
+            return True
+        else:
+            return False
 
     def _has_artist(self, page):
-        return page.find("div", {'id': 'listAlbum'})
+        if page.find("div", {'id': 'listAlbum'}):
+            return True
+        else:
+            return False
 
     def _make_artist_url(self, author):
         if author[0].isalpha():
@@ -481,6 +493,117 @@ class AzLyrics(LyricsProvider):
         """
         text = "".join([c if c.isalnum() else "" for c in text])
         return text.lower()
+
+
+class Genius(LyricsProvider):
+    """
+    Class interfacing with https://genius.com .
+    This class is used to retrieve lyrics from Genius.
+
+    """
+    base_url = 'https://genius.com'
+    name = 'Genius'
+
+    def _has_lyrics(self, page):
+        if page.find("div", {'class': 'song_body-lyrics'}):
+            return True
+        else:
+            return False
+
+    def _has_artist(self, page):
+        if not page.find("div", {'class': 'render_404'}):
+            return True
+        else:
+            return False
+
+    def _make_artist_url(self, author):
+        url = self.base_url + '/artists/' + author
+        return url
+
+    def get_albums(self, raw_artist_page):
+        """
+        Fetches the albums section in the supplied html page.
+
+        :param raw_artist_page: Artist's raw html page.
+        :return: list.
+            List of BeautifulSoup objects.
+        """
+        artist_page = BeautifulSoup(raw_artist_page, 'lxml')
+        albums_link = artist_page.find("a", {'class': 'full_width_button'})
+        albums_link = albums_link.attrs['href'].replace('songs?', 'albums?')
+        albums_page = BeautifulSoup(self.get_page(self.base_url + albums_link).data, 'lxml')
+        albums = [tag for tag in albums_page.find_all("a", {'class': 'album_link'})]
+        return albums
+
+    def get_album_title(self, tag):
+        """
+        Extracts the Album title from the tag
+
+        :param tag: BeautifulSoup object.
+        :return: string.
+            Album title.
+        """
+        album_title = tag.text
+        return album_title
+
+    def get_songs(self, album):
+        """
+        Fetches the links to the songs of the supplied album.
+
+        :param album: BeautifulSoup object.
+        :return: List of BeautifulSoup Link objects.
+        """
+        album_page = BeautifulSoup(self.get_page(self.base_url + album.attrs['href']).data, 'lxml')
+        song_links = album_page.find_all("div", {'class': 'chart_row chart_row--light_border chart_row--full_bleed_left chart_row--align_baseline chart_row--no_hover'})
+        song_links = [song.find('a') for song in song_links]
+        return song_links
+
+    def create_song(self, link, author, album_title):
+        """
+        Creates a Song object.
+
+        :param link: BeautifulSoup Link object.
+        :param author: string.
+        :param album_title: string.
+        :return: models.Song object or None.
+        """
+        if not link.attrs['href'].startswith(self.base_url):
+            song_url = self.base_url + link.attrs['href']
+        else:
+            song_url = link.attrs['href']
+        song_title = link.text.strip('\n').split('\n')[0].lstrip()
+        lyrics_page = self.get_lyrics_page(song_url)
+        if not lyrics_page:
+            return None
+        lyrics = self.extract_lyrics(lyrics_page)
+        song = Song(song_title, album_title, author, lyrics)
+        return song
+
+    def extract_lyrics(self, song):
+        """
+        Extracts the lyrics from the lyrics page of the supplied song.
+
+        :param song: string.
+            Lyrics's raw html page.
+        :return: string.
+            Formatted lyrics.
+        """
+        lyrics_page = BeautifulSoup(song, 'lxml')
+        lyric_box = lyrics_page.find("div", {"class": 'lyrics'})
+        lyrics = ''.join(lyric_box.strings)
+        return lyrics
+
+    def _clean_string(self, text):
+        """
+        Cleans the supplied string and formats it to use in a url.
+
+        :param text: string.
+            Text to be cleaned.
+        :return: string.
+            Cleaned text.
+        """
+        text = normalize(text).lower().capitalize()
+        return text
 
 
 
