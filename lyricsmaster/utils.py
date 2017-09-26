@@ -78,10 +78,9 @@ class TorController:
 
         :return: requests.session object.
         """
-        session = SOCKSProxyManager('socks5://{0}:{1}'.format(self.ip, self.socksport), cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
-        # session = requests.session()
-        # session.proxies = {'http': 'socks5://{0}:{1}'.format(self.ip, self.socksport),
-        #                    'https': 'socks5://{0}:{1}'.format(self.ip, self.socksport)}
+        user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
+        session = SOCKSProxyManager('socks5://{0}:{1}'.format(self.ip, self.socksport), cert_reqs='CERT_REQUIRED',
+                                    ca_certs=certifi.where(), headers=user_agent)
         return session
 
     def renew_tor_circuit(self):
