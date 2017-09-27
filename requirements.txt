@@ -1,10 +1,8 @@
-requests==2.18.4
-urllib3==1.22
+requests
+urllib3[secure]
 beautifulsoup4==4.6.0
-requests[socks]
 PySocks==1.6.7
 gevent==1.2.2
 stem==1.5.4
-beautifulsoup4==4.6.0
 lxml==4.0.0
 click==6.7
