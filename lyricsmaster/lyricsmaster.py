@@ -598,6 +598,101 @@ class Genius(LyricsProvider):
         return text
 
 
+class Lyrics007(LyricsProvider):
+    """
+        Class interfacing with https://www.lyrics007.com .
+        This class is used to retrieve lyrics from Lyrics007.
+
+        """
+    base_url = 'https://www.lyrics007.com'
+    name = 'Lyrics007'
+
+    def _has_lyrics(self, page):
+        if page.find("div", {'class': 'lyrics'}):
+            return True
+        else:
+            return False
+
+    def _has_artist(self, page):
+        pass
+
+    def _make_artist_url(self, author):
+        author = "".join([c if c.isalnum() else "-" for c in author])
+        url = self.base_url + '/artist/' + author
+
+    def get_albums(self, raw_artist_page):
+        """
+        Fetches the albums section in the supplied html page.
+
+        :param raw_artist_page: Artist's raw html page.
+        :return: list.
+            List of BeautifulSoup objects.
+        """
+        pass
+
+    def get_album_title(self, tag):
+        """
+        Extracts the Album title from the tag
+
+        :param tag: BeautifulSoup object.
+        :return: string.
+            Album title.
+        """
+        pass
+
+    def get_songs(self, album):
+        """
+        Fetches the links to the songs of the supplied album.
+
+        :param album: BeautifulSoup object.
+        :return: List of BeautifulSoup Link objects.
+        """
+        pass
+
+    def create_song(self, link, author, album_title):
+        """
+        Creates a Song object.
+
+        :param link: BeautifulSoup Link object.
+        :param author: string.
+        :param album_title: string.
+        :return: models.Song object or None.
+        """
+        pass
+
+    def extract_lyrics(self, song):
+        """
+        Extracts the lyrics from the lyrics page of the supplied song.
+
+        :param song: string.
+            Lyrics's raw html page.
+        :return: string.
+            Formatted lyrics.
+        """
+        pass
+
+    def _clean_string(self, text):
+        """
+        Cleans the supplied string and formats it to use in a url.
+
+        :param text: string.
+            Text to be cleaned.
+        :return: string.
+            Cleaned text.
+        """
+        pass
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     pass
