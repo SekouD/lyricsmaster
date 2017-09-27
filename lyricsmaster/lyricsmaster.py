@@ -117,7 +117,7 @@ class LyricsProvider:
             print('Unable to download url ' + url)
         return req
 
-    def get_lyrics(self, author):
+    def get_lyrics(self, author, album=None, song=None):
         """
         This is the main method of this class.
         Connects to the Lyrics Provider and downloads lyrics for all the albums of the supplied artist.
@@ -131,10 +131,14 @@ class LyricsProvider:
         if not raw_html:
             return None
         albums = self.get_albums(raw_html)
+        if album:
+            albums = [elmt for elmt in albums if album in self.get_album_title(elmt)]
         album_objects = []
         for elmt in albums:
             album_title = self.get_album_title(elmt)
             song_links = self.get_songs(elmt)
+            if song:
+                song_links = [link for link in song_links if song in link.text]
             print('Downloading {0}'.format(album_title))
             if self.tor_controller and self.tor_controller.controlport:
                 self.tor_controller.renew_tor_circuit()
@@ -143,8 +147,9 @@ class LyricsProvider:
             results = [pool.spawn(self.create_song, *(link, author, album_title)) for link in song_links]
             pool.join()  # Gathers results from the pool
             songs = [song.value for song in results]
-            album = Album(album_title, author, songs)
-            album_objects.append(album)
+            album_obj = Album(album_title, author, songs)
+            album_objects.append(album_obj)
+            print('{0} succesfully downloaded'.format(album_title))
         discography = Discography(author, album_objects)
         return discography
 
