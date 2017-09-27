@@ -13,21 +13,40 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'Click>=6.0',
-    # TODO: put package requirements here
+    'lxml',
+    'beautifulsoup4',
+    'requests',
+    'requests[socks]',
+    'pysocks',
+    'gevent',
+    'stem'
 ]
 
 setup_requirements = [
+    'pytest'
     # TODO(SekouD): put setup requirements (distutils extensions, etc.) here
 ]
 
 test_requirements = [
-    # TODO: put package test requirements here
+    'Sphinx',
+    'docutils',
+    'pytest',
+    'pytest-cov',
+    'Click>=6.0',
+    'lxml',
+    'beautifulsoup4',
+    'requests',
+    'requests[socks]',
+    'urllib3'
+    'PySocks',
+    'gevent',
+    'stem'
 ]
 
 setup(
     name='lyricsmaster',
-    version='2.3',
-    description="LyricsMaster is a library for analyzing lyrics using various Machine Learning algorithms. It includes utilities for downloading lyrics from multiple lyrics providers.",
+    version='2.7.1',
+    description="LyricsMaster is a library for downloading lyrics from multiple lyrics providers. LyricWiki, AzLyrics, Genius and other lyrics provider are available",
     long_description=readme + '\n\n' + history,
     author="SekouD",
     author_email='sekoud.python@gmail.com',
@@ -45,6 +64,9 @@ setup(
     keywords='lyricsmaster',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
+        'Topic :: Communications',
+        'Topic :: Internet :: WWW/HTTP :: Indexing/Search',
+        'Topic :: Software Development :: Libraries :: Python Modules',
         'Intended Audience :: Developers',
         'Intended Audience :: End Users/Desktop',
         'License :: OSI Approved :: MIT License',

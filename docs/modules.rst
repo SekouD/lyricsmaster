@@ -7,28 +7,26 @@ API Reference for classes in lyricsmaster.lyricsmaster
 ------------------------------------------------------
 
 .. automodule:: lyricsmaster.lyricsmaster
+    :member-order: bysource
     :members:
-    :undoc-members:
-    :inherited-members:
-
-
-API Reference for classes in lyricsmaster.lyricsprovider
---------------------------------------------------------
-
-.. automodule:: lyricsmaster.lyricsprovider
-    :members:
-    :undoc-members:
     :inherited-members:
     :show-inheritance:
+
+
+API Reference for classes in lyricsmaster.models
+------------------------------------------------
+
+.. automodule:: lyricsmaster.models
+    :member-order: bysource
+    :members:
 
 
 API Reference for classes in lyricsmaster.utils
 -----------------------------------------------
 
 .. automodule:: lyricsmaster.utils
+    :member-order: bysource
     :members:
-    :undoc-members:
     :inherited-members:
-    :show-inheritance:
 
 
