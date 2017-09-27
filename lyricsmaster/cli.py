@@ -5,7 +5,7 @@
 import click
 import lyricsmaster
 from .lyricsmaster import LyricWiki, AzLyrics, Genius
-from .lyricsmaster import TorController
+from .utils import TorController
 
 
 
