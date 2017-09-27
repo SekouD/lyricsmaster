@@ -132,13 +132,13 @@ class LyricsProvider:
             return None
         albums = self.get_albums(raw_html)
         if album:
-            albums = [elmt for elmt in albums if album in self.get_album_title(elmt)]
+            albums = [elmt for elmt in albums if album.lower() in self.get_album_title(elmt).lower()]
         album_objects = []
         for elmt in albums:
             album_title = self.get_album_title(elmt)
             song_links = self.get_songs(elmt)
             if song:
-                song_links = [link for link in song_links if song in link.text]
+                song_links = [link for link in song_links if song.lower() in link.text.lower()]
             print('Downloading {0}'.format(album_title))
             if self.tor_controller and self.tor_controller.controlport:
                 self.tor_controller.renew_tor_circuit()
