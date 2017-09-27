@@ -276,6 +276,10 @@ class TestLyricsProviders:
         assert isinstance(discography, models.Discography)
         discography = provider.get_lyrics(fake_singer['name'])
         assert discography is None
+        discography = provider.get_lyrics('Reggie Watts', 'Why $#!+ So Crazy?')
+        assert isinstance(discography, models.Discography)
+        discography = provider.get_lyrics('Reggie Watts', 'Why $#!+ So Crazy?', 'Fuck Shit Stack')
+        assert isinstance(discography, models.Discography)
 
 
 class Test_tor:
@@ -331,3 +335,10 @@ def test_command_line_interface():
     help_result = runner.invoke(cli.main, ['--help'])
     assert help_result.exit_code == 0
     assert 'Show this message and exit.' in help_result.output
+    # Removed test with optional arguments. Need to check click docs for passing optional args to Clirunner.
+    # result_tor = runner.invoke(cli.main, ['Reggie Watts'], '--tor 127.0.0.1')
+    # assert result_tor.exit_code == 0
+    # assert 'Downloading Simplified' in result.output
+    # result_tor1 = runner.invoke(cli.main, ['Reggie Watts', '--tor 127.0.0.1', '--controlport 9051', '--password password'])
+    # assert result_tor1.exit_code == 0
+    # assert 'Downloading Simplified' in result.output
