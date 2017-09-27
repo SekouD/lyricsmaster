@@ -1,3 +1,4 @@
+requests
 urllib3[secure]
 beautifulsoup4==4.6.0
 PySocks==1.6.7
