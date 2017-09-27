@@ -9,6 +9,18 @@ from stem.control import Controller
 from urllib3.contrib.socks import SOCKSProxyManager
 import certifi
 
+import gevent.monkey
+import socket
+
+# Works for Python 2 and 3
+try:
+    from importlib import reload
+except ImportError:
+    try:
+        from imp import reload
+    except:
+        pass
+
 try:
     basestring # Python 2.7 compatibility
 except NameError:
@@ -100,8 +112,10 @@ class TorController:
             else:
                 delay = controller.get_newnym_wait()
                 print('Dealy to create new Tor circuit: {0}s'.format(delay))
+            gevent.monkey.patch_socket()
             return False
 
+        reload(socket)
         if isinstance(self.controlport, int):
             with Controller.from_port(port=self.controlport) as controller:
                 return renew_circuit(self.password)

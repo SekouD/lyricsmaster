@@ -58,10 +58,10 @@ class LyricsProvider:
             print('Anonymous requests enabled.')
             if not self.tor_controller.controlport:
                 print(
-                    'Asynchronous requests enabled but the tor circuit will not change for each album.')
+                    'Asynchronous requests enabled but the Tor circuit will not change for each album.')
             else:
                 print(
-                    'Asynchronous requests disabled to allow the creation of new tor circuits for each album')
+                    'Asynchronous requests enabled and creation of new Tor circuits for each album')
 
     def __repr__(self):
         return '{0}.{1}({2})'.format(__name__, self.__class__.__name__, self.tor_controller.__repr__())
@@ -128,7 +128,6 @@ class LyricsProvider:
         :return: models.Discography object or None.
         """
         raw_html = self.get_artist_page(author)
-
         if not raw_html:
             return None
         albums = self.get_albums(raw_html)
@@ -138,9 +137,7 @@ class LyricsProvider:
             song_links = self.get_songs(elmt)
             print('Downloading {0}'.format(album_title))
             if self.tor_controller and self.tor_controller.controlport:
-                reload(socket)
                 self.tor_controller.renew_tor_circuit()
-                gevent.monkey.patch_socket()
                 self.session = self.tor_controller.get_tor_session()
             pool = Pool(25)  # Sets the worker pool for async requests
             results = [pool.spawn(self.create_song, *(link, author, album_title)) for link in song_links]
