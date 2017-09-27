@@ -3,15 +3,21 @@
 """Console script for lyricsmaster."""
 
 import click
+from lyricsmaster import LyricWiki, AzLyrics, Genius
 
 
 
 @click.command()
-def main(args=None):
+@click.argument('artist_name')
+@click.option('--provider', default=LyricWiki, help='Lyrics Provider.')
+@click.option('--album', default=None, help='Album.')
+@click.option('--song', default=None, help='Song.')
+@click.option('--folder', default=None, help='Folder where the lyrics will be saved.')
+def main(artist_name, provider, album, song, folder):
     """Console script for lyricsmaster."""
-    click.echo("Replace this message by putting your code into "
-               "lyricsmaster.cli.main")
-    click.echo("See click documentation at http://click.pocoo.org/")
+    # provider = provider()
+    results = provider.get_lyrics(artist_name)
+    results.save()
 
 
 if __name__ == "__main__":

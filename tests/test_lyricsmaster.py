@@ -65,7 +65,6 @@ provider_strings = {
                  'fake_url': 'https://genius.com/The-notorious-big-things-done-changed-lyrics_fake'}
 }
 
-
 class TestSongs:
     """Tests for Song Class."""
     song = songs()[0]
@@ -323,11 +322,12 @@ class Test_tor:
 
 
 def test_command_line_interface():
-    """Test the CLI."""
+    """Tests the CLI."""
+    artist = 'Reggie Watts'
     runner = CliRunner()
-    result = runner.invoke(cli.main)
+    result = runner.invoke(cli.main, ['Reggie Watts'])
     assert result.exit_code == 0
-    assert 'lyricsmaster.cli.main' in result.output
+    assert 'Downloading Simplified' in result.output
     help_result = runner.invoke(cli.main, ['--help'])
     assert help_result.exit_code == 0
-    assert '--help  Show this message and exit.' in help_result.output
+    assert 'Show this message and exit.' in help_result.output
