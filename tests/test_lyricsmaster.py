@@ -12,6 +12,18 @@ from click.testing import CliRunner
 
 from bs4 import BeautifulSoup, Tag
 
+import gevent.monkey
+import socket
+
+# Works for Python 2 and 3
+try:
+    from importlib import reload
+except ImportError:
+    try:
+        from imp import reload
+    except:
+        pass
+
 import requests
 
 from lyricsmaster import models
@@ -303,7 +315,9 @@ class Test_tor:
         anonymous_ip = self.provider2.get_page("http://httpbin.org/ip").data
         real_ip = session.get("http://httpbin.org/ip").text
         assert real_ip != anonymous_ip
+        reload(socket)
         new_tor_circuit = self.provider2.tor_controller.renew_tor_circuit()
+        gevent.monkey.patch_socket()
         anonymous_ip2 = self.provider2.get_page("http://httpbin.org/ip").data
         real_ip2 = session.get("http://httpbin.org/ip").text
         assert real_ip2 != anonymous_ip2

@@ -45,6 +45,7 @@ class LyricsProvider:
     __metaclass__ = ABCMeta
 
     def __init__(self, tor_controller=None):
+        gevent.monkey.patch_socket()
         self.tor_controller = tor_controller
         if not self.tor_controller:
             user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
@@ -64,10 +65,6 @@ class LyricsProvider:
 
     def __repr__(self):
         return '{0}.{1}({2})'.format(__name__, self.__class__.__name__, self.tor_controller.__repr__())
-
-    @property
-    def __async_enabled__(self):
-        return not self.tor_controller or (self.tor_controller and not self.tor_controller.controlport)
 
     @abstractmethod
     def _has_lyrics(self, page):
@@ -136,28 +133,21 @@ class LyricsProvider:
             return None
         albums = self.get_albums(raw_html)
         album_objects = []
-        if self.__async_enabled__:
-            # cycle circuits
-            gevent.monkey.patch_socket()
         for elmt in albums:
             album_title = self.get_album_title(elmt)
             song_links = self.get_songs(elmt)
             print('Downloading {0}'.format(album_title))
             if self.tor_controller and self.tor_controller.controlport:
+                reload(socket)
                 self.tor_controller.renew_tor_circuit()
+                gevent.monkey.patch_socket()
                 self.session = self.tor_controller.get_tor_session()
-                songs = [self.create_song(link, author, album_title) for link in song_links]
-            else:
-                pool = Pool(25)  # Sets the worker pool for async requests
-                results = [
-                    pool.spawn(self.create_song, *(link, author, album_title))
-                    for link in song_links]
-                pool.join()  # Gathers results from the pool
-                songs = [song.value for song in results]
+            pool = Pool(25)  # Sets the worker pool for async requests
+            results = [pool.spawn(self.create_song, *(link, author, album_title)) for link in song_links]
+            pool.join()  # Gathers results from the pool
+            songs = [song.value for song in results]
             album = Album(album_title, author, songs)
             album_objects.append(album)
-        if self.__async_enabled__:
-            reload(socket)
         discography = Discography(author, album_objects)
         return discography
 
