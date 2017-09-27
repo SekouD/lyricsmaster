@@ -6,7 +6,7 @@ To use LyricsMaster in a project::
 
     from lyricsmaster import LyricWiki, TorController
 
-    # Select a provider from the supported Lyrics Provider (LyricWiki, AzLyrics, Genius etc..)
+    # Select a provider from the supported Lyrics Providers (LyricWiki, AzLyrics, Genius etc..)
     provider = LyricWiki()
 
     # Fetch all lyrics from 2Pac
@@ -47,12 +47,12 @@ To use LyricsMaster in a project::
 
 To use LyricsMaster from the command line::
 
-    lyricsmaster <artist_name> options
+    $ lyricsmaster <artist_name> options
 
 Examples::
 
-    lyricsmaster "Reggie Watts"
+    $ lyricsmaster "Reggie Watts"
 
-    lyricsmaster "Reggie Watts" --tor 127.0.0.1
+    $ lyricsmaster "Reggie Watts" --tor 127.0.0.1
 
-    lyricsmaster "Reggie Watts" --tor 127.0.0.1 --controlport 9051 --password password
+    $ lyricsmaster "Reggie Watts" --tor 127.0.0.1 --controlport 9051 --password password
