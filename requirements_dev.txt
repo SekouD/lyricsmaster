@@ -5,13 +5,13 @@ watchdog==0.8.3
 flake8==3.4.1
 tox==2.8.2
 coverage==4.4.1
-Sphinx==1.6.3
+Sphinx==1.6.4
 docutils==0.14
 cryptography==2.0.3
 PyYAML==3.12
 mypy==0.521
 pytest==3.2.2
-hypothesis==3.30.1
+hypothesis==3.30.4
 beautifulsoup4==4.6.0
 requests==2.18.4
 gevent==1.2.2
@@ -20,4 +20,4 @@ stem==1.5.4
 lxml==4.0.0
 click==6.7
 PySocks==1.6.7
-urllib3
+urllib3==1.22
