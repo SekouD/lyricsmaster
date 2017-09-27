@@ -65,6 +65,24 @@ provider_strings = {
                  'fake_url': 'https://genius.com/The-notorious-big-things-done-changed-lyrics_fake'}
 }
 
+def test_command_line_interface():
+    """Tests the CLI."""
+    artist = 'Reggie Watts'
+    runner = CliRunner()
+    result = runner.invoke(cli.main, ['Reggie Watts'])
+    assert result.exit_code == 0
+    assert 'Downloading Simplified' in result.output
+    help_result = runner.invoke(cli.main, ['--help'])
+    assert help_result.exit_code == 0
+    assert 'Show this message and exit.' in help_result.output
+    # Removed test with optional arguments. Need to check click docs for passing optional args to Clirunner.
+    # result_tor = runner.invoke(cli.main, ['Reggie Watts'], '--tor 127.0.0.1')
+    # assert result_tor.exit_code == 0
+    # assert 'Downloading Simplified' in result.output
+    # result_tor1 = runner.invoke(cli.main, ['Reggie Watts', '--tor 127.0.0.1', '--controlport 9051', '--password password'])
+    # assert result_tor1.exit_code == 0
+    # assert 'Downloading Simplified' in result.output
+
 class TestSongs:
     """Tests for Song Class."""
     song = songs()[0]
@@ -323,22 +341,3 @@ class Test_tor:
         discography = self.provider2.get_lyrics(
             'Reggie Watts')  # put another realsinger who has not so many songs to speed up testing.
         assert isinstance(discography, models.Discography)
-
-
-def test_command_line_interface():
-    """Tests the CLI."""
-    artist = 'Reggie Watts'
-    runner = CliRunner()
-    result = runner.invoke(cli.main, ['Reggie Watts'])
-    assert result.exit_code == 0
-    assert 'Downloading Simplified' in result.output
-    help_result = runner.invoke(cli.main, ['--help'])
-    assert help_result.exit_code == 0
-    assert 'Show this message and exit.' in help_result.output
-    # Removed test with optional arguments. Need to check click docs for passing optional args to Clirunner.
-    # result_tor = runner.invoke(cli.main, ['Reggie Watts'], '--tor 127.0.0.1')
-    # assert result_tor.exit_code == 0
-    # assert 'Downloading Simplified' in result.output
-    # result_tor1 = runner.invoke(cli.main, ['Reggie Watts', '--tor 127.0.0.1', '--controlport 9051', '--password password'])
-    # assert result_tor1.exit_code == 0
-    # assert 'Downloading Simplified' in result.output
