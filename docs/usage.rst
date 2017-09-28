@@ -20,11 +20,11 @@ To use LyricsMaster in a project::
             print('Song: ', song.title)
             print('Lyrics: ', song.lyrics)
 
-    # Fetch all lyrics from 2pac's album 'All eyes on me'
+    # Fetch all lyrics from 2pac's album 'All eyez on me'.
     album = provider.get_lyrics('2Pac', album='All eyes on me')
 
-    # Fetch the lyrics from 2pac's album 'All eyes on me' and song 'California Love'
-    album = provider.get_lyrics('2Pac', album='All eyes on me', song='California Love)
+    # Fetch the lyrics from the song 'California Love' in 2pac's album 'All eyez on me'.
+    song = provider.get_lyrics('2Pac', album='All eyez on me', song='California Love)
 
     # Once the lyrics are fetched, you can save them on disk.
     # The 'save()' method is implemented for Discography, Album and Song objects.
@@ -55,12 +55,21 @@ To use LyricsMaster from the command line::
 Examples::
 
     $ lyricsmaster "2Pac"
-    Anonymous requests disabled. The connexion will not anonymous.
+    Anonymous requests disabled. The connexion will not be anonymous.
     Downloading 2Pacalypse Now (1991)
     2Pacalypse Now (1991) succesfully downloaded
     Downloading Strictly 4 My N.I.G.G.A.Z... (1993)
     Strictly 4 My N.I.G.G.A.Z... (1993) succesfully downloaded
     Downloading Thug Life - Volume 1 (1994)
+    ...
+
+
+    $ lyricsmaster "2Pac" --provider Genius
+    Anonymous requests disabled. The connexion will not be anonymous.
+    Downloading The Rose That Grew From Concrete (Book)
+    The Rose That Grew From Concrete (Book) succesfully downloaded
+    Downloading Best of 2Pac Part 2: Life
+    Best of 2Pac Part 2: Life succesfully downloaded
     ...
 
 
@@ -74,7 +83,7 @@ Examples::
     ...
 
 
-    $ lyricsmaster "Reggie Watts" --tor 127.0.0.1 --controlport 9051 --password password
+    $ lyricsmaster "2Pac" --tor 127.0.0.1 --controlport 9051 --password password
     Anonymous requests enabled. The Tor circuit will change for each album.
     Downloading 2Pacalypse Now (1991)
     2Pacalypse Now (1991) succesfully downloaded
