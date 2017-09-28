@@ -88,7 +88,7 @@ class TorController:
         """
         Configures the session to use a Tor proxy.
 
-        :return: requests.session object.
+        :return: urllib3.SOCKSProxyManager object.
         """
         user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
         session = SOCKSProxyManager('socks5://{0}:{1}'.format(self.ip, self.socksport), cert_reqs='CERT_REQUIRED',
