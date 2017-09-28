@@ -15,8 +15,8 @@ requirements = [
     'Click>=6.0',
     'lxml',
     'beautifulsoup4',
-    'requests',
-    'requests[socks]',
+    'urllib3',
+    'urllib3[secure]',
     'pysocks',
     'gevent',
     'stem'
@@ -61,7 +61,7 @@ setup(
     install_requires=requirements,
     license="MIT license",
     zip_safe=False,
-    keywords='lyricsmaster',
+    keywords=['lyricsmaster', 'lyrics', 'LyricWiki', 'Lyrics Wikia', 'AzLyrics', 'Genius', 'Tor'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Topic :: Communications',

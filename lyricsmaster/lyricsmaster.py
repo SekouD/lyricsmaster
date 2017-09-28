@@ -20,8 +20,6 @@ from bs4 import BeautifulSoup
 import gevent.monkey
 from gevent.pool import Pool
 
-import socket
-
 # Works for Python 2 and 3
 try:
     from importlib import reload

@@ -45,7 +45,7 @@ Features
 
 - Download Lyrics from LyricWiki, AzLyrics, Genius OHHLA and more.
 - Download Lyrics Asynchronously.
-- Can make requests over Tor for anonymous downloading of songs and evading anti scraping tools.
+- Can make requests over Tor for anonymous downloading of songs.
 - Easily save the lyrics on your computer.
 
 Credits
