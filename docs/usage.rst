@@ -52,7 +52,28 @@ To use LyricsMaster from the command line::
 Examples::
 
     $ lyricsmaster "Reggie Watts"
+    Asynchronous requests enabled. The connexion is not anonymous.
+    Downloading Simplified (2004)
+    Simplified (2004) succesfully downloaded
+    Downloading Why $#!+ So Crazy? (2010)
+    Why $#!+ So Crazy? (2010) succesfully downloaded
+
 
     $ lyricsmaster "Reggie Watts" --tor 127.0.0.1
+    Asynchronous requests enabled.
+    Anonymous requests enabled. The Tor circuit will change according to the Tor network defaults.
+    Downloading Simplified (2004)
+    Simplified (2004) succesfully downloaded
+    Downloading Why $#!+ So Crazy? (2010)
+    Why $#!+ So Crazy? (2010) succesfully downloaded
+
 
     $ lyricsmaster "Reggie Watts" --tor 127.0.0.1 --controlport 9051 --password password
+    Asynchronous requests enabled.
+    Anonymous requests enabled and creation of new Tor circuits for each album.
+    Downloading Simplified (2004)
+    New Tor circuit created
+    Simplified (2004) succesfully downloaded
+    Downloading Why $#!+ So Crazy? (2010)
+    New Tor circuit created
+    Why $#!+ So Crazy? (2010) succesfully downloaded
