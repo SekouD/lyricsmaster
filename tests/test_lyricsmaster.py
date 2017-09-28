@@ -65,24 +65,6 @@ provider_strings = {
                  'fake_url': 'https://genius.com/The-notorious-big-things-done-changed-lyrics_fake'}
 }
 
-def test_command_line_interface():
-    """Tests the CLI."""
-    artist = 'Reggie Watts'
-    runner = CliRunner()
-    result = runner.invoke(cli.main, ['Reggie Watts'])
-    assert result.exit_code == 0
-    assert 'Downloading Simplified' in result.output
-    help_result = runner.invoke(cli.main, ['--help'])
-    assert help_result.exit_code == 0
-    assert 'Show this message and exit.' in help_result.output
-    # Removed test with optional arguments. Need to check click docs for passing optional args to Clirunner.
-    # result_tor = runner.invoke(cli.main, ['Reggie Watts'], '--tor 127.0.0.1')
-    # assert result_tor.exit_code == 0
-    # assert 'Downloading Simplified' in result.output
-    # result_tor1 = runner.invoke(cli.main, ['Reggie Watts', '--tor 127.0.0.1', '--controlport 9051', '--password password'])
-    # assert result_tor1.exit_code == 0
-    # assert 'Downloading Simplified' in result.output
-
 class TestSongs:
     """Tests for Song Class."""
     song = songs()[0]
@@ -302,7 +284,35 @@ class TestLyricsProviders:
         assert isinstance(discography, models.Discography)
 
 
-class Test_tor:
+class TestCli:
+    """Tests for Command Line Interface."""
+
+    @pytest.mark.skipif(is_appveyor and python_is_outdated, reason="Tor error on 2.7 and 3.3.")
+    def test_command_line_interface(self):
+        artist = 'Reggie Watts'
+        runner = CliRunner()
+        result = runner.invoke(cli.main, [artist, '-a', 'Why $#!+ So Crazy?', '-s', 'Fuck Shit Stack'])
+        assert result.exit_code == 0
+        assert 'Why $#!+ So Crazy?' in result.output
+        help_result = runner.invoke(cli.main, ['--help'])
+        assert help_result.exit_code == 0
+        assert 'Show this message and exit.' in help_result.output
+        # Removed test with optional arguments. Need to check click docs for passing optional args to Clirunner.
+        result_tor = runner.invoke(cli.main, [artist, '--tor', '127.0.0.1'])
+        assert result_tor.exit_code == 0
+        assert 'Downloading Simplified' in result_tor.output
+
+    @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated), reason="Skip this Tor test when in CI")
+    def test_command_line_interface_tor(self):
+        artist = 'Reggie Watts'
+        runner = CliRunner()
+        result_tor1 = runner.invoke(cli.main, [artist, '--tor', '127.0.0.1', '--controlport', '9051', '--password', 'password'])
+        assert result_tor1.exit_code == 0
+        assert 'Downloading Simplified' in result_tor1.output
+
+
+# If tests involving Tor are run first, the following tests fail with error: 'an integer is required (got type object)'
+class TestTor:
     """Tests for Tor functionality."""
     tor_basic = TorController()
     if is_travis or (is_appveyor and python_is_outdated):
@@ -343,3 +353,6 @@ class Test_tor:
         discography = self.provider2.get_lyrics(
             'Reggie Watts')  # put another realsinger who has not so many songs to speed up testing.
         assert isinstance(discography, models.Discography)
+
+
+
