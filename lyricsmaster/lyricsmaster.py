@@ -41,6 +41,7 @@ class LyricsProvider:
 
     """
     __metaclass__ = ABCMeta
+    name = ''
 
     def __init__(self, tor_controller=None):
         gevent.monkey.patch_socket()
@@ -58,7 +59,7 @@ class LyricsProvider:
 
     def __tor_status__(self):
         if not self.tor_controller:
-            print('Anonymous requests disabled. The connexion will not anonymous.')
+            print('Anonymous requests disabled. The connexion will not be anonymous.')
         elif self.tor_controller and not self.tor_controller.controlport:
             print('Anonymous requests enabled. The Tor circuit will change according to the Tor network defaults.')
         else:
@@ -128,6 +129,7 @@ class LyricsProvider:
 
         raw_html = self.get_artist_page(author)
         if not raw_html:
+            print('{0} was not found on {1}'.format(author, self.name))
             return None
         albums = self.get_albums(raw_html)
         if album:
