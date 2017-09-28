@@ -9,6 +9,10 @@ python:
 - 3.4
 - 3.3
 #- 2.7 # Randomly generates errors on Travis since 27/09/2017
+- "pypy"
+- "pypy3"
+- "pypy-5.8.0"
+- "pypy3-5.8.0"
 
 before_install:
 - sudo apt-get update
