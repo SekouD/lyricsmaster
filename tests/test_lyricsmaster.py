@@ -170,6 +170,8 @@ class TestDiscography:
 class TestLyricsProviders:
     """Tests for LyricWiki Class."""
 
+    @pytest.mark.skipif(is_appveyor and '3.3' in sys.version,
+                        reason="[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:548) on Appveyor 3.3.")
     @pytest.mark.parametrize('provider', providers)
     def test_get_page(self, provider):
         url = 'http://non-existent-url.com'
