@@ -6,6 +6,7 @@ To use LyricsMaster in a project::
 
     from lyricsmaster import LyricWiki, TorController
 
+
     # Select a provider from the supported Lyrics Providers (LyricWiki, AzLyrics, Genius etc..)
     provider = LyricWiki()
 
@@ -14,17 +15,19 @@ To use LyricsMaster in a project::
 
     # Discography Objects and Album Objects can be iterated over.
     for album in discography:    # album is an Album Object.
-        print(album)
+        print('Album: ', album.title)
         for song in album:       # song is a Song Object.
-            print(song.lyrics)
+            print('Song: ', song.title)
+            print('Lyrics: ', song.lyrics)
 
     # Fetch all lyrics from 2pac's album 'All eyes on me'
     album = provider.get_lyrics('2Pac', album='All eyes on me')
 
     # Fetch the lyrics from 2pac's album 'All eyes on me' and song 'California Love'
-    album = provider.get_lyrics('2Pac', album='All eyes on me', 'California Love)
+    album = provider.get_lyrics('2Pac', album='All eyes on me', song='California Love)
 
-    # Once the lyrics are fetched, you can save them on disk. The 'save()' method is implemented for Discography, Album and Song objects.
+    # Once the lyrics are fetched, you can save them on disk.
+    # The 'save()' method is implemented for Discography, Album and Song objects.
     # By default, the lyrics are saved in {user}/Documents/lyricsmaster/
     discography.save()
 
@@ -51,29 +54,31 @@ To use LyricsMaster from the command line::
 
 Examples::
 
-    $ lyricsmaster "Reggie Watts"
-    Asynchronous requests enabled. The connexion is not anonymous.
-    Downloading Simplified (2004)
-    Simplified (2004) succesfully downloaded
-    Downloading Why $#!+ So Crazy? (2010)
-    Why $#!+ So Crazy? (2010) succesfully downloaded
+    $ lyricsmaster "2Pac"
+    Anonymous requests disabled. The connexion will not anonymous.
+    Downloading 2Pacalypse Now (1991)
+    2Pacalypse Now (1991) succesfully downloaded
+    Downloading Strictly 4 My N.I.G.G.A.Z... (1993)
+    Strictly 4 My N.I.G.G.A.Z... (1993) succesfully downloaded
+    Downloading Thug Life - Volume 1 (1994)
+    ...
 
 
-    $ lyricsmaster "Reggie Watts" --tor 127.0.0.1
-    Asynchronous requests enabled.
+    $ lyricsmaster "2Pac" --tor 127.0.0.1
     Anonymous requests enabled. The Tor circuit will change according to the Tor network defaults.
-    Downloading Simplified (2004)
-    Simplified (2004) succesfully downloaded
-    Downloading Why $#!+ So Crazy? (2010)
-    Why $#!+ So Crazy? (2010) succesfully downloaded
+    Downloading 2Pacalypse Now (1991)
+    2Pacalypse Now (1991) succesfully downloaded
+    Downloading Strictly 4 My N.I.G.G.A.Z... (1993)
+    Strictly 4 My N.I.G.G.A.Z... (1993) succesfully downloaded
+    Downloading Thug Life - Volume 1 (1994)
+    ...
 
 
     $ lyricsmaster "Reggie Watts" --tor 127.0.0.1 --controlport 9051 --password password
-    Asynchronous requests enabled.
-    Anonymous requests enabled and creation of new Tor circuits for each album.
-    Downloading Simplified (2004)
-    New Tor circuit created
-    Simplified (2004) succesfully downloaded
-    Downloading Why $#!+ So Crazy? (2010)
-    New Tor circuit created
-    Why $#!+ So Crazy? (2010) succesfully downloaded
+    Anonymous requests enabled. The Tor circuit will change for each album.
+    Downloading 2Pacalypse Now (1991)
+    2Pacalypse Now (1991) succesfully downloaded
+    Downloading Strictly 4 My N.I.G.G.A.Z... (1993)
+    Strictly 4 My N.I.G.G.A.Z... (1993) succesfully downloaded
+    Downloading Thug Life - Volume 1 (1994)
+    ...

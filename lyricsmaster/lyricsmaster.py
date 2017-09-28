@@ -49,20 +49,20 @@ class LyricsProvider:
             user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
             self.session = urllib3.PoolManager(maxsize=10, cert_reqs='CERT_REQUIRED', ca_certs=certifi.where(),
                                                headers=user_agent)
-            print(
-                'Asynchronous requests enabled. The connexion is not anonymous.')
         else:
             self.session = self.tor_controller.get_tor_session()
-            print('Asynchronous requests enabled.')
-            if not self.tor_controller.controlport:
-                print(
-                    'Anonymous requests enabled. The Tor circuit will change according to the Tor network defaults.')
-            else:
-                print(
-                    'Anonymous requests enabled and creation of new Tor circuits for each album.')
+        self.__tor_status__()
 
     def __repr__(self):
         return '{0}.{1}({2})'.format(__name__, self.__class__.__name__, self.tor_controller.__repr__())
+
+    def __tor_status__(self):
+        if not self.tor_controller:
+            print('Anonymous requests disabled. The connexion will not anonymous.')
+        elif self.tor_controller and not self.tor_controller.controlport:
+            print('Anonymous requests enabled. The Tor circuit will change according to the Tor network defaults.')
+        else:
+            print('Anonymous requests enabled. The Tor circuit will change for each album.')
 
     @abstractmethod
     def _has_lyrics(self, page):
@@ -125,6 +125,7 @@ class LyricsProvider:
             Artist name.
         :return: models.Discography object or None.
         """
+
         raw_html = self.get_artist_page(author)
         if not raw_html:
             return None
