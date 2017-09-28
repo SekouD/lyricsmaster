@@ -61,7 +61,7 @@ setup(
     install_requires=requirements,
     license="MIT license",
     zip_safe=False,
-    keywords=['lyricsmaster', 'lyrics', 'LyricWiki', 'Lyrics Wikia', 'AzLyrics', 'Genius', 'Tor'],
+    keywords='lyricsmaster lyrics LyricWiki Lyrics Wikia AzLyrics Genius Tor',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Topic :: Communications',
