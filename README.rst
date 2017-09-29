@@ -32,6 +32,7 @@ LyricsMaster is a library for downloading lyrics from multiple lyrics providers.
 - Lyric Wikia
 - AzLyrics
 - Genius
+- Lyrics007
 - The Original Hip-Hop (Rap) Lyrics Archive - OHHLA.com
 - and more to come soon.
 

@@ -49,7 +49,7 @@ test_requirements = [
 setup(
     name='lyricsmaster',
     version='2.7.6',
-    description="LyricsMaster is a library for downloading lyrics from multiple lyrics providers. LyricWiki, AzLyrics, Genius and other lyrics provider are available",
+    description="LyricsMaster is a library for downloading lyrics from multiple lyrics providers. LyricWiki, AzLyrics, Genius, Lyrics007 and other lyrics provider are available",
     long_description=readme + '\n\n' + usage + '\n\n' + history,
     author="SekouD",
     author_email='sekoud.python@gmail.com',
@@ -64,7 +64,7 @@ setup(
     install_requires=requirements,
     license="MIT license",
     zip_safe=False,
-    keywords='lyricsmaster lyrics LyricWiki Lyrics Wikia AzLyrics Genius Tor',
+    keywords='lyricsmaster lyrics LyricWiki Lyrics Wikia Lyrics007 AzLyrics Genius Tor',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Topic :: Communications',
