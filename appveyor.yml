@@ -53,7 +53,7 @@ test_script:
   - "%PYTHON%\\python.exe -m pip install docutils"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
   - "%PYTHON%\\Scripts\\py.test --cov=./lyricsmaster/"
-  - "%PYTHON%\\Scripts\\codecov -f 'coverage.xml'"
+  - "%PYTHON%\\Scripts\\codecov"
   - "%PYTHON%\\python.exe setup.py check --restructuredtext -s"
 
 after_test:
