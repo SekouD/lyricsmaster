@@ -353,6 +353,3 @@ class TestTor:
         discography = self.provider2.get_lyrics(
             'Reggie Watts')  # put another realsinger who has not so many songs to speed up testing.
         assert isinstance(discography, models.Discography)
-
-
-
