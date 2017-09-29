@@ -3,10 +3,10 @@ Package Api Documentation
 =========================
 
 
-API Reference for classes in lyricsmaster.lyricsmaster
-------------------------------------------------------
+API Reference for classes in lyricsmaster.providers
+---------------------------------------------------
 
-.. automodule:: lyricsmaster.lyricsmaster
+.. automodule:: lyricsmaster.providers
     :member-order: bysource
     :members:
     :inherited-members:
