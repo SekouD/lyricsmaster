@@ -12,11 +12,12 @@ from click.testing import CliRunner
 
 from bs4 import BeautifulSoup, Tag
 
-import requests
+import urllib3
+import certifi
 
 from lyricsmaster import models
 from lyricsmaster import cli
-from lyricsmaster import lyricsmaster
+from lyricsmaster.providers import LyricWiki, AzLyrics, Genius
 from lyricsmaster.utils import TorController, normalize
 
 try:
@@ -24,13 +25,16 @@ try:
 except NameError:
     basestring = str
 
+
+
+
 python_is_outdated = '2.7' in sys.version or '3.3' in sys.version
 is_appveyor = 'APPVEYOR' in os.environ
 is_travis = 'TRAVIS' in os.environ
 
 user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
-session = requests.Session()
-session.headers = user_agent
+session = urllib3.PoolManager(maxsize=10, cert_reqs='CERT_REQUIRED', ca_certs=certifi.where(),
+                                               headers=user_agent)
 
 @pytest.fixture(scope="module")
 def songs():
@@ -48,7 +52,7 @@ real_singer = {'name': 'The Notorious B.I.G.', 'album': 'Ready to Die (1994)',
 fake_singer = {'name': 'Fake Rapper', 'album': "In my mom's basement", 'song': 'I fap',
                'lyrics': 'Everyday I fap furiously...'}
 
-providers = [ lyricsmaster.Genius(), lyricsmaster.LyricWiki()]
+providers = [Genius(), LyricWiki()]
 
 provider_strings = {
     'LyricWiki': {'artist_name': 'The_Notorious_B.I.G.',
@@ -170,10 +174,10 @@ class TestLyricsProviders:
     def test_has_artist(self, provider):
         clean = provider._clean_string
         url = provider._make_artist_url(clean(real_singer['name']))
-        page = BeautifulSoup(session.get(url).text, 'lxml')
+        page = BeautifulSoup(session.request('GET', url).data, 'lxml')
         assert provider._has_artist(page)
         url = provider._make_artist_url(clean(fake_singer['name']))
-        page = BeautifulSoup(session.get(url).text, 'lxml')
+        page = BeautifulSoup(session.request('GET', url).data, 'lxml')
         assert not provider._has_artist(page)
 
     @pytest.mark.parametrize('provider', providers)
@@ -204,10 +208,10 @@ class TestLyricsProviders:
     @pytest.mark.parametrize('provider', providers)
     def test_has_lyrics(self, provider):
         url = provider_strings[provider.name]['song_url']
-        page = BeautifulSoup(session.get(url).text, 'lxml')
+        page = BeautifulSoup(session.request('GET', url).data, 'lxml')
         assert provider._has_lyrics(page)
         url = provider_strings[provider.name]['fake_url']
-        page = BeautifulSoup(session.get(url).text, 'lxml')
+        page = BeautifulSoup(session.request('GET', url).data, 'lxml')
         assert not provider._has_lyrics(page)
 
     @pytest.mark.parametrize('provider', providers)
@@ -220,7 +224,7 @@ class TestLyricsProviders:
     @pytest.mark.parametrize('provider', providers)
     def test_get_albums(self, provider):
         url = provider_strings[provider.name]['artist_url']
-        page = session.get(url).text
+        page = session.request('GET', url).data
         albums = provider.get_albums(page)
         for album in albums:
             assert isinstance(album, Tag)
@@ -228,7 +232,7 @@ class TestLyricsProviders:
     @pytest.mark.parametrize('provider', providers)
     def test_get_album_title(self, provider):
         url = provider_strings[provider.name]['artist_url']
-        page = session.get(url).text
+        page = session.request('GET', url).data
         album = provider.get_albums(page)[0]
         album_title = provider.get_album_title(album)
         assert album_title in (real_singer['album'], 'Demo Tape') # 'Demo Tape' for Genius
@@ -302,6 +306,7 @@ class TestCli:
         assert result_tor.exit_code == 0
         assert 'Downloading Simplified' in result_tor.output
 
+
     @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated), reason="Skip this Tor test when in CI")
     def test_command_line_interface_tor(self):
         artist = 'Reggie Watts'
@@ -320,13 +325,13 @@ class TestTor:
     else:
         tor_advanced = TorController(controlport=9051, password='password')
 
-    provider = lyricsmaster.LyricWiki(tor_basic)
-    provider2 = lyricsmaster.LyricWiki(tor_advanced)
+    provider = LyricWiki(tor_basic)
+    provider2 = LyricWiki(tor_advanced)
 
     @pytest.mark.skipif(is_appveyor and python_is_outdated, reason="Tor error on 2.7 and 3.3.")
     def test_anonymisation(self):
         anonymous_ip = self.provider.get_page("http://httpbin.org/ip").data
-        real_ip = session.get("http://httpbin.org/ip").text
+        real_ip = session.request('GET', "http://httpbin.org/ip").data
         assert real_ip != anonymous_ip
 
     # this function is tested out in travis using a unix path as a control port instead of port 9051.
@@ -334,11 +339,11 @@ class TestTor:
     @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated), reason="Skip this Tor test when in CI")
     def test_renew_tor_session(self):
         anonymous_ip = self.provider2.get_page("http://httpbin.org/ip").data
-        real_ip = session.get("http://httpbin.org/ip").text
+        real_ip = session.request('GET', "http://httpbin.org/ip").data
         assert real_ip != anonymous_ip
         new_tor_circuit = self.provider2.tor_controller.renew_tor_circuit()
         anonymous_ip2 = self.provider2.get_page("http://httpbin.org/ip").data
-        real_ip2 = session.get("http://httpbin.org/ip").text
+        real_ip2 = session.request('GET', "http://httpbin.org/ip").data
         assert real_ip2 != anonymous_ip2
         assert new_tor_circuit == True
 
