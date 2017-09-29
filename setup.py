@@ -48,7 +48,7 @@ test_requirements = [
 
 setup(
     name='lyricsmaster',
-    version='2.7.5',
+    version='2.7.6',
     description="LyricsMaster is a library for downloading lyrics from multiple lyrics providers. LyricWiki, AzLyrics, Genius and other lyrics provider are available",
     long_description=readme + '\n\n' + usage + '\n\n' + history,
     author="SekouD",
