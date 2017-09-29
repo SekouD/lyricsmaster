@@ -8,6 +8,9 @@ from setuptools import setup, find_packages
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
+with open('USAGE.rst') as usage_file:
+    usage = usage_file.read()
+
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
@@ -47,7 +50,7 @@ setup(
     name='lyricsmaster',
     version='2.7.4',
     description="LyricsMaster is a library for downloading lyrics from multiple lyrics providers. LyricWiki, AzLyrics, Genius and other lyrics provider are available",
-    long_description=readme + '\n\n' + history,
+    long_description=readme + '\n\n' + usage + '\n\n' + history,
     author="SekouD",
     author_email='sekoud.python@gmail.com',
     url='https://github.com/SekouD/lyricsmaster',
