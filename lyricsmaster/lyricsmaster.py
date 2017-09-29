@@ -106,7 +106,7 @@ class LyricsProvider:
         Fetches the supplied url and returns a request object.
 
         :param url: string.
-        :return: requests.request Object.
+        :return: urllib3.response.HTTPResponse Object.
         """
         try:
             req = self.session.request('GET', url)
@@ -140,10 +140,10 @@ class LyricsProvider:
             song_links = self.get_songs(elmt)
             if song:
                 song_links = [link for link in song_links if song.lower() in link.text.lower()]
-            print('Downloading {0}'.format(album_title))
             if self.tor_controller and self.tor_controller.controlport:
                 self.tor_controller.renew_tor_circuit()
                 self.session = self.tor_controller.get_tor_session()
+            print('Downloading {0}'.format(album_title))
             pool = Pool(25)  # Sets the worker pool for async requests
             results = [pool.spawn(self.create_song, *(link, author, album_title)) for link in song_links]
             pool.join()  # Gathers results from the pool

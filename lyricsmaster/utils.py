@@ -111,7 +111,7 @@ class TorController:
                 return True
             else:
                 delay = controller.get_newnym_wait()
-                print('Dealy to create new Tor circuit: {0}s'.format(delay))
+                print('Delay to create new Tor circuit: {0}s'.format(delay))
             gevent.monkey.patch_socket()
             return False
 

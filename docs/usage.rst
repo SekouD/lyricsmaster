@@ -85,9 +85,12 @@ Examples::
 
     $ lyricsmaster "2Pac" --tor 127.0.0.1 --controlport 9051 --password password
     Anonymous requests enabled. The Tor circuit will change for each album.
+    New Tor circuit created
     Downloading 2Pacalypse Now (1991)
     2Pacalypse Now (1991) succesfully downloaded
+    New Tor circuit created
     Downloading Strictly 4 My N.I.G.G.A.Z... (1993)
     Strictly 4 My N.I.G.G.A.Z... (1993) succesfully downloaded
+    New Tor circuit created
     Downloading Thug Life - Volume 1 (1994)
     ...
