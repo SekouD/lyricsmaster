@@ -13,11 +13,9 @@ mypy==0.521
 pytest==3.2.2
 hypothesis==3.31.0
 beautifulsoup4==4.6.0
-requests==2.18.4
 gevent==1.2.2
-requests[socks]
 stem==1.5.4
 lxml==4.0.0
 click==6.7
 PySocks==1.6.7
-urllib3==1.22
+urllib3[secure]
