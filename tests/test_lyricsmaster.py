@@ -25,7 +25,16 @@ try:
 except NameError:
     basestring = str
 
+import gevent.monkey
 
+# Works for Python 2 and 3
+try:
+    from importlib import reload
+except ImportError:
+    try:
+        from imp import reload
+    except:
+        pass
 
 
 python_is_outdated = '2.7' in sys.version or '3.3' in sys.version
@@ -68,6 +77,10 @@ provider_strings = {
                  'song_url': 'https://genius.com/The-notorious-big-things-done-changed-lyrics',
                  'fake_url': 'https://genius.com/The-notorious-big-things-done-changed-lyrics_fake'}
 }
+
+def socket_is_patched():
+    return gevent.monkey.is_module_patched('socket')
+
 
 class TestSongs:
     """Tests for Song Class."""
@@ -291,7 +304,6 @@ class TestLyricsProviders:
 class TestCli:
     """Tests for Command Line Interface."""
 
-    @pytest.mark.skipif(is_appveyor and python_is_outdated, reason="Tor error on 2.7 and 3.3.")
     def test_command_line_interface(self):
         artist = 'Reggie Watts'
         runner = CliRunner()
@@ -301,19 +313,6 @@ class TestCli:
         help_result = runner.invoke(cli.main, ['--help'])
         assert help_result.exit_code == 0
         assert 'Show this message and exit.' in help_result.output
-        # Removed test with optional arguments. Need to check click docs for passing optional args to Clirunner.
-        result_tor = runner.invoke(cli.main, [artist, '--tor', '127.0.0.1'])
-        assert result_tor.exit_code == 0
-        assert 'Downloading Simplified' in result_tor.output
-
-
-    @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated), reason="Skip this Tor test when in CI")
-    def test_command_line_interface_tor(self):
-        artist = 'Reggie Watts'
-        runner = CliRunner()
-        result_tor1 = runner.invoke(cli.main, [artist, '--tor', '127.0.0.1', '--controlport', '9051', '--password', 'password'])
-        assert result_tor1.exit_code == 0
-        assert 'Downloading Simplified' in result_tor1.output
 
 
 # If tests involving Tor are run first, the following tests fail with error: 'an integer is required (got type object)'
@@ -325,25 +324,26 @@ class TestTor:
     else:
         tor_advanced = TorController(controlport=9051, password='password')
 
+    non_anon_provider = LyricWiki()
     provider = LyricWiki(tor_basic)
     provider2 = LyricWiki(tor_advanced)
 
     @pytest.mark.skipif(is_appveyor and python_is_outdated, reason="Tor error on 2.7 and 3.3.")
     def test_anonymisation(self):
+        real_ip = self.non_anon_provider.get_page("http://httpbin.org/ip").data
         anonymous_ip = self.provider.get_page("http://httpbin.org/ip").data
-        real_ip = session.request('GET', "http://httpbin.org/ip").data
         assert real_ip != anonymous_ip
 
     # this function is tested out in travis using a unix path as a control port instead of port 9051.
     # for now gets permission denied on '/var/run/tor/control' in Travis CI
     @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated), reason="Skip this Tor test when in CI")
     def test_renew_tor_session(self):
+        real_ip = self.non_anon_provider.get_page("http://httpbin.org/ip").data
         anonymous_ip = self.provider2.get_page("http://httpbin.org/ip").data
-        real_ip = session.request('GET', "http://httpbin.org/ip").data
         assert real_ip != anonymous_ip
         new_tor_circuit = self.provider2.tor_controller.renew_tor_circuit()
+        real_ip2 = self.non_anon_provider.get_page("http://httpbin.org/ip").data
         anonymous_ip2 = self.provider2.get_page("http://httpbin.org/ip").data
-        real_ip2 = session.request('GET', "http://httpbin.org/ip").data
         assert real_ip2 != anonymous_ip2
         assert new_tor_circuit == True
 
@@ -356,5 +356,22 @@ class TestTor:
     @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated), reason="Skip this Tor test when in CI")
     def test_get_lyrics_tor_advanced(self):
         discography = self.provider2.get_lyrics(
-            'Reggie Watts')  # put another realsinger who has not so many songs to speed up testing.
+            'Reggie Watts')
         assert isinstance(discography, models.Discography)
+
+    @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated), reason="Skip this Tor test when in CI")
+    def test_command_line_interface_tor(self):
+        artist = 'Reggie Watts'
+        runner = CliRunner()
+        result_tor1 = runner.invoke(cli.main,
+                                    [artist, '--tor', '127.0.0.1', '--controlport', '9051', '--password', 'password'])
+        assert result_tor1.exit_code == 0
+        assert 'Downloading Simplified' in result_tor1.output
+
+    @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated), reason="Skip this Tor test when in CI")
+    def test_command_line_interface_tor(self):
+        artist = 'Reggie Watts'
+        runner = CliRunner()
+        result_tor = runner.invoke(cli.main, [artist, '--tor', '127.0.0.1'])
+        assert result_tor.exit_code == 0
+        assert 'Downloading Simplified' in result_tor.output

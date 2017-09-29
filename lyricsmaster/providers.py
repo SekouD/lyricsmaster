@@ -17,6 +17,7 @@ import urllib3
 import certifi
 from bs4 import BeautifulSoup
 
+
 import gevent.monkey
 from gevent.pool import Pool
 
@@ -44,7 +45,8 @@ class LyricsProvider:
     name = ''
 
     def __init__(self, tor_controller=None):
-        gevent.monkey.patch_socket()
+        if not self.__socket_is_patched():
+            gevent.monkey.patch_socket()
         self.tor_controller = tor_controller
         if not self.tor_controller:
             user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
@@ -64,6 +66,9 @@ class LyricsProvider:
             print('Anonymous requests enabled. The Tor circuit will change according to the Tor network defaults.')
         else:
             print('Anonymous requests enabled. The Tor circuit will change for each album.')
+
+    def __socket_is_patched(self):
+        return gevent.monkey.is_module_patched('socket')
 
     @abstractmethod
     def _has_lyrics(self, page):
@@ -108,6 +113,8 @@ class LyricsProvider:
         :param url: string.
         :return: urllib3.response.HTTPResponse Object.
         """
+        if not self.__socket_is_patched():
+            gevent.monkey.patch_socket()
         try:
             req = self.session.request('GET', url)
         except Exception as e:
