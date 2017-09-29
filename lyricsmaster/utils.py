@@ -113,16 +113,18 @@ class TorController:
                 delay = controller.get_newnym_wait()
                 print('Delay to create new Tor circuit: {0}s'.format(delay))
                 result= False
-            gevent.monkey.patch_socket()
             return result
 
         reload(socket)
         if isinstance(self.controlport, int):
             with Controller.from_port(port=self.controlport) as controller:
-                is_renewed= renew_circuit(self.password)
+                is_renewed = renew_circuit(self.password)
         elif isinstance(self.controlport, basestring):
             with Controller.from_socket_file(path=self.controlport) as controller:
-                is_renewed= renew_circuit(self.password)
+                is_renewed = renew_circuit(self.password)
+        else:
+            is_renewed = False
+        gevent.monkey.patch_socket()
         return is_renewed
 
 
