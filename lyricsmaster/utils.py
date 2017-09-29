@@ -119,9 +119,10 @@ class TorController:
         reload(socket)
         if isinstance(self.controlport, int):
             with Controller.from_port(port=self.controlport) as controller:
-                return renew_circuit(self.password)
+                is_renewed= renew_circuit(self.password)
         elif isinstance(self.controlport, basestring):
             with Controller.from_socket_file(path=self.controlport) as controller:
-                return renew_circuit(self.password)
+                is_renewed= renew_circuit(self.password)
+        return is_renewed
 
 
