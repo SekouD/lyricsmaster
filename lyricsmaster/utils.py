@@ -108,12 +108,13 @@ class TorController:
             if controller.is_newnym_available():  # true if tor would currently accept a NEWNYM signal.
                 controller.signal(Signal.NEWNYM)
                 print('New Tor circuit created')
-                return True
+                result= True
             else:
                 delay = controller.get_newnym_wait()
                 print('Delay to create new Tor circuit: {0}s'.format(delay))
+                result= False
             gevent.monkey.patch_socket()
-            return False
+            return result
 
         reload(socket)
         if isinstance(self.controlport, int):
