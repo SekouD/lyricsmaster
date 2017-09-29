@@ -125,7 +125,6 @@ class TorController:
         else:
             is_renewed = False
         gevent.monkey.patch_socket()
-        gevent.monkey.patch_ssl()
         return is_renewed
 
 

@@ -47,7 +47,6 @@ class LyricsProvider:
     def __init__(self, tor_controller=None):
         if not self.__socket_is_patched():
             gevent.monkey.patch_socket()
-            gevent.monkey.patch_ssl()
         self.tor_controller = tor_controller
         if not self.tor_controller:
             user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
@@ -116,7 +115,6 @@ class LyricsProvider:
         """
         if not self.__socket_is_patched():
             gevent.monkey.patch_socket()
-            gevent.monkey.patch_ssl()
         try:
             req = self.session.request('GET', url)
         except Exception as e:
