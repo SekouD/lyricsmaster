@@ -27,7 +27,8 @@ LyricsMaster
         :target: https://codecov.io/gh/SekouD/lyricsmaster
         :alt: Coverage Status
 
-LyricsMaster is a library for downloading lyrics from multiple lyrics providers. The following Lyrics Providers are supported:
+LyricsMaster is a library for downloading lyrics from multiple lyrics providers.
+The following Lyrics Providers are supported:
 
 - Lyric Wikia
 - AzLyrics
@@ -44,7 +45,7 @@ LyricsMaster is a library for downloading lyrics from multiple lyrics providers.
 Features
 --------
 
-- Download Lyrics from LyricWiki, AzLyrics, Genius, OHHLA and more.
+- Download Lyrics from LyricWiki, AzLyrics, Genius, Lyrics007, OHHLA and more.
 - Download Lyrics Asynchronously.
 - Can make requests over Tor for anonymous downloading of songs.
 - Easily save the lyrics on your computer.
