@@ -49,7 +49,7 @@ class LyricsProvider:
             gevent.monkey.patch_socket()
         self.tor_controller = tor_controller
         if not self.tor_controller:
-            user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
+            user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
             self.session = urllib3.PoolManager(maxsize=10, cert_reqs='CERT_REQUIRED', ca_certs=certifi.where(),
                                                headers=user_agent)
         else:
@@ -394,6 +394,7 @@ class AzLyrics(LyricsProvider):
 
     """
     base_url = 'https://www.azlyrics.com'
+    base_search_url = 'https://search.azlyrics.com'
     name = 'AzLyrics'
 
     def _has_lyrics(self, lyrics_page):
@@ -408,13 +409,54 @@ class AzLyrics(LyricsProvider):
         else:
             return False
 
-    def _make_artist_url(self, author):
-        if author[0].isalpha():
-            prefix = author[0]
+    def _has_artist_result(self, page):
+        artist_result = page.find("div", {'class': 'panel-heading'})
+        if artist_result.find('b').text == 'Artist results:':
+            return True
         else:
-            prefix = '19'
-        url = self.base_url + '/{0}/{1}.html'.format(prefix, author)
-        return url
+            return False
+
+    def _make_artist_url(self, author):
+        # if author[0].isalpha():
+        #     prefix = author[0]
+        # else:
+        #     prefix = '19'
+        # url = self.base_url + '/{0}/{1}.html'.format(prefix, author)
+        # return url
+        author = author.replace(' ', '+')
+        if author.lower().startswith('the'):
+            author = author[4:]
+        url = self.base_search_url + '/search.php?q=' + author
+        search_results = self.get_page(url).data
+        results_page = BeautifulSoup(search_results, 'lxml')
+        if not self._has_artist_result(results_page):
+            return None
+        target_node = results_page.find("div", {'class': 'panel-heading'}).find_next_sibling("table")
+        artist_url = target_node.find('a').attrs['href']
+        if not artist_url.startswith(self.base_url):
+            artist_url = self.base_url + artist_url
+        pass
+        return artist_url
+
+    def get_artist_page(self, author):
+        """
+        Overrides the Parent Method.
+        Fetches the web page for the supplied artist.
+
+        :param author: string.
+            Artist name.
+        :return: string or None.
+            Artist's raw html page. None if the artist page was not found.
+        """
+        author = self._clean_string(author)
+        url = self._make_artist_url(author)
+        if not url:
+            return None
+        raw_html = self.get_page(url).data
+        artist_page = BeautifulSoup(raw_html, 'lxml')
+        if not self._has_artist(artist_page):
+            return None
+        return raw_html
 
     def get_albums(self, raw_artist_page):
         """
@@ -491,8 +533,7 @@ class AzLyrics(LyricsProvider):
         :return: string.
             Cleaned text.
         """
-        text = "".join([c if c.isalnum() else "" for c in text])
-        return text.lower()
+        return text
 
 
 class Genius(LyricsProvider):
