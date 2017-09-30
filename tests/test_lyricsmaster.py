@@ -12,9 +12,6 @@ from click.testing import CliRunner
 
 from bs4 import BeautifulSoup, Tag
 
-import urllib3
-import certifi
-
 from lyricsmaster import models
 from lyricsmaster import cli
 from lyricsmaster.providers import LyricWiki, AzLyrics, Genius, Lyrics007
@@ -37,21 +34,14 @@ except ImportError:
         pass
 
 
+def socket_is_patched():
+    return gevent.monkey.is_module_patched('socket')
+
 python_is_outdated = '2.7' in sys.version or '3.3' in sys.version
 is_appveyor = 'APPVEYOR' in os.environ
 is_travis = 'TRAVIS' in os.environ
 
-user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
-session = urllib3.PoolManager(maxsize=10, cert_reqs='CERT_REQUIRED', ca_certs=certifi.where(), headers=user_agent)
-
-@pytest.fixture(scope="module")
-def songs():
-    songs = [models.Song(real_singer['songs'][0]['song'], real_singer['album'], real_singer['name'],
-                         real_singer['songs'][0]['lyrics']),
-             models.Song(real_singer['songs'][1]['song'], real_singer['album'], real_singer['name'],
-                         real_singer['songs'][1]['lyrics'])]
-    return songs
-
+providers = [Lyrics007(), Genius(), LyricWiki()]
 
 real_singer = {'name': 'The Notorious B.I.G.', 'album': 'Ready to Die (1994)',
                'songs': [{'song': 'Things Done Changed', 'lyrics': 'Remember back in the days...'},
@@ -60,14 +50,12 @@ real_singer = {'name': 'The Notorious B.I.G.', 'album': 'Ready to Die (1994)',
 fake_singer = {'name': 'Fake Rapper', 'album': "In my mom's basement", 'song': 'I fap',
                'lyrics': 'Everyday I fap furiously...'}
 
-providers = [Lyrics007(), Genius(), LyricWiki()]
-
 provider_strings = {
     'LyricWiki': {'artist_name': 'The_Notorious_B.I.G.',
                   'artist_url': 'http://lyrics.wikia.com/wiki/The_Notorious_B.I.G.',
                   'song_url': 'http://lyrics.wikia.com/wiki/The_Notorious_B.I.G.:Things_Done_Changed',
                   'fake_url': 'http://lyrics.wikia.com/wiki/Things_Done_Changed:Things_Done_Changed_fake_url'},
-    'AzLyrics': {'artist_name': 'notorious',
+    'AzLyrics': {'artist_name': 'The Notorious B.I.G.',
                  'artist_url': 'https://www.azlyrics.com/n/notorious.html',
                  'song_url': 'https://www.azlyrics.com/lyrics/notoriousbig/thingsdonechanged.html',
                  'fake_url': 'https://www.azlyrics.com/lyrics/notoriousbig/thingsdonechanged_fake.html'},
@@ -81,8 +69,13 @@ provider_strings = {
                  'fake_url': 'https://www.lyrics007.com/Notorious%20B.i.g.%20Lyrics/Things%20Done%20Changed%20fake_Lyrics.html'},
 }
 
-def socket_is_patched():
-    return gevent.monkey.is_module_patched('socket')
+@pytest.fixture(scope="module")
+def songs():
+    songs = [models.Song(real_singer['songs'][0]['song'], real_singer['album'], real_singer['name'],
+                         real_singer['songs'][0]['lyrics']),
+             models.Song(real_singer['songs'][1]['song'], real_singer['album'], real_singer['name'],
+                         real_singer['songs'][1]['lyrics'])]
+    return songs
 
 
 class TestSongs:
@@ -190,13 +183,13 @@ class TestLyricsProviders:
     def test_has_artist(self, provider):
         clean = provider._clean_string
         url = provider._make_artist_url(clean(real_singer['name']))
-        page = BeautifulSoup(session.request('GET', url).data, 'lxml')
+        page = BeautifulSoup(provider.get_page(url).data, 'lxml')
         assert provider._has_artist(page)
         url = provider._make_artist_url(clean(fake_singer['name']))
         if not url:
             assert url is None
         else:
-            page = BeautifulSoup(session.request('GET', url).data, 'lxml')
+            page = BeautifulSoup(provider.get_page(url).data, 'lxml')
             assert not provider._has_artist(page)
         pass
 
@@ -228,10 +221,10 @@ class TestLyricsProviders:
     @pytest.mark.parametrize('provider', providers)
     def test_has_lyrics(self, provider):
         url = provider_strings[provider.name]['song_url']
-        page = BeautifulSoup(session.request('GET', url).data, 'lxml')
+        page = BeautifulSoup(provider.get_page(url).data, 'lxml')
         assert provider._has_lyrics(page)
         url = provider_strings[provider.name]['fake_url']
-        page = BeautifulSoup(session.request('GET', url).data, 'lxml')
+        page = BeautifulSoup(provider.get_page(url).data, 'lxml')
         assert not provider._has_lyrics(page)
 
     @pytest.mark.parametrize('provider', providers)
@@ -244,7 +237,7 @@ class TestLyricsProviders:
     @pytest.mark.parametrize('provider', providers)
     def test_get_albums(self, provider):
         url = provider_strings[provider.name]['artist_url']
-        page = session.request('GET', url).data
+        page = provider.get_page(url).data
         albums = provider.get_albums(page)
         for album in albums:
             assert isinstance(album, Tag)
@@ -252,7 +245,7 @@ class TestLyricsProviders:
     @pytest.mark.parametrize('provider', providers)
     def test_get_album_title(self, provider):
         url = provider_strings[provider.name]['artist_url']
-        page = session.request('GET', url).data
+        page = provider.get_page(url).data
         album = provider.get_albums(page)[0]
         album_title = provider.get_album_title(album)
         assert album_title.lower() in real_singer['album'].lower() or album_title.lower() in 'Demo Tape'.lower() # 'Demo Tape' for Genius
