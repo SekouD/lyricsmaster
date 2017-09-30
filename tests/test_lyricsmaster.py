@@ -105,12 +105,12 @@ class TestAlbums:
     """Tests for Album Class."""
 
     songs = songs()
-    album = models.Album(real_singer['album'], real_singer['name'], songs)
+    album = models.Album(real_singer['album'], real_singer['name'], '2017', songs)
 
     def test_album(self):
         assert self.album.__idx__ == 0
         assert self.album.title == real_singer['album']
-        assert self.album.author == real_singer['name']
+        assert self.album.artist == real_singer['name']
         assert self.album.__repr__() == 'lyricsmaster.models.Album({0}, {1})'.format(real_singer['album'],
                                                                                      real_singer['name'])
 
@@ -123,10 +123,10 @@ class TestAlbums:
     def test_album_save(self):
         self.album.save()
         for song in self.album.songs:
-            author = normalize(song.author)
+            artist = normalize(song.artist)
             album = normalize(song.album)
             title = normalize(song.title)
-            path = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster', author, album, title + '.txt')
+            path = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster', artist, album, title + '.txt')
             assert os.path.exists(path)
             with codecs.open(path, 'r', encoding='utf-8') as file:
                 assert song.lyrics == '\n'.join(file.readlines())
@@ -135,8 +135,8 @@ class TestAlbums:
 class TestDiscography:
     """Tests for Discography Class."""
 
-    albums = [models.Album(real_singer['album'], real_singer['name'], songs()),
-              models.Album(fake_singer['album'], fake_singer['name'], songs())]
+    albums = [models.Album(real_singer['album'], real_singer['name'], '2017', songs()),
+              models.Album(fake_singer['album'], fake_singer['name'], '2017', songs())]
     discography = models.Discography(real_singer['name'], albums)
 
     def test_discography(self):
@@ -153,10 +153,10 @@ class TestDiscography:
         self.discography.save()
         for album in self.albums:
             for song in album.songs:
-                author = normalize(song.author)
+                artist = normalize(song.artist)
                 album = normalize(song.album)
                 title = normalize(song.title)
-                path = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster', author, album, title + '.txt')
+                path = os.path.join(os.path.expanduser("~"), 'Documents', 'LyricsMaster', artist, album, title + '.txt')
                 assert os.path.exists(path)
                 with codecs.open(path, 'r', encoding='utf-8') as file:
                     assert song.lyrics == '\n'.join(file.readlines())
@@ -243,33 +243,43 @@ class TestLyricsProviders:
             assert isinstance(album, Tag)
 
     @pytest.mark.parametrize('provider', providers)
-    def test_get_album_title(self, provider):
+    def test_get_album_infos(self, provider):
         url = provider_strings[provider.name]['artist_url']
         page = provider.get_page(url).data
         album = provider.get_albums(page)[0]
-        album_title = provider.get_album_title(album)
+        album_title, release_date = provider.get_album_infos(album)
+        assert isinstance(release_date, basestring)
         assert album_title.lower() in real_singer['album'].lower() or album_title.lower() in 'Demo Tape'.lower() # 'Demo Tape' for Genius
 
     @pytest.mark.parametrize('provider', providers)
     def test_extract_lyrics(self, provider):
         page = provider.get_lyrics_page(provider_strings[provider.name]['song_url'])
-        lyrics = provider.extract_lyrics(page)
+        lyrics_page = BeautifulSoup(page, 'lxml')
+        lyrics = provider.extract_lyrics(lyrics_page)
         assert isinstance(lyrics, basestring)
         assert 'Remember back in the days'.lower() in lyrics.lower()
         assert "Don't ask me why I'm".lower() in lyrics.lower()
 
     @pytest.mark.parametrize('provider', providers)
+    def test_extract_writers(self, provider):
+        page = provider.get_lyrics_page(provider_strings[provider.name]['song_url'])
+        lyrics_page = BeautifulSoup(page, 'lxml')
+        writers =  provider.extract_writers(lyrics_page)
+        assert isinstance(writers, basestring)
+        assert "notorious" in writers.lower() or "christopher wallace" in writers.lower() or writers == ''
+
+    @pytest.mark.parametrize('provider', providers)
     def test_get_songs(self, provider):
-        author_page = provider.get_artist_page(real_singer['name'])
-        album = provider.get_albums(author_page)[0]
+        artist_page = provider.get_artist_page(real_singer['name'])
+        album = provider.get_albums(artist_page)[0]
         song_links = provider.get_songs(album)
         for link in song_links:
             assert isinstance(link, Tag)
 
     @pytest.mark.parametrize('provider', providers)
     def test_create_song(self, provider):
-        author_page = provider.get_artist_page(real_singer['name'])
-        album = provider.get_albums(author_page)[0]
+        artist_page = provider.get_artist_page(real_singer['name'])
+        album = provider.get_albums(artist_page)[0]
         song_links = provider.get_songs(album)
         song_links[-1].attrs['href'] = provider_strings[provider.name]['fake_url']#.replace(provider.base_url, '')
         fail_song = provider.create_song(song_links[-1], real_singer['name'], real_singer['album'])
@@ -278,7 +288,7 @@ class TestLyricsProviders:
         assert isinstance(good_song, models.Song)
         assert isinstance(good_song.title, basestring)
         assert good_song.album == real_singer['album']
-        assert good_song.author == real_singer['name']
+        assert good_song.artist == real_singer['name']
         assert isinstance(good_song.lyrics, basestring)
         # Tests existing song with empty lyrics
         if provider.name == 'LyricWiki':
