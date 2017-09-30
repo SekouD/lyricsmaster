@@ -90,7 +90,7 @@ class TorController:
 
         :return: urllib3.SOCKSProxyManager object.
         """
-        user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
+        user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
         session = SOCKSProxyManager('socks5://{0}:{1}'.format(self.ip, self.socksport), cert_reqs='CERT_REQUIRED',
                                     ca_certs=certifi.where(), headers=user_agent)
         return session
