@@ -11,7 +11,7 @@ from codecs import open
 from .utils import set_save_folder, normalize
 
 
-class Song:
+class Song(object):
     """
     Song class.
 
@@ -19,36 +19,39 @@ class Song:
         Song title.
     :param album: string.
         Album title.
-    :param author: string.
+    :param artist: string.
         Author name.
     :param lyrics: string.
         Lyrics of the song.
+    :param writers: string.
+        List of the song's writers.
     """
-    __slots__ = ('title', 'album', 'author', 'lyrics')
+    __slots__ = ('title', 'album', 'artist', 'lyrics', 'writers')
 
-    def __init__(self, title, album, author, lyrics=None):
+    def __init__(self, title, album, artist, lyrics=None, writers=None):
         self.title = title
         self.album = album
-        self.author = author
+        self.artist = artist
         self.lyrics = lyrics
+        self.writers = writers
 
     def __repr__(self):
-        return '{0}.{1}({2}, {3}, {4})'.format(__name__, self.__class__.__name__, self.title, self.album, self.author)
+        return '{0}.{1}({2}, {3}, {4})'.format(__name__, self.__class__.__name__, self.title, self.album, self.artist)
 
     def save(self, folder=None):
         """
         Saves the lyrics of the song in the supplied folder.
         If no folder is supplied, 'folder' is set to {user}/Documents/lyricsmaster/
-        The lyrics of a song are saved in folder/author/album/song_title.txt
+        The lyrics of a song are saved in folder/artist/album/song_title.txt
 
         :param folder: string.
             path to save folder.
         """
         folder = set_save_folder(folder)
         if self.lyrics:
-            author = normalize(self.author)
+            artist = normalize(self.artist)
             album = normalize(self.album)
-            save_path = os.path.join(folder, author, album)
+            save_path = os.path.join(folder, artist, album)
             if not os.path.exists(save_path):
                 os.makedirs(save_path)
             file_name = normalize(self.title)
@@ -56,28 +59,31 @@ class Song:
                 file.write(self.lyrics)
 
 
-class Album:
+class Album(object):
     """
     Album Class.
     The Album class follows the Iterable protocol and can be iterated over the songs.
 
     :param title: string.
         Album title.
-    :param author: string.
+    :param artist: string.
         Artist name.
+    :param release_date: string.
+        Release date.
     :param songs: list.
         List of Songs objects.
     """
-    __slots__ = ('__idx__', 'title', 'author', 'songs')
+    __slots__ = ('__idx__', 'title', 'artist', 'release_date', 'songs')
 
-    def __init__(self, title, author, songs):
+    def __init__(self, title, artist, release_date, songs):
         self.__idx__ = 0
         self.title = title
-        self.author = author
+        self.artist = artist
+        self.release_date = release_date
         self.songs = songs
 
     def __repr__(self):
-        return '{0}.{1}({2}, {3})'.format(__name__, self.__class__.__name__, self.title,self.author)
+        return '{0}.{1}({2}, {3})'.format(__name__, self.__class__.__name__, self.title,self.artist)
 
     def __len__(self):
         return len(self.songs)
@@ -110,25 +116,25 @@ class Album:
                 song.save(folder)
 
 
-class Discography:
+class Discography(object):
     """
     Discography Class.
     The Discography class follows the Iterable protocol and can be iterated over the albums.
 
-    :param author: string.
+    :param artist: string.
         Artist name.
     :param albums: list.
         List of Album objects.
     """
-    __slots__ = ('__idx__', 'author', 'albums')
+    __slots__ = ('__idx__', 'artist', 'albums')
 
-    def __init__(self, author, albums):
+    def __init__(self, artist, albums):
         self.__idx__ = 0
-        self.author = author
+        self.artist = artist
         self.albums = albums
 
     def __repr__(self):
-        return '{0}.{1}({2})'.format(__name__, self.__class__.__name__, self.author)
+        return '{0}.{1}({2})'.format(__name__, self.__class__.__name__, self.artist)
 
     def __len__(self):
         return len(self.albums)
