@@ -6,6 +6,7 @@ Development Lead
 ----------------
 
 * SekouD <sekoud.python@gmail.com>
+https://github.com/SekouD/
 
 Contributors
 ------------

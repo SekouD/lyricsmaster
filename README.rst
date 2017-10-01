@@ -34,6 +34,7 @@ The following Lyrics Providers are supported:
 - AzLyrics
 - Genius
 - Lyrics007
+- MusixMatch
 - The Original Hip-Hop (Rap) Lyrics Archive - OHHLA.com
 - and more to come soon.
 
@@ -45,7 +46,7 @@ The following Lyrics Providers are supported:
 Features
 --------
 
-- Download Lyrics from LyricWiki, AzLyrics, Genius, Lyrics007, OHHLA and more.
+- Download Lyrics from LyricWiki, AzLyrics, Genius, Lyrics007, MusixMatch, OHHLA and more.
 - Download Lyrics Asynchronously.
 - Can make requests over Tor for anonymous downloading of songs.
 - Easily save the lyrics on your computer.
