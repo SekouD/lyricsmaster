@@ -11,12 +11,15 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
+with open('docs/usage.rst') as usage_file:
+    usage = usage_file.read()
+
 requirements = [
     'Click>=6.0',
     'lxml',
     'beautifulsoup4',
-    'requests',
-    'requests[socks]',
+    'urllib3',
+    'urllib3[secure]',
     'pysocks',
     'gevent',
     'stem'
@@ -45,9 +48,9 @@ test_requirements = [
 
 setup(
     name='lyricsmaster',
-    version='2.7.1',
-    description="LyricsMaster is a library for downloading lyrics from multiple lyrics providers. LyricWiki, AzLyrics, Genius and other lyrics provider are available",
-    long_description=readme + '\n\n' + history,
+    version='2.7.9',
+    description="LyricsMaster is a library for downloading lyrics from multiple lyrics providers. LyricWiki, AzLyrics, Genius, Lyrics007, MusixMatch and other lyrics provider are available",
+    long_description=readme + '\n\n' + usage + '\n\n' + history,
     author="SekouD",
     author_email='sekoud.python@gmail.com',
     url='https://github.com/SekouD/lyricsmaster',
@@ -61,7 +64,7 @@ setup(
     install_requires=requirements,
     license="MIT license",
     zip_safe=False,
-    keywords='lyricsmaster',
+    keywords='lyricsmaster lyrics LyricWiki Lyrics Wikia Lyrics007 AzLyrics Genius MusixMatch Tor',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Topic :: Communications',

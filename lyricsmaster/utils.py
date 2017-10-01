@@ -88,9 +88,9 @@ class TorController:
         """
         Configures the session to use a Tor proxy.
 
-        :return: requests.session object.
+        :return: urllib3.SOCKSProxyManager object.
         """
-        user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
+        user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
         session = SOCKSProxyManager('socks5://{0}:{1}'.format(self.ip, self.socksport), cert_reqs='CERT_REQUIRED',
                                     ca_certs=certifi.where(), headers=user_agent)
         return session
@@ -108,19 +108,23 @@ class TorController:
             if controller.is_newnym_available():  # true if tor would currently accept a NEWNYM signal.
                 controller.signal(Signal.NEWNYM)
                 print('New Tor circuit created')
-                return True
+                result= True
             else:
                 delay = controller.get_newnym_wait()
-                print('Dealy to create new Tor circuit: {0}s'.format(delay))
-            gevent.monkey.patch_socket()
-            return False
+                print('Delay to create new Tor circuit: {0}s'.format(delay))
+                result= False
+            return result
 
         reload(socket)
         if isinstance(self.controlport, int):
             with Controller.from_port(port=self.controlport) as controller:
-                return renew_circuit(self.password)
+                is_renewed = renew_circuit(self.password)
         elif isinstance(self.controlport, basestring):
             with Controller.from_socket_file(path=self.controlport) as controller:
-                return renew_circuit(self.password)
+                is_renewed = renew_circuit(self.password)
+        else:
+            is_renewed = False
+        gevent.monkey.patch_socket()
+        return is_renewed
 
 

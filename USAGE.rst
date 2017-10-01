@@ -8,7 +8,6 @@ To use LyricsMaster in a project::
 
 
     # Select a provider from the supported Lyrics Providers (LyricWiki, AzLyrics, Genius etc..)
-    # The default Provider is LyricWiki
     provider = LyricWiki()
 
     # Fetch all lyrics from 2Pac
@@ -49,7 +48,7 @@ To use LyricsMaster in a project::
 
 
 
-To use LyricsMaster from the command line (The default Lyrics Provider is LyricWiki)::
+To use LyricsMaster from the command line::
 
     $ lyricsmaster <artist_name> options
 
@@ -95,4 +94,3 @@ Examples::
     New Tor circuit created
     Downloading Thug Life - Volume 1 (1994)
     ...
-

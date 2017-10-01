@@ -27,11 +27,14 @@ LyricsMaster
         :target: https://codecov.io/gh/SekouD/lyricsmaster
         :alt: Coverage Status
 
-LyricsMaster is a library for downloading lyrics from multiple lyrics providers. The following Lyrics Providers are supported:
+LyricsMaster is a library for downloading lyrics from multiple lyrics providers.
+The following Lyrics Providers are supported:
 
 - Lyric Wikia
 - AzLyrics
 - Genius
+- Lyrics007
+- MusixMatch
 - The Original Hip-Hop (Rap) Lyrics Archive - OHHLA.com
 - and more to come soon.
 
@@ -43,16 +46,7 @@ LyricsMaster is a library for downloading lyrics from multiple lyrics providers.
 Features
 --------
 
-- Download Lyrics from LyricWiki, AzLyrics, Genius OHHLA and more.
+- Download Lyrics from LyricWiki, AzLyrics, Genius, Lyrics007, MusixMatch, OHHLA and more.
 - Download Lyrics Asynchronously.
-- Can make requests over Tor for anonymous downloading of songs and evading anti scraping tools.
+- Can make requests over Tor for anonymous downloading of songs.
 - Easily save the lyrics on your computer.
-
-Credits
--------
-
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
-

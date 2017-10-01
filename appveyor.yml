@@ -7,8 +7,8 @@ environment:
     # The list here is complete (excluding Python 2.6, which
     # isn't covered by this document) at the time of writing.
 
-    - PYTHON: "C:\\Python27"
-    - PYTHON: "C:\\Python27-x64"
+#    - PYTHON: "C:\\Python27"
+#    - PYTHON: "C:\\Python27-x64" # do_handshake_on_connect should not be specified for non-blocking sockets
     - PYTHON: "C:\\Python33"
 #    Failed building wheel for gevent
 #    - PYTHON: "C:\\Python33-x64"
@@ -21,6 +21,7 @@ environment:
 #    - PYTHON: "C:\\Python35-x64"
     - PYTHON: "C:\\Python36"
     - PYTHON: "C:\\Python36-x64"
+
 
 cache:
   - C:\Users\appveyor\pip\wheels -> appveyor.yml
@@ -49,9 +50,11 @@ test_script:
   #- "%PYTHON%\\python.exe setup.py test"
   - "%PYTHON%\\python.exe -m pip install pytest"
   - "%PYTHON%\\python.exe -m pip install pytest-cov"
+  - "%PYTHON%\\python.exe -m pip install codecov"
   - "%PYTHON%\\python.exe -m pip install docutils"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
   - "%PYTHON%\\Scripts\\py.test --cov=./lyricsmaster/"
+  - "%PYTHON%\\Scripts\\codecov -f .coverage"
   - "%PYTHON%\\python.exe setup.py check --restructuredtext -s"
 
 after_test:
