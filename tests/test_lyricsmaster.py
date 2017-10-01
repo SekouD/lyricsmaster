@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup, Tag
 
 from lyricsmaster import models
 from lyricsmaster import cli
-from lyricsmaster.providers import LyricWiki, AzLyrics, Genius, Lyrics007
+from lyricsmaster.providers import LyricWiki, AzLyrics, Genius, Lyrics007, MusixMatch
 from lyricsmaster.utils import TorController, normalize
 
 try:
@@ -41,7 +41,7 @@ python_is_outdated = '2.7' in sys.version or '3.3' in sys.version
 is_appveyor = 'APPVEYOR' in os.environ
 is_travis = 'TRAVIS' in os.environ
 
-providers = [Lyrics007(), Genius(), LyricWiki()]
+providers = [MusixMatch(), LyricWiki(), Genius(), Lyrics007()]
 
 real_singer = {'name': 'The Notorious B.I.G.', 'album': 'Ready to Die (1994)',
                'songs': [{'song': 'Things Done Changed', 'lyrics': 'Remember back in the days...'},
@@ -67,6 +67,10 @@ provider_strings = {
                  'artist_url': 'https://www.lyrics007.com/artist/the-notorious-b-i-g/TVRJMk5EQT0=',
                  'song_url': 'https://www.lyrics007.com/Notorious%20B.i.g.%20Lyrics/Things%20Done%20Changed%20Lyrics.html',
                  'fake_url': 'https://www.lyrics007.com/Notorious%20B.i.g.%20Lyrics/Things%20Done%20Changed%20fake_Lyrics.html'},
+    'MusixMatch': {'artist_name': 'The-Notorious-B-I-G',
+                     'artist_url': 'https://www.musixmatch.com/artist/The-Notorious-B-I-G',
+                     'song_url': 'https://www.musixmatch.com/lyrics/The-Notorious-B-I-G/Things-Done-Changed',
+                     'fake_url': 'https://www.musixmatch.com/lyrics/The-Notorious-B-I-G/Things-Done-Changed_fake'},
 }
 
 @pytest.fixture(scope="module")
@@ -208,7 +212,7 @@ class TestLyricsProviders:
 
     @pytest.mark.parametrize('provider', providers)
     def test_get_album_page(self, provider):
-        if provider.name in ('AzLyrics', 'Genius', 'Lyrics007'):
+        if provider.name in ('AzLyrics', 'Genius', 'Lyrics007', 'MusixMatch'):
             return
         else:
             page = provider.get_album_page(real_singer['name'], fake_singer['album'])
@@ -249,7 +253,8 @@ class TestLyricsProviders:
         album = provider.get_albums(page)[0]
         album_title, release_date = provider.get_album_infos(album)
         assert isinstance(release_date, basestring)
-        assert album_title.lower() in real_singer['album'].lower() or album_title.lower() in 'Demo Tape'.lower() # 'Demo Tape' for Genius
+        assert album_title.lower() in real_singer['album'].lower() or \
+               album_title.lower() in 'Demo Tape'.lower() or 'notorious themes' in  album_title.lower()
 
     @pytest.mark.parametrize('provider', providers)
     def test_extract_lyrics(self, provider):
@@ -284,7 +289,7 @@ class TestLyricsProviders:
         song_links[-1].attrs['href'] = provider_strings[provider.name]['fake_url']#.replace(provider.base_url, '')
         fail_song = provider.create_song(song_links[-1], real_singer['name'], real_singer['album'])
         assert fail_song is None
-        good_song = provider.create_song(song_links[1], real_singer['name'], real_singer['album'])
+        good_song = provider.create_song(song_links[3], real_singer['name'], real_singer['album'])
         assert isinstance(good_song, models.Song)
         assert isinstance(good_song.title, basestring)
         assert good_song.album == real_singer['album']
