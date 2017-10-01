@@ -425,7 +425,7 @@ class AzLyrics(LyricsProvider):
 
     """
     base_url = 'https://www.azlyrics.com'
-    base_search_url = 'https://search.azlyrics.com'
+    search_url = 'https://search.azlyrics.com/search.php?q='
     name = 'AzLyrics'
 
     def _has_lyrics(self, lyrics_page):
@@ -448,19 +448,30 @@ class AzLyrics(LyricsProvider):
             return False
 
     def _make_artist_url(self, artist):
+        return self.search(artist)
+
+    def search(self, artist):
+        """
+        Searches for the artist in the supplier's database.
+
+        :param artist: Artist's name.
+        :return: url.
+            Url to the artist's page if found. None if not Found.
+        """
         artist = artist.replace(' ', '+')
         if artist.lower().startswith('the'):
             artist = artist[4:]
-        url = self.base_search_url + '/search.php?q=' + artist
+        url = self.search_url + artist
         search_results = self.get_page(url).data
         results_page = BeautifulSoup(search_results, 'lxml')
         if not self._has_artist_result(results_page):
             return None
         target_node = results_page.find("div", {'class': 'panel-heading'}).find_next_sibling("table")
         artist_url = target_node.find('a').attrs['href']
+        if not artist_url:
+            return None
         if not artist_url.startswith(self.base_url):
             artist_url = self.base_url + artist_url
-        pass
         return artist_url
 
     def get_albums(self, raw_artist_page):
@@ -566,6 +577,7 @@ class Genius(LyricsProvider):
 
     """
     base_url = 'https://genius.com'
+    search_url = base_url + '/search?q='
     name = 'Genius'
 
     def _has_lyrics(self, page):
@@ -703,6 +715,7 @@ class Lyrics007(LyricsProvider):
 
         """
     base_url = 'https://www.lyrics007.com'
+    search_url = base_url + '/search.php?category=artist&q='
     name = 'Lyrics007'
 
     def _has_lyrics(self, page):
@@ -725,13 +738,25 @@ class Lyrics007(LyricsProvider):
             return False
 
     def _make_artist_url(self, artist):
+        return self.search(artist)
+
+    def search(self, artist):
+        """
+        Searches for the artist in the supplier's database.
+
+        :param raw_artist_page: Artist's raw html page.
+        :return: list.
+            List of BeautifulSoup objects.
+        """
         artist = "".join([c if (c.isalnum() or c == '.') else "+" for c in artist])
-        url = self.base_url + '/search.php?category=artist&q=' + artist
+        url = self.search_url + artist
         search_results = self.get_page(url).data
         results_page = BeautifulSoup(search_results, 'lxml')
         if not self._has_artist_result(results_page):
             return None
         artist_url = results_page.find("div", {'id': 'search_result'}).find('a').attrs['href']
+        if not artist_url:
+            return None
         if not artist_url.startswith(self.base_url):
             artist_url = self.base_url + artist_url
         return artist_url
