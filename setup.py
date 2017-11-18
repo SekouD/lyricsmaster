@@ -22,7 +22,8 @@ requirements = [
     'urllib3[secure]',
     'pysocks',
     'gevent',
-    'stem'
+    'stem',
+    'certifi'
 ]
 
 setup_requirements = [
