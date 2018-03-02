@@ -9,7 +9,7 @@ Sphinx==1.6.4
 docutils==0.14
 cryptography==2.0.3
 PyYAML==3.12
-mypy==0.521
+mypy==0.570
 pytest==3.2.2
 hypothesis==3.31.0
 beautifulsoup4==4.6.0
