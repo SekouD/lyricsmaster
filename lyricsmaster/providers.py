@@ -841,7 +841,8 @@ class Lyrics007(LyricsProvider):
             Song writers or None.
         """
         writers_box = \
-            [elmt for elmt in lyrics_page.strings if elmt.startswith('writers:') or elmt.startswith('writer:')]
+            [elmt for elmt in lyrics_page.strings if elmt.lower().startswith(
+                'writers:') or elmt.lower().startswith('writer:')]
         if writers_box:
             writers = writers_box[0].strip()
         else:
