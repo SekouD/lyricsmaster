@@ -30,6 +30,10 @@ install:
 
 deploy:
   provider: pypi
+  on:
+    python: 3.6
+    repo: SekouD/lyricsmaster
+    tags: true
   true:
     python: 3.6
     repo: SekouD/lyricsmaster
