@@ -8,7 +8,7 @@ LyricsMaster
         :alt: PyPi Status
 
 .. image:: https://img.shields.io/travis/SekouD/lyricsmaster.svg
-        :target: https://travis-ci.org/SekouD/lyricsmaster
+        :target: https://travis-ci.org/SekouD/lyricsmaster.svg?branch=master
         :alt: Linux Continuous Integration Status
 
 .. image:: https://ci.appveyor.com/api/projects/status/73bd1ct4revmlk42/branch/master?svg=true
