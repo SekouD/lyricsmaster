@@ -347,9 +347,9 @@ class TestLyricsProviders:
 
     @pytest.mark.parametrize('provider', providers)
     def test_get_lyrics(self, provider):
-        discography = provider.get_lyrics(
-            'Reggie Watts')  # put another realsinger who has not so many songs to speed up testing.
-        assert isinstance(discography, models.Discography)
+        # discography = provider.get_lyrics(
+        #     'Reggie Watts')  # put another realsinger who has not so many songs to speed up testing.
+        # assert isinstance(discography, models.Discography)
         discography = provider.get_lyrics(fake_singer['name'])
         assert discography is None
         discography = provider.get_lyrics('Reggie Watts', 'Why $#!+ So Crazy?')
@@ -431,17 +431,19 @@ class TestTor:
         artist = 'Reggie Watts'
         runner = CliRunner()
         result_tor1 = runner.invoke(cli.main,
-                                    [artist, '--tor', '127.0.0.1',
+                                    [artist, '-a', 'Why $#!+ So Crazy?', '-s',
+                                     'Fuck Shit Stack', '--tor', '127.0.0.1',
                                      '--controlport', '9051', '--password',
                                      'password'])
         assert result_tor1.exit_code == 0
-        assert 'Downloading Simplified' in result_tor1.output # TODO: Dowload only 1 song
+        assert 'Downloading Why $#!+ So Crazy?' in result_tor1.output
 
     @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated),
                         reason="Skip this Tor test when in CI")
     def test_command_line_interface_tor(self):
         artist = 'Reggie Watts'
         runner = CliRunner()
-        result_tor = runner.invoke(cli.main, [artist, '--tor', '127.0.0.1'])
+        result_tor = runner.invoke(cli.main, [artist, '-a', 'Why $#!+ So Crazy?', '-s',
+                                              'Fuck Shit Stack', '--tor', '127.0.0.1'])
         assert result_tor.exit_code == 0
-        assert 'Downloading Simplified' in result_tor.output # TODO: Dowload only 1 song
+        assert 'Downloading Why $#!+ So Crazy?' in result_tor.output
