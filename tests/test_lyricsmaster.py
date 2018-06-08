@@ -435,7 +435,7 @@ class TestTor:
                                      '--controlport', '9051', '--password',
                                      'password'])
         assert result_tor1.exit_code == 0
-        assert 'Downloading Simplified' in result_tor1.output
+        assert 'Downloading Simplified' in result_tor1.output # TODO: Dowload only 1 song
 
     @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated),
                         reason="Skip this Tor test when in CI")
@@ -444,4 +444,4 @@ class TestTor:
         runner = CliRunner()
         result_tor = runner.invoke(cli.main, [artist, '--tor', '127.0.0.1'])
         assert result_tor.exit_code == 0
-        assert 'Downloading Simplified' in result_tor.output
+        assert 'Downloading Simplified' in result_tor.output # TODO: Dowload only 1 song
