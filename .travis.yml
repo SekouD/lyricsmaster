@@ -35,10 +35,6 @@ deploy:
     repo: SekouD/lyricsmaster
     tags: true
     branch: master
-  true:
-    python: 3.6
-    repo: SekouD/lyricsmaster
-    tags: true
   user: SekouD
   distributions: sdist bdist_wheel
   password:
