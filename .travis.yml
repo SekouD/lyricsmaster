@@ -13,11 +13,6 @@ python:
 #- "pypy-5.8.0"
 #- "pypy3-5.8.0"
 
-branches:
-  only:
-  - master
-  - dev
-
 
 before_install:
 - sudo apt-get update
