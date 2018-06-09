@@ -17,7 +17,7 @@ branches:
     only:
     - master
     - dev
-    - /v\d+\.\d+[a-z]/.\d+[a-z]/
+    - /v\d+\.\d+[a-z]*.\d+[a-z]*/
 
 before_install:
 - sudo apt-get update
