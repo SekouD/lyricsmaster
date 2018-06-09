@@ -39,6 +39,7 @@ def socket_is_patched():
     return gevent.monkey.is_module_patched('socket')
 
 
+# Boolean tests
 python_is_outdated = '2.7' in sys.version or '3.3' in sys.version
 is_appveyor = 'APPVEYOR' in os.environ
 is_travis = 'TRAVIS' in os.environ
@@ -78,21 +79,15 @@ provider_strings = {
                    'fake_url': 'https://www.musixmatch.com/lyrics/The-Notorious-B-I-G/Things-Done-Changed_fake'},
 }
 
-
-@pytest.fixture(scope="module")
-def songs():
-    songs = [models.Song(real_singer['songs'][0]['song'], real_singer['album'],
-                         real_singer['name'],
-                         real_singer['songs'][0]['lyrics']),
-             models.Song(real_singer['songs'][1]['song'], real_singer['album'],
-                         real_singer['name'],
-                         real_singer['songs'][1]['lyrics'])]
-    return songs
+songs = [models.Song(real_singer['songs'][0]['song'], real_singer['album'],
+                     real_singer['name'],real_singer['songs'][0]['lyrics']),
+         models.Song(real_singer['songs'][1]['song'], real_singer['album'],
+                     real_singer['name'], real_singer['songs'][1]['lyrics'])]
 
 
 class TestSongs:
     """Tests for Song Class."""
-    song = songs()[0]
+    song = songs[0]
 
     def test_song(self):
         assert self.song.__repr__() == 'lyricsmaster.models.Song({0}, {1}, {2})'.format(
@@ -122,7 +117,6 @@ class TestSongs:
 class TestAlbums:
     """Tests for Album Class."""
 
-    songs = songs()
     album = models.Album(real_singer['album'], real_singer['name'], songs, '2017')
 
     def test_album(self):
@@ -135,7 +129,7 @@ class TestAlbums:
 
     def test_album_isiter(self):
         assert len(self.album) == 2
-        assert [elmt for elmt in self.album] == self.songs
+        assert [elmt for elmt in self.album] == songs
         for x, y in zip(reversed(self.album), reversed(self.album.songs)):
             assert x == y
 
@@ -155,7 +149,6 @@ class TestAlbums:
 class TestDiscography:
     """Tests for Discography Class."""
 
-    songs = songs()
     albums = [models.Album(real_singer['album'], real_singer['name'], songs, '2017'),
               models.Album(real_singer['album'], real_singer['name'], songs, '2017')]
     discography = models.Discography(real_singer['name'], albums)
@@ -222,9 +215,7 @@ class TestLyricsProviders:
     @pytest.mark.parametrize('provider', providers)
     def test_make_artist_url(self, provider):
         clean = provider._clean_string
-        assert provider._make_artist_url(
-            clean(real_singer['name'])) == provider_strings[provider.name][
-                   'artist_url']
+        assert provider._make_artist_url(clean(real_singer['name'])) == provider_strings[provider.name]['artist_url']
 
     @pytest.mark.parametrize('provider', providers)
     def test_get_artist_page(self, provider):
@@ -282,14 +273,12 @@ class TestLyricsProviders:
         album_title, release_date = provider.get_album_infos(album)
         assert isinstance(release_date, basestring)
         assert album_title.lower() in real_singer['album'].lower() or \
-               album_title.lower() in 'Demo Tape'.lower() or 'notorious ' \
-                                                             'themes' in \
+               album_title.lower() in 'Demo Tape'.lower() or 'notorious themes' in \
                album_title.lower() or 'greatest hits' in album_title.lower()
 
     @pytest.mark.parametrize('provider', providers)
     def test_extract_lyrics(self, provider):
-        page = provider.get_lyrics_page(
-            provider_strings[provider.name]['song_url'])
+        page = provider.get_lyrics_page(provider_strings[provider.name]['song_url'])
         lyrics_page = BeautifulSoup(page, 'lxml')
         lyrics = provider.extract_lyrics(lyrics_page)
         assert isinstance(lyrics, basestring)
@@ -299,8 +288,7 @@ class TestLyricsProviders:
     @pytest.mark.parametrize('provider', [prov for prov in providers if
                                           not prov.name == 'Lyrics007'])
     def test_extract_writers(self, provider):
-        page = provider.get_lyrics_page(
-            provider_strings[provider.name]['song_url'])
+        page = provider.get_lyrics_page(provider_strings[provider.name]['song_url'])
         lyrics_page = BeautifulSoup(page, 'lxml')
         writers = provider.extract_writers(lyrics_page)
         assert isinstance(writers, basestring)
@@ -319,19 +307,16 @@ class TestLyricsProviders:
         artist_page = provider.get_artist_page(real_singer['name'])
         album = provider.get_albums(artist_page)[0]
         song_links = provider.get_songs(album)
-        song_links[-1].attrs['href'] = provider_strings[provider.name][
-            'fake_url']  # .replace(provider.base_url, '')
-        fail_song = provider.create_song(song_links[-1], real_singer['name'],
-                                         real_singer['album'])
+        song_links[-1].attrs['href'] = provider_strings[provider.name]['fake_url']
+        fail_song = provider.create_song(song_links[-1], real_singer['name'], real_singer['album'])
         assert fail_song is None
-        good_song = provider.create_song(song_links[0], real_singer['name'],
-                                         real_singer['album'])
+        good_song = provider.create_song(song_links[0], real_singer['name'], real_singer['album'])
         assert isinstance(good_song, models.Song)
         assert isinstance(good_song.title, basestring)
         assert good_song.album == real_singer['album']
         assert good_song.artist == real_singer['name']
         assert isinstance(good_song.lyrics, basestring)
-        # Tests existing song with empty lyrics
+        # Tests existing song with known empty lyrics
         if provider.name == 'LyricWiki':
             tag = '<a href="http://lyrics.wikia.com/wiki/Reggie_Watts:Feel_The_Same" class="new" title="Reggie Watts:Feel The Same (page does not exist)">Feel the Same</a>'
             page = BeautifulSoup(tag, 'lxml')
@@ -345,9 +330,6 @@ class TestLyricsProviders:
 
     @pytest.mark.parametrize('provider', providers)
     def test_get_lyrics(self, provider):
-        # discography = provider.get_lyrics(
-        #     'Reggie Watts')  # put another realsinger who has not so many songs to speed up testing.
-        # assert isinstance(discography, models.Discography)
         discography = provider.get_lyrics(fake_singer['name'])
         assert discography is None
         discography = provider.get_lyrics('Reggie Watts', 'Why $#!+ So Crazy?')
@@ -363,9 +345,7 @@ class TestCli:
     def test_command_line_interface(self):
         artist = 'Reggie Watts'
         runner = CliRunner()
-        result = runner.invoke(cli.main,
-                               [artist, '-a', 'Why $#!+ So Crazy?', '-s',
-                                'Fuck Shit Stack'])
+        result = runner.invoke(cli.main, [artist, '-a', 'Why $#!+ So Crazy?', '-s', 'Fuck Shit Stack'])
         assert result.exit_code == 0
         assert 'Why $#!+ So Crazy?' in result.output
         help_result = runner.invoke(cli.main, ['--help'])
