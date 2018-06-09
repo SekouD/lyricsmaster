@@ -42,7 +42,7 @@ class Song(object):
         """
         Saves the lyrics of the song in the supplied folder.
         If no folder is supplied, 'folder' is set to {user}/Documents/lyricsmaster/
-        The lyrics of a song are saved in folder/artist/album/song_title.txt
+        The lyrics of a song are saved in the folder /artist/album/song_title.txt
 
         :param folder: string.
             path to save folder.
@@ -75,7 +75,7 @@ class Album(object):
     """
     __slots__ = ('__idx__', 'title', 'artist', 'release_date', 'songs')
 
-    def __init__(self, title, artist, release_date, songs):
+    def __init__(self, title, artist, songs, release_date='Unknown'):
         self.__idx__ = 0
         self.title = title
         self.artist = artist
