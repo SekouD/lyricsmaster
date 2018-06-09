@@ -123,8 +123,7 @@ class TestAlbums:
     """Tests for Album Class."""
 
     songs = songs()
-    album = models.Album(real_singer['album'], real_singer['name'], '2017',
-                         songs)
+    album = models.Album(real_singer['album'], real_singer['name'], songs, '2017')
 
     def test_album(self):
         assert self.album.__idx__ == 0
@@ -156,10 +155,9 @@ class TestAlbums:
 class TestDiscography:
     """Tests for Discography Class."""
 
-    albums = [models.Album(real_singer['album'], real_singer['name'], '2017',
-                           songs()),
-              models.Album(fake_singer['album'], fake_singer['name'], '2017',
-                           songs())]
+    songs = songs()
+    albums = [models.Album(real_singer['album'], real_singer['name'], songs, '2017'),
+              models.Album(real_singer['album'], real_singer['name'], songs, '2017')]
     discography = models.Discography(real_singer['name'], albums)
 
     def test_discography(self):
