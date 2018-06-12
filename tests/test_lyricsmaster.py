@@ -286,7 +286,8 @@ class TestLyricsProviders:
         assert "Don't ask me why I'm".lower() in lyrics.lower()
 
     @pytest.mark.parametrize('provider', [prov for prov in providers if
-                                          not prov.name == 'Lyrics007'])
+                                          not prov.name in ('Lyrics007',
+                                                            'LyricWiki')])
     def test_extract_writers(self, provider):
         page = provider.get_lyrics_page(provider_strings[provider.name]['song_url'])
         lyrics_page = BeautifulSoup(page, 'lxml')
