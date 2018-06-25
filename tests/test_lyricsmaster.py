@@ -368,8 +368,8 @@ class TestTor:
     provider = LyricWiki(tor_basic)
     provider2 = LyricWiki(tor_advanced)
 
-    @pytest.mark.skipif(is_appveyor and python_is_outdated,
-                        reason="Tor error on 2.7 and 3.3.")
+    @pytest.mark.skipif(is_appveyor,
+                        reason="Tor error on TravisCI.")
     def test_anonymisation(self):
         real_ip = self.non_anon_provider.get_page("http://httpbin.org/ip").data
         anonymous_ip = self.provider.get_page("http://httpbin.org/ip").data
@@ -377,8 +377,8 @@ class TestTor:
 
     # this function is tested out in travis using a unix path as a control port instead of port 9051.
     # for now gets permission denied on '/var/run/tor/control' in Travis CI
-    @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated),
-                        reason="Skip this Tor test when in CI")
+    @pytest.mark.skipif(is_appveyor,
+                        reason="Tor error on TravisCI.")
     def test_renew_tor_session(self):
         real_ip = self.non_anon_provider.get_page("http://httpbin.org/ip").data
         anonymous_ip = self.provider2.get_page("http://httpbin.org/ip").data
@@ -389,23 +389,23 @@ class TestTor:
         assert real_ip2 != anonymous_ip2
         assert new_tor_circuit == True
 
-    @pytest.mark.skipif(is_appveyor and python_is_outdated,
-                        reason="Tor error on 2.7 and 3.3.")
+    @pytest.mark.skipif(is_appveyor,
+                        reason="Tor error on TravisCI.")
     def test_get_lyrics_tor_basic(self):
         discography = self.provider.get_lyrics(
             'Reggie Watts', 'Why $#!+ So Crazy?',
             'Fuck Shit Stack')  # put another realsinger who has not so many songs to speed up testing.
         assert isinstance(discography, models.Discography)
 
-    @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated),
-                        reason="Skip this Tor test when in CI")
+    @pytest.mark.skipif(is_appveyor,
+                        reason="Tor error on TravisCI.")
     def test_get_lyrics_tor_advanced(self):
         discography = self.provider2.get_lyrics(
             'Reggie Watts', 'Why $#!+ So Crazy?', 'Fuck Shit Stack')
         assert isinstance(discography, models.Discography)
 
-    @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated),
-                        reason="Skip this Tor test when in CI")
+    @pytest.mark.skipif(is_appveyor,
+                        reason="Tor error on TravisCI.")
     def test_command_line_interface_tor(self):
         artist = 'Reggie Watts'
         runner = CliRunner()
@@ -417,8 +417,8 @@ class TestTor:
         assert result_tor1.exit_code == 0
         assert 'Downloading Why $#!+ So Crazy?' in result_tor1.output
 
-    @pytest.mark.skipif(is_travis or (is_appveyor and python_is_outdated),
-                        reason="Skip this Tor test when in CI")
+    @pytest.mark.skipif(is_appveyor,
+                        reason="Tor error on TravisCI.")
     def test_command_line_interface_tor(self):
         artist = 'Reggie Watts'
         runner = CliRunner()
