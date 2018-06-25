@@ -377,8 +377,8 @@ class TestTor:
 
     # this function is tested out in travis using a unix path as a control port instead of port 9051.
     # for now gets permission denied on '/var/run/tor/control' in Travis CI
-    @pytest.mark.skipif(is_appveyor,
-                        reason="Tor error on ApppVeyor.")
+    @pytest.mark.skipif(is_appveyor or is_travis,
+                        reason="Tor error on CI.")
     def test_renew_tor_session(self):
         real_ip = self.non_anon_provider.get_page("http://httpbin.org/ip").data
         anonymous_ip = self.provider2.get_page("http://httpbin.org/ip").data
@@ -397,8 +397,8 @@ class TestTor:
             'Fuck Shit Stack')  # put another realsinger who has not so many songs to speed up testing.
         assert isinstance(discography, models.Discography)
 
-    @pytest.mark.skipif(is_appveyor,
-                        reason="Tor error on ApppVeyor.")
+    @pytest.mark.skipif(is_appveyor or is_travis,
+                        reason="Tor error on CI.")
     def test_get_lyrics_tor_advanced(self):
         discography = self.provider2.get_lyrics(
             'Reggie Watts', 'Why $#!+ So Crazy?', 'Fuck Shit Stack')
