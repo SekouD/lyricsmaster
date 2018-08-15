@@ -3,9 +3,22 @@ dist: trusty
 cache: pip
 language: python
 python:
-- 3.6
-- 3.5
+- 3.3
 - 3.4
+- 3.5
+- 3.6
+- 3.7-dev
+#  PyPy versions
+- pypy2.7
+- pypy3.5
+matrix:
+  allow_failures:
+  - python: pypy2.7
+  - python: pypy3.5
+  - python: 3.3
+  - python: 3.5
+  - python: 3.7-dev
+
 branches:
   only:
   - master
@@ -18,17 +31,17 @@ before_install:
 - sudo service tor start
 install:
 - pip install -U tox-travis
-deploy:
-  provider: pypi
-  on:
-    python: 3.6
-    repo: SekouD/lyricsmaster
-    tags: true
-    branch: master
-  user: SekouD
-  distributions: sdist bdist_wheel
-  password:
-    secure: eQ6A6c8+c3IkgxsGWLnf/EmYy5hf520hKqbzLdhkUGZIcd4ESgDwYJ4pOunAejeNcF5nqie0K9vfGQReIRv8q/kRhNnrMbqGlecSJPMbf4llO/l9zcb7r66VQQeNq2L296Or6N5nH+R6lQVHgVUgtScwO8Dnln2hK1MLAi6vCQfMWYEHXozHu6+hML1UowolYMuy0qXspiefuueOo3Dut06TIqsXRRnkAK4NfwOubY5osiXwfjg4UeGL3StOZGisKlYoED9UxL1Q5K1FdMFry2UcQRFa07KBoOWIsvHkdJv5oKq+EOqktetnBU3SyzZrXrgJXNBKseIJxCuOPnEPxBQaFb6/EoP236lOED81FQa0YuXg0EK8EnoxksUzi6Ec0Ay2cHJCVTSEthM0dOK3/0l4XD4cJJAClCxhSs3HXAqqGz8OYdP1V08OXYd9+rQ3kjDRerb8Lfg3QvkTZMe6NLgoBVuN51W5qE3XYg3q953zui7kza7qeqqGLCWhn3YLkDBFJyQO8sM1lg4lK5pstLo2qX13C4tGJkSbzJ4+rTx25m4NtJ5vwmoT26P7J1fVTa6fSmHXbduEhLbZ9leIWJvoVCjY9v1Kp2vz8BUS5pb4FYBsekSOzx7GWe1X/bHRzadp3iyijlEtfNwCkcblAX1tDuY12jBr2O3ZMozOBVk=
+#deploy:
+#  provider: pypi
+#  on:
+#    python: 3.6
+#    repo: SekouD/lyricsmaster
+#    tags: true
+#    branch: master
+#  user: SekouD
+#  distributions: sdist bdist_wheel
+#  password:
+#    secure: eQ6A6c8+c3IkgxsGWLnf/EmYy5hf520hKqbzLdhkUGZIcd4ESgDwYJ4pOunAejeNcF5nqie0K9vfGQReIRv8q/kRhNnrMbqGlecSJPMbf4llO/l9zcb7r66VQQeNq2L296Or6N5nH+R6lQVHgVUgtScwO8Dnln2hK1MLAi6vCQfMWYEHXozHu6+hML1UowolYMuy0qXspiefuueOo3Dut06TIqsXRRnkAK4NfwOubY5osiXwfjg4UeGL3StOZGisKlYoED9UxL1Q5K1FdMFry2UcQRFa07KBoOWIsvHkdJv5oKq+EOqktetnBU3SyzZrXrgJXNBKseIJxCuOPnEPxBQaFb6/EoP236lOED81FQa0YuXg0EK8EnoxksUzi6Ec0Ay2cHJCVTSEthM0dOK3/0l4XD4cJJAClCxhSs3HXAqqGz8OYdP1V08OXYd9+rQ3kjDRerb8Lfg3QvkTZMe6NLgoBVuN51W5qE3XYg3q953zui7kza7qeqqGLCWhn3YLkDBFJyQO8sM1lg4lK5pstLo2qX13C4tGJkSbzJ4+rTx25m4NtJ5vwmoT26P7J1fVTa6fSmHXbduEhLbZ9leIWJvoVCjY9v1Kp2vz8BUS5pb4FYBsekSOzx7GWe1X/bHRzadp3iyijlEtfNwCkcblAX1tDuY12jBr2O3ZMozOBVk=
 script:
 - tox
-after_success: 
+after_success:

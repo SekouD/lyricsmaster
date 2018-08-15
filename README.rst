@@ -28,6 +28,7 @@ LyricsMaster
         :alt: Coverage Status
 
 LyricsMaster is a library for downloading lyrics from multiple lyrics providers.
+
 The following Lyrics Providers are supported:
 
 - Lyric Wikia
