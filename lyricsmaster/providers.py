@@ -169,7 +169,12 @@ class LyricsProvider:
             albums = [elmt for elmt in albums if album.lower() in self.get_album_infos(elmt)[0].lower()]
         album_objects = []
         for elmt in albums:
-            album_title, release_date = self.get_album_infos(elmt)
+            try:
+                album_title, release_date = self.get_album_infos(elmt)
+            except ValueError as e:
+                pass
+                print('Error {0} while downloading {1}'.format(e, album_title))
+                continue
             song_links = self.get_songs(elmt)
             if song:
                 # If user supplied a specific song
@@ -375,9 +380,14 @@ class LyricWiki(LyricsProvider):
         :return: tuple(string, string).
             Album title and release date.
         """
-        i = tag.text.index(' (')
+        try:
+            i = tag.text.index(' (')
+            release_date = re.findall(r'\(([^()]+)\)', tag.text)[0]
+        except ValueError:
+            i = -1
+            release_date = 'Unknown'
         album_title = tag.text[:i]
-        release_date = re.findall(r'\(([^()]+)\)', tag.text)[0]
+
         return album_title, release_date
 
     def get_songs(self, album):
