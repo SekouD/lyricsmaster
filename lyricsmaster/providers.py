@@ -574,7 +574,10 @@ class AzLyrics(LyricsProvider):
         """
         album_infos = tag.find("div", {'class': 'album'}).text
         album_title = re.findall(r'"([^"]*)"', album_infos)[0]
-        release_date = re.findall(r'\(([^()]+)\)', tag.text)[0]
+        try:
+            release_date = re.findall(r'\(([^()]+)\)', tag.text)[0]
+        except ValueError:
+            release_date = 'Unknown'
         return album_title, release_date
 
     def get_songs(self, album):
@@ -719,10 +722,12 @@ class Genius(LyricsProvider):
         album_page = BeautifulSoup(self.get_page(self.base_url + tag.attrs['href']).data, 'lxml')
         info_box = album_page.find("div", {'class': 'header_with_cover_art-primary_info'})
         metadata = [elmt for elmt in info_box.find_all("div", {'class': 'metadata_unit'}) if elmt.text.startswith('Released')]
-        if metadata:
+        try:
             release_date = metadata[0].text
-        else:
-            release_date = ''
+        except IndexError:
+            release_date = 'Unknown'
+        except ValueError:
+            release_date = 'Unknown'
         return album_title, release_date
 
     def get_songs(self, album):
@@ -900,6 +905,7 @@ class Lyrics007(LyricsProvider):
         :return: tuple(string, string).
             Album title and release date.
         """
+        # TODO: Verify order of release_date, album_title = tag.text.split(': ')
         release_date, album_title = tag.text.split(': ')
         return album_title, release_date
 
@@ -1046,7 +1052,10 @@ class MusixMatch(LyricsProvider):
             Album title and release date.
         """
         album_title = tag.find('h2').text
-        release_date = tag.find('h3').text
+        try:
+            release_date = tag.find('h3').text
+        except AttributeError:
+            release_date = 'Unknown'
         return album_title, release_date
 
     def get_songs(self, album):
