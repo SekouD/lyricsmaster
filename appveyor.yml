@@ -29,7 +29,7 @@ cache:
 
 install:
   - ps: Invoke-WebRequest 'https://dist.torproject.org/torbrowser/7.5.6/tor-win32-0.3.3.7.zip' -OutFile C:\projects\lyricsmaster\tor-win32-0.3.3.7.zip
-  - ps: 7z e tor-win32-0.3.2.10.zip
+  - ps: 7z e tor-win32-0.3.3.7.zip
   - tor --service install -options -f C:\projects\lyricsmaster\torrc ControlPort 9051
   - ps: netstat -an
   - "%PYTHON%\\python.exe -m pip install wheel"
