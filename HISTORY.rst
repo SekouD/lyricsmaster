@@ -3,6 +3,19 @@ History
 =======
 
 
+2.7.20 (2018-07-29)
+-------------------
+
+* Updated to latest tor version.
+* Updated documentation.
+
+
+2.7.19 (2018-07-16)
+-------------------
+
+* Catch exceptions when the release date of the album is not in the title tag for all providers.
+
+
 2.7.17 (2018-07-08)
 -------------------
 
