@@ -3,7 +3,6 @@ dist: trusty
 cache: pip
 language: python
 python:
-- 3.3
 - 3.4
 - 3.5
 - 3.6
@@ -15,7 +14,6 @@ matrix:
   allow_failures:
   - python: pypy2.7
   - python: pypy3.5
-  - python: 3.3
   - python: 3.5
   - python: 3.7-dev
 
