@@ -294,7 +294,7 @@ class TestLyricsProviders:
         lyrics_page = BeautifulSoup(page, 'lxml')
         writers = provider.extract_writers(lyrics_page)
         assert isinstance(writers, basestring)
-        assert "C. WALLACE" in writers.lower() or "notorious" in writers.lower()\
+        assert "c. wallace" in writers.lower() or "notorious" in writers.lower()\
                or "christopher wallace" in writers.lower() or writers == ''
 
     @pytest.mark.parametrize('provider', providers)
