@@ -3,6 +3,12 @@ History
 =======
 
 
+2.7.21 (2018-11-04)
+-------------------
+
+* Updated to latest tor version.
+* Updated dependencies.
+
 2.7.20 (2018-07-29)
 -------------------
 
