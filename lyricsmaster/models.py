@@ -83,7 +83,7 @@ class Album(object):
         self.songs = songs
 
     def __repr__(self):
-        return '{0}.{1}({2}, {3})'.format(__name__, self.__class__.__name__, self.title,self.artist)
+        return '{0}.{1}({2}, {3})'.format(__name__, self.__class__.__name__, self.title, self.artist)
 
     def __len__(self):
         return len(self.songs)
@@ -102,7 +102,7 @@ class Album(object):
     def __reversed__(self):
         return reversed(self.songs)
 
-    next = __next__ # Python 2.7 compatibility for iterator protocol
+    next = __next__  # Python 2.7 compatibility for iterator protocol
 
     def save(self, folder=None):
         """
@@ -153,7 +153,7 @@ class Discography(object):
     def __reversed__(self):
         return reversed(self.albums)
 
-    next = __next__ # Python 2.7 compatibility for iterator protocol
+    next = __next__  # Python 2.7 compatibility for iterator protocol
 
     def save(self, folder=None):
         """
