@@ -1,0 +1,40 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+bumpversion = "==0.5.3"
+watchdog = "==0.9.0"
+flake8 = "==3.7.7"
+tox = "==3.7.0"
+coverage = "==4.5.2"
+docutils = "==0.14"
+cryptography = "==2.5"
+mypy = "==0.670"
+pytest = "==4.3.0"
+hypothesis = "==4.7.12"
+beautifulsoup4 = "==4.7.1"
+gevent = "==1.4.0"
+stem = "==1.7.1"
+lxml = "==4.3.1"
+click = "==7.0"
+urllib3 = {extras = ["secure"],version = "==1.24.1"}
+Sphinx = "==1.8.4"
+PyYAML = "==5.1b1"
+PySocks = "==1.6.8"
+
+[packages]
+urllib3 = {extras = ["secure"],version = "==1.24.1"}
+beautifulsoup4 = "==4.7.1"
+gevent = "==1.4.0"
+stem = "==1.7.1"
+lxml = "==4.3.1"
+click = "==7.0"
+PySocks = "==1.6.8"
+
+[requires]
+python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
