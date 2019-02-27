@@ -156,6 +156,8 @@ class LyricsProvider:
 
         :param artist: string
             Artist name.
+        :param song:
+        :param album:
         :return: models.Discography object or None.
         """
 
@@ -281,7 +283,7 @@ class LyricsProvider:
         pass
 
     @abstractmethod
-    def extract_lyrics(self, song):
+    def extract_lyrics(self, lyrics_page):
         """
         Must be implemented by children classes conforming to the LyricsMaster API.
 
@@ -498,7 +500,7 @@ class AzLyrics(LyricsProvider):
         """
         Check if the artist is in the lyrics provider's database.
 
-        :param lyrics_page:
+        :param page:
         :return: bool.
         """
         if page.find("div", {'id': 'listAlbum'}):
@@ -510,7 +512,7 @@ class AzLyrics(LyricsProvider):
         """
         Checks if the lyrics provider has the lyrics for the song or not.
 
-        :param lyrics_page:
+        :param page:
         :return: bool.
         """
         artist_result = page.find("div", {'class': 'panel-heading'})
@@ -665,7 +667,7 @@ class Genius(LyricsProvider):
         """
         Checks if the lyrics provider has the lyrics for the song or not.
 
-        :param lyrics_page:
+        :param page:
         :return: bool.
         """
         if page.find("div", {'class': 'song_body-lyrics'}):
@@ -677,7 +679,7 @@ class Genius(LyricsProvider):
         """
         Check if the artist is in the lyrics provider's database.
 
-        :param lyrics_page:
+        :param page:
         :return: bool.
         """
         if not page.find("div", {'class': 'render_404'}):
@@ -822,7 +824,7 @@ class Lyrics007(LyricsProvider):
         """
         Checks if the lyrics provider has the lyrics for the song or not.
 
-        :param lyrics_page:
+        :param page:
         :return: bool.
         """
         if page.find("div", {'class': 'lyrics'}):
@@ -834,7 +836,7 @@ class Lyrics007(LyricsProvider):
         """
         Check if the artist is in the lyrics provider's database.
 
-        :param lyrics_page:
+        :param page:
         :return: bool.
         """
         if page.find("ul", {'class': 'song_title'}):
@@ -846,7 +848,7 @@ class Lyrics007(LyricsProvider):
         """
         Check if the artist is in the lyrics provider's database.
 
-        :param lyrics_page:
+        :param page:
         :return: bool.
         """
         artist_link = page.find("div", {'id': 'search_result'}).find('a')
@@ -868,7 +870,8 @@ class Lyrics007(LyricsProvider):
         """
         Searches for the artist in the supplier's database.
 
-        :param raw_artist_page: Artist's raw html page.
+        :param artist: string.
+            Artist's name.
         :return: string or None.
             Artist's url page.
         """
@@ -999,7 +1002,7 @@ class MusixMatch(LyricsProvider):
         """
         Checks if the lyrics provider has the lyrics for the song or not.
 
-        :param lyrics_page:
+        :param page:
         :return: bool.
         """
         if page.find("p", {'class': 'mxm-lyrics__content '}):
@@ -1011,7 +1014,7 @@ class MusixMatch(LyricsProvider):
         """
         Check if the artist is in the lyrics provider's database.
 
-        :param lyrics_page:
+        :param page:
         :return: bool.
         """
         if page.find("div", {'class': 'artist-page main-wrapper'}):
@@ -1136,6 +1139,7 @@ class MusixMatch(LyricsProvider):
         if text[-1] == '-':
             text = text[:-1]
         return text
+
 
 if __name__ == "__main__":
     pass
