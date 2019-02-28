@@ -1007,7 +1007,7 @@ class MusixMatch(LyricsProvider):
         :param page: BeautifulSoup object.
         :return: bool.
         """
-        if page.find("p", {'class': 'mxm-lyrics__content '}):
+        if page.find("div", {'class': 'mxm-lyrics'}):
             return True
         else:
             return False
