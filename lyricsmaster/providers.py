@@ -899,7 +899,8 @@ class Lyrics007(LyricsProvider):
             List of BeautifulSoup objects.
         """
         artist_page = BeautifulSoup(raw_artist_page, 'lxml')
-        albums = [tag for tag in artist_page.find_all('li') if tag.find('b')]
+        content = artist_page.find("div", {'class': 'content'})
+        albums = [tag for tag in content.find_all('li', recursive=False)]
         return albums
 
     def get_album_infos(self, tag):
@@ -910,8 +911,12 @@ class Lyrics007(LyricsProvider):
         :return: tuple(string, string).
             Album title and release date.
         """
-        # TODO: Verify order of release_date, album_title = tag.text.split(': ')
-        release_date, album_title = tag.text.split(': ')
+        infos = tag.text.split(': ')
+        if len(infos) == 2:
+            release_date, album_title = infos
+        else:
+            release_date = 'Unknown'
+            album_title = infos
         return album_title, release_date
 
     def get_songs(self, album):
