@@ -272,9 +272,9 @@ class LyricsProvider:
         :param artist: string
             Artist name.
         :param album string
-            Album title.:
+            Album title.
         :param song string
-            Song title.:
+            Song title.
         :return: models.Discography object or None.
         """
 
