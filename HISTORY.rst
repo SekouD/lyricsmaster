@@ -3,6 +3,12 @@ History
 =======
 
 
+2.7.23 (2019-02-28)
+-------------------
+
+* Updated lyricsmaster to reflect changes in MusixMatch and Lyrics007 APIs.
+* Updated dependencies.
+
 2.7.22 (2018-11-18)
 -------------------
 
