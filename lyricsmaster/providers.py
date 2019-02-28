@@ -35,6 +35,7 @@ except ImportError:
 from .models import Song, Album, Discography
 from .utils import normalize
 
+
 class LyricsProvider:
     """
     This is the base class for all Lyrics Providers. If you wish to subclass this class, you must implement all
@@ -90,7 +91,7 @@ class LyricsProvider:
 
         Checks if the lyrics provider has the lyrics for the song or not.
 
-        :param page:
+        :param page: BeautifulSoup object.
         :return: bool.
         """
         pass
@@ -102,7 +103,7 @@ class LyricsProvider:
 
         Check if the artist is in the lyrics provider's database.
 
-        :param page:
+        :param page: BeautifulSoup object.
         :return: bool.
         """
         pass
@@ -114,7 +115,7 @@ class LyricsProvider:
 
         Builds an url for the artist page of the lyrics provider.
 
-        :param artist:
+        :param artist: string.
         :return: string or None.
         """
         pass
@@ -130,106 +131,6 @@ class LyricsProvider:
         :return: string or None.
         """
         pass
-
-    def get_page(self, url):
-        """
-        Fetches the supplied url and returns a request object.
-
-        :param url: string.
-        :return: urllib3.response.HTTPResponse Object or None.
-        """
-        if not self.__socket_is_patched():
-            gevent.monkey.patch_socket()
-        try:
-            req = self.session.request('GET', url)
-        except Exception as e:
-            print(e)
-            req = None
-            print('Unable to download url ' + url)
-        return req
-
-    def get_lyrics(self, artist, album=None, song=None):
-        """
-        This is the main method of this class.
-        Connects to the Lyrics Provider and downloads lyrics for all the albums of the supplied artist and songs.
-        Returns a Discography Object or None if the artist was not found on the Lyrics Provider.
-
-        :param artist: string
-            Artist name.
-        :param album string
-            Album title.:
-        :param song string
-            Song title.:
-        :return: models.Discography object or None.
-        """
-
-        raw_html = self.get_artist_page(artist)
-        if not raw_html:
-            print('{0} was not found on {1}'.format(artist, self.name))
-            return None
-        albums = self.get_albums(raw_html)
-        if album:
-            # If user supplied a specific album
-            albums = [elmt for elmt in albums if album.lower() in self.get_album_infos(elmt)[0].lower()]
-        album_objects = []
-        for elmt in albums:
-            try:
-                album_title, release_date = self.get_album_infos(elmt)
-            except ValueError as e:
-                print('Error {0} while downloading {1}'.format(e, album_title))
-                continue
-            song_links = self.get_songs(elmt)
-            if song:
-                # If user supplied a specific song
-                song_links = [link for link in song_links if song.lower() in link.text.lower()]
-            if self.tor_controller and self.tor_controller.controlport:
-                # Renew Tor circuit before starting downloads.
-                self.tor_controller.renew_tor_circuit()
-                self.session = self.tor_controller.get_tor_session()
-            print('Downloading {0}'.format(album_title))
-            pool = Pool(25)  # Sets the worker pool for async requests. 25 is a nice value to not annoy site owners ;)
-            results = [pool.spawn(self.create_song, *(link, artist, album_title)) for link in song_links]
-            pool.join()  # Gathers results from the pool
-            songs = [song.value for song in results]
-            album_obj = Album(album_title, artist, songs, release_date)
-            album_objects.append(album_obj)
-            print('{0} succesfully downloaded'.format(album_title))
-        discography = Discography(artist, album_objects)
-        return discography
-
-    def get_artist_page(self, artist):
-        """
-        Fetches the web page for the supplied artist.
-
-        :param artist: string.
-            Artist name.
-        :return: string or None.
-            Artist's raw html page. None if the artist page was not found.
-        """
-        artist = self._clean_string(artist)
-        url = self._make_artist_url(artist)
-        if not url:
-            return None
-        raw_html = self.get_page(url).data
-        artist_page = BeautifulSoup(raw_html, 'lxml')
-        if not self._has_artist(artist_page):
-            return None
-        return raw_html
-
-    def get_lyrics_page(self, url):
-        """
-        Fetches the web page containing the lyrics at the supplied url.
-
-        :param url: string.
-            Lyrics url.
-        :return: string or None.
-            Lyrics's raw html page. None if the lyrics page was not found.
-        """
-        raw_html = self.get_page(url).data
-        lyrics_page = BeautifulSoup(raw_html, 'lxml')
-        if not self._has_lyrics(lyrics_page):
-            return None
-        return raw_html
 
     @abstractmethod
     def get_albums(self, raw_artist_page):
@@ -311,6 +212,106 @@ class LyricsProvider:
         """
         pass
 
+    def get_page(self, url):
+        """
+        Fetches the supplied url and returns a request object.
+
+        :param url: string.
+        :return: urllib3.response.HTTPResponse Object or None.
+        """
+        if not self.__socket_is_patched():
+            gevent.monkey.patch_socket()
+        try:
+            req = self.session.request('GET', url)
+        except Exception as e:
+            print(e)
+            req = None
+            print('Unable to download url ' + url)
+        return req
+
+    def get_artist_page(self, artist):
+        """
+        Fetches the web page for the supplied artist.
+
+        :param artist: string.
+            Artist name.
+        :return: string or None.
+            Artist's raw html page. None if the artist page was not found.
+        """
+        artist = self._clean_string(artist)
+        url = self._make_artist_url(artist)
+        if not url:
+            return None
+        raw_html = self.get_page(url).data
+        artist_page = BeautifulSoup(raw_html, 'lxml')
+        if not self._has_artist(artist_page):
+            return None
+        return raw_html
+
+    def get_lyrics_page(self, url):
+        """
+        Fetches the web page containing the lyrics at the supplied url.
+
+        :param url: string.
+            Lyrics url.
+        :return: string or None.
+            Lyrics's raw html page. None if the lyrics page was not found.
+        """
+        raw_html = self.get_page(url).data
+        lyrics_page = BeautifulSoup(raw_html, 'lxml')
+        if not self._has_lyrics(lyrics_page):
+            return None
+        return raw_html
+
+    def get_lyrics(self, artist, album=None, song=None):
+        """
+        This is the main method of this class.
+        Connects to the Lyrics Provider and downloads lyrics for all the albums of the supplied artist and songs.
+        Returns a Discography Object or None if the artist was not found on the Lyrics Provider.
+
+        :param artist: string
+            Artist name.
+        :param album string
+            Album title.:
+        :param song string
+            Song title.:
+        :return: models.Discography object or None.
+        """
+
+        raw_html = self.get_artist_page(artist)
+        if not raw_html:
+            print('{0} was not found on {1}'.format(artist, self.name))
+            return None
+        albums = self.get_albums(raw_html)
+        if album:
+            # If user supplied a specific album
+            albums = [elmt for elmt in albums if album.lower() in self.get_album_infos(elmt)[0].lower()]
+        album_objects = []
+        for elmt in albums:
+            try:
+                album_title, release_date = self.get_album_infos(elmt)
+            except ValueError as e:
+                print('Error {0} while downloading {1}'.format(e, album_title))
+                continue
+            song_links = self.get_songs(elmt)
+            if song:
+                # If user supplied a specific song
+                song_links = [link for link in song_links if song.lower() in link.text.lower()]
+            if self.tor_controller and self.tor_controller.controlport:
+                # Renew Tor circuit before starting downloads.
+                self.tor_controller.renew_tor_circuit()
+                self.session = self.tor_controller.get_tor_session()
+            print('Downloading {0}'.format(album_title))
+            pool = Pool(25)  # Sets the worker pool for async requests. 25 is a nice value to not annoy site owners ;)
+            results = [pool.spawn(self.create_song, *(link, artist, album_title)) for link in song_links]
+            pool.join()  # Gathers results from the pool
+            songs = [song.value for song in results]
+            album_obj = Album(album_title, artist, songs, release_date)
+            album_objects.append(album_obj)
+            print('{0} succesfully downloaded'.format(album_title))
+        discography = Discography(artist, album_objects)
+        return discography
+
 
 class LyricWiki(LyricsProvider):
     """
@@ -325,7 +326,7 @@ class LyricWiki(LyricsProvider):
         """
         Checks if the lyrics provider has the lyrics for the song or not.
 
-        :param lyrics_page:
+        :param lyrics_page: BeautifulSoup object.
         :return: bool.
         """
         return not lyrics_page.find("div", {'class': 'noarticletext'})
@@ -336,7 +337,7 @@ class LyricWiki(LyricsProvider):
         """
         Builds an url for the artist page of the lyrics provider.
 
-        :param artist:
+        :param artist: string.
         :return: string.
         """
         url = self.base_url + '/wiki/' + artist
@@ -489,7 +490,7 @@ class AzLyrics(LyricsProvider):
         """
         Checks if the lyrics provider has the lyrics for the song or not.
 
-        :param lyrics_page:
+        :param lyrics_page: BeautifulSoup object.
         :return: bool.
         """
         if lyrics_page.find("div", {'class': 'lyricsh'}):
@@ -501,7 +502,7 @@ class AzLyrics(LyricsProvider):
         """
         Check if the artist is in the lyrics provider's database.
 
-        :param page:
+        :param page: BeautifulSoup object.
         :return: bool.
         """
         if page.find("div", {'id': 'listAlbum'}):
@@ -513,7 +514,7 @@ class AzLyrics(LyricsProvider):
         """
         Checks if the lyrics provider has the lyrics for the song or not.
 
-        :param page:
+        :param page: BeautifulSoup object.
         :return: bool.
         """
         artist_result = page.find("div", {'class': 'panel-heading'})
@@ -526,7 +527,7 @@ class AzLyrics(LyricsProvider):
         """
         Builds an url for the artist page of the lyrics provider.
 
-        :param artist:
+        :param artist: string.
         :return: string.
         """
         return self.search(artist)
@@ -668,7 +669,7 @@ class Genius(LyricsProvider):
         """
         Checks if the lyrics provider has the lyrics for the song or not.
 
-        :param page:
+        :param page: BeautifulSoup object.
         :return: bool.
         """
         if page.find("div", {'class': 'song_body-lyrics'}):
@@ -680,7 +681,7 @@ class Genius(LyricsProvider):
         """
         Check if the artist is in the lyrics provider's database.
 
-        :param page:
+        :param page: BeautifulSoup object.
         :return: bool.
         """
         if not page.find("div", {'class': 'render_404'}):
@@ -692,7 +693,7 @@ class Genius(LyricsProvider):
         """
         Builds an url for the artist page of the lyrics provider.
 
-        :param artist:
+        :param artist: string.
         :return: string.
         """
         url = self.base_url + '/artists/' + artist
@@ -825,7 +826,7 @@ class Lyrics007(LyricsProvider):
         """
         Checks if the lyrics provider has the lyrics for the song or not.
 
-        :param page:
+        :param page: BeautifulSoup object.
         :return: bool.
         """
         if page.find("div", {'class': 'lyrics'}):
@@ -837,7 +838,7 @@ class Lyrics007(LyricsProvider):
         """
         Check if the artist is in the lyrics provider's database.
 
-        :param page:
+        :param page: BeautifulSoup object
         :return: bool.
         """
         if page.find("ul", {'class': 'song_title'}):
@@ -849,7 +850,7 @@ class Lyrics007(LyricsProvider):
         """
         Check if the artist is in the lyrics provider's database.
 
-        :param page:
+        :param page: BeautifulSoup object.
         :return: bool.
         """
         artist_link = page.find("div", {'id': 'search_result'}).find('a')
@@ -862,7 +863,7 @@ class Lyrics007(LyricsProvider):
         """
         Builds an url for the artist page of the lyrics provider.
 
-        :param artist:
+        :param artist: string.
         :return: string.
         """
         return self.search(artist)
@@ -1003,7 +1004,7 @@ class MusixMatch(LyricsProvider):
         """
         Checks if the lyrics provider has the lyrics for the song or not.
 
-        :param page:
+        :param page: BeautifulSoup object.
         :return: bool.
         """
         if page.find("p", {'class': 'mxm-lyrics__content '}):
@@ -1015,7 +1016,7 @@ class MusixMatch(LyricsProvider):
         """
         Check if the artist is in the lyrics provider's database.
 
-        :param page:
+        :param page: BeautifulSoup object.
         :return: bool.
         """
         if page.find("div", {'class': 'artist-page main-wrapper'}):
@@ -1027,7 +1028,7 @@ class MusixMatch(LyricsProvider):
         """
         Builds an url for the artist page of the lyrics provider.
 
-        :param artist:
+        :param artist: string.
         :return: string.
         """
         return self.base_url + '/artist/' + artist
