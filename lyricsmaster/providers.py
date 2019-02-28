@@ -176,7 +176,6 @@ class LyricsProvider:
             try:
                 album_title, release_date = self.get_album_infos(elmt)
             except ValueError as e:
-                pass
                 print('Error {0} while downloading {1}'.format(e, album_title))
                 continue
             song_links = self.get_songs(elmt)
