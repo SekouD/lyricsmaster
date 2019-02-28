@@ -269,11 +269,11 @@ class LyricsProvider:
         Connects to the Lyrics Provider and downloads lyrics for all the albums of the supplied artist and songs.
         Returns a Discography Object or None if the artist was not found on the Lyrics Provider.
 
-        :param artist: string
+        :param artist: string.
             Artist name.
-        :param album: string
+        :param album: string.
             Album title.
-        :param song: string
+        :param song: string.
             Song title.
         :return: models.Discography object or None.
         """
