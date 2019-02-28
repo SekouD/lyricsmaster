@@ -916,7 +916,7 @@ class Lyrics007(LyricsProvider):
             release_date, album_title = infos
         else:
             release_date = 'Unknown'
-            album_title = infos
+            album_title = infos[0]
         return album_title, release_date
 
     def get_songs(self, album):
