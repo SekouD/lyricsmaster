@@ -8,14 +8,14 @@ coverage==4.5.2
 Sphinx==1.8.4
 docutils==0.14
 cryptography==2.6.1
-PyYAML==5.1b1
+PyYAML==5.1b3
 mypy==0.670
 pytest==4.3.0
-hypothesis==4.7.15
+hypothesis==4.7.17
 beautifulsoup4==4.7.1
 gevent==1.4.0
 stem==1.7.1
-lxml==4.3.1
+lxml==4.3.2
 click==7.0
 PySocks==1.6.8
 urllib3[secure]==1.24.1
