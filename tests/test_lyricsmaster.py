@@ -44,6 +44,7 @@ python_is_outdated = '2.7' in sys.version or '3.3' in sys.version
 is_appveyor = 'APPVEYOR' in os.environ
 is_travis = 'TRAVIS' in os.environ
 
+# TODO: Fix testing bugs with AZLyrics
 providers = [MusixMatch(), LyricWiki(), Genius(), Lyrics007()]
 
 real_singer = {'name': 'The Notorious B.I.G.', 'album': 'Ready to Die (1994)',
@@ -379,7 +380,7 @@ class TestTor:
 
     # this function is tested out in travis using a unix path as a control port instead of port 9051.
     # for now gets permission denied on '/var/run/tor/control' in Travis CI
-    @pytest.mark.skipif(is_appveyor or is_travis,
+    @pytest.mark.skipif(is_travis,
                         reason="Tor error on CI.")
     def test_renew_tor_session(self):
         real_ip = self.non_anon_provider.get_page("http://httpbin.org/ip").data
@@ -389,7 +390,7 @@ class TestTor:
         real_ip2 = self.non_anon_provider.get_page("http://httpbin.org/ip").data
         anonymous_ip2 = self.provider2.get_page("http://httpbin.org/ip").data
         assert real_ip2 != anonymous_ip2
-        assert new_tor_circuit == True
+        assert new_tor_circuit is True
 
     @pytest.mark.skipif(is_appveyor,
                         reason="Tor error on ApppVeyor.")
