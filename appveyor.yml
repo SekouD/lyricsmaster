@@ -49,7 +49,7 @@ test_script:
   # to put the Python version you want to use on PATH.
   #- "%PYTHON%\\python.exe setup.py test"
   - "%PYTHON%\\python.exe -m pip install -r requirements_dev.txt"
-  - "tox"
+  - "%PYTHON%\\python.exe -m tox"
 
 after_test:
   # This step builds your wheels.
