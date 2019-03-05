@@ -11,7 +11,7 @@ cryptography==2.6.1
 PyYAML==5.1b3
 mypy==0.670
 pytest==4.3.0
-hypothesis==4.7.18
+hypothesis==4.7.19
 beautifulsoup4==4.7.1
 gevent==1.4.0
 stem==1.7.1
