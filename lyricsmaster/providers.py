@@ -476,7 +476,7 @@ class LyricWiki(LyricsProvider):
         return text
 
 
-class AzLyrics(LyricsProvider): # pragma: no cover
+class AzLyrics(LyricsProvider):  # pragma: no cover
     """
     Class interfacing with https://azlyrics.com .
     This class is used to retrieve lyrics from AzLyrics.
