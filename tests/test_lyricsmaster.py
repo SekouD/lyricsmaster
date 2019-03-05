@@ -380,7 +380,7 @@ class TestTor:
 
     # this function is tested out in travis using a unix path as a control port instead of port 9051.
     # for now gets permission denied on '/var/run/tor/control' in Travis CI
-    @pytest.mark.skipif(is_travis,
+    @pytest.mark.skipif(is_travis or is_appveyor,
                         reason="Tor error on CI.")
     def test_renew_tor_session(self):
         real_ip = self.non_anon_provider.get_page("http://httpbin.org/ip").data
