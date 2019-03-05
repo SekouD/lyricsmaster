@@ -28,8 +28,8 @@ cache:
   - '%LOCALAPPDATA%\pip\Cache -> appveyor.yml'
 
 install:
-  - ps: Invoke-WebRequest 'https://dist.torproject.org/torbrowser/8.0.3/tor-win32-0.3.4.8.zip' -OutFile C:\projects\lyricsmaster\tor-win32-0.3.4.8.zip
-  - ps: 7z e tor-win32-0.3.4.8.zip
+  - ps: Invoke-WebRequest 'https://dist.torproject.org/torbrowser/8.0.6/tor-win32-0.3.5.7.zip' -OutFile C:\projects\lyricsmaster\tor-win32-0.3.5.7.zip
+  - ps: 7z e tor-win32-0.3.5.7.zip
   - tor --service install -options -f C:\projects\lyricsmaster\torrc ControlPort 9051
   - ps: netstat -an
   - "%PYTHON%\\python.exe -m pip install wheel"
