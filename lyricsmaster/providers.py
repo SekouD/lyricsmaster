@@ -35,6 +35,9 @@ except ImportError:
 from .models import Song, Album, Discography
 from .utils import normalize
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class LyricsProvider:
     """
@@ -70,11 +73,11 @@ class LyricsProvider:
 
         """
         if not self.tor_controller:
-            print('Anonymous requests disabled. The connexion will not be anonymous.')
+            logger.debug('Anonymous requests disabled. The connexion will not be anonymous.')
         elif self.tor_controller and not self.tor_controller.controlport:
-            print('Anonymous requests enabled. The Tor circuit will change according to the Tor network defaults.')
+            logger.debug('Anonymous requests enabled. The Tor circuit will change according to the Tor network defaults.')
         else:
-            print('Anonymous requests enabled. The Tor circuit will change for each album.')
+            logger.debug('Anonymous requests enabled. The Tor circuit will change for each album.')
 
     def __socket_is_patched(self):
         """
@@ -222,11 +225,12 @@ class LyricsProvider:
         if not self.__socket_is_patched():
             gevent.monkey.patch_socket()
         try:
+            # FIXME: In Python3 throws an 'ascii' encoding error...
             req = self.session.request('GET', url)
         except Exception as e:
-            print(e)
+            logger.exception(e)
             req = None
-            print('Unable to download url ' + url)
+            logger.warning('Unable to download url ' + url)
         return req
 
     def get_artist_page(self, artist):
@@ -280,7 +284,7 @@ class LyricsProvider:
 
         raw_html = self.get_artist_page(artist)
         if not raw_html:
-            print('{0} was not found on {1}'.format(artist, self.name))
+            logger.info('{0} was not found on {1}'.format(artist, self.name))
             return None
         albums = self.get_albums(raw_html)
         if album:
@@ -291,7 +295,7 @@ class LyricsProvider:
             try:
                 album_title, release_date = self.get_album_infos(elmt)
             except ValueError as e:
-                print('Error {0} while downloading {1}'.format(e, album_title))
+                logger.info('Error {0} while downloading {1}'.format(e, album_title))
                 continue
             song_links = self.get_songs(elmt)
             if song:
@@ -301,14 +305,14 @@ class LyricsProvider:
                 # Renew Tor circuit before starting downloads.
                 self.tor_controller.renew_tor_circuit()
                 self.session = self.tor_controller.get_tor_session()
-            print('Downloading {0}'.format(album_title))
+            logger.info('Downloading {0}'.format(album_title))
             pool = Pool(25)  # Sets the worker pool for async requests. 25 is a nice value to not annoy site owners ;)
             results = [pool.spawn(self.create_song, *(link, artist, album_title)) for link in song_links]
             pool.join()  # Gathers results from the pool
             songs = [song.value for song in results]
             album_obj = Album(album_title, artist, songs, release_date)
             album_objects.append(album_obj)
-            print('{0} succesfully downloaded'.format(album_title))
+            logger.info('{0} succesfully downloaded'.format(album_title))
         discography = Discography(artist, album_objects)
         return discography
 
