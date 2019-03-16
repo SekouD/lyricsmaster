@@ -12,6 +12,10 @@ import certifi
 import gevent.monkey
 import socket
 
+import logging
+import sys
+
+
 # Python 2.7 compatibility
 # Works for Python 2 and 3
 try:
@@ -28,6 +32,17 @@ try:
     basestring
 except NameError:
     basestring = str
+
+logger = logging.getLogger(__name__)
+
+# create console and error handler and set level to debug
+console_handler = logging.StreamHandler(sys.stdout)
+error_handler = logging.StreamHandler(sys.stderr)
+console_handler.setLevel(logging.INFO)
+error_handler.setLevel(logging.ERROR)
+logger.addHandler(console_handler)
+logger.addHandler(error_handler)
+logger.setLevel(logging.INFO)
 
 
 def normalize(value):
@@ -123,11 +138,11 @@ class TorController:
             controller.authenticate(password=password)
             if controller.is_newnym_available():  # true if tor would currently accept a NEWNYM signal.
                 controller.signal(Signal.NEWNYM)
-                print('New Tor circuit created')
+                logger.info('New Tor circuit created')
                 result = True
             else:
                 delay = controller.get_newnym_wait()
-                print('Delay to create new Tor circuit: {0}s'.format(delay))
+                logger.warning('Delay to create new Tor circuit: {0}s'.format(delay))
                 result = False
             return result
 

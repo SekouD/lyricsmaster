@@ -33,11 +33,8 @@ except ImportError:
 
 # Importing the app models and utilities
 from .models import Song, Album, Discography
-from .utils import normalize
+from .utils import normalize, logger
 
-import logging
-
-logger = logging.getLogger(__name__)
 
 class LyricsProvider:
     """
@@ -73,11 +70,11 @@ class LyricsProvider:
 
         """
         if not self.tor_controller:
-            logger.debug('Anonymous requests disabled. The connexion will not be anonymous.')
+            logger.info('Anonymous requests disabled. The connexion will not be anonymous.')
         elif self.tor_controller and not self.tor_controller.controlport:
-            logger.debug('Anonymous requests enabled. The Tor circuit will change according to the Tor network defaults.')
+            logger.info('Anonymous requests enabled. The Tor circuit will change according to the Tor network defaults.')
         else:
-            logger.debug('Anonymous requests enabled. The Tor circuit will change for each album.')
+            logger.info('Anonymous requests enabled. The Tor circuit will change for each album.')
 
     def __socket_is_patched(self):
         """
@@ -284,7 +281,7 @@ class LyricsProvider:
 
         raw_html = self.get_artist_page(artist)
         if not raw_html:
-            logger.info('{0} was not found on {1}'.format(artist, self.name))
+            logger.warning('{0} was not found on {1}'.format(artist, self.name))
             return None
         albums = self.get_albums(raw_html)
         if album:
@@ -295,7 +292,7 @@ class LyricsProvider:
             try:
                 album_title, release_date = self.get_album_infos(elmt)
             except ValueError as e:
-                logger.info('Error {0} while downloading {1}'.format(e, album_title))
+                logger.warning('Error {0} while downloading {1}'.format(e, album_title))
                 continue
             song_links = self.get_songs(elmt)
             if song:
