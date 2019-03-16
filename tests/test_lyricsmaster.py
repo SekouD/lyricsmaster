@@ -417,7 +417,6 @@ class TestTor:
                                      '--controlport', '9051', '--password',
                                      'password'])
         assert result_tor1.exit_code == 0
-        assert 'Downloading Why $#!+ So Crazy?' in result_tor1.output
 
     @pytest.mark.skipif(is_appveyor,
                         reason="Tor error on ApppVeyor.")
@@ -427,4 +426,3 @@ class TestTor:
         result_tor = runner.invoke(cli.main, [artist, '-a', 'Why $#!+ So Crazy?', '-s',
                                               'Fuck Shit Stack', '--tor', '127.0.0.1'])
         assert result_tor.exit_code == 0
-        assert 'Downloading Why $#!+ So Crazy?' in result_tor.output
