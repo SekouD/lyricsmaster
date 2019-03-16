@@ -33,7 +33,7 @@ try:
 except NameError:
     basestring = str
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__.split('.')[0])
 
 # create console and error handler and set level to debug
 console_handler = logging.StreamHandler(sys.stdout)
