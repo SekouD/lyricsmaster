@@ -13,6 +13,7 @@ from abc import ABCMeta, abstractmethod
 
 import re
 import urllib3
+from urllib.parse import quote, urlsplit, urlunsplit
 import certifi
 from bs4 import BeautifulSoup
 
@@ -222,7 +223,9 @@ class LyricsProvider:
         if not self.__socket_is_patched():
             gevent.monkey.patch_socket()
         try:
-            # FIXME: In Python3 throws an 'ascii' encoding error...
+            split_url = list(urlsplit(url))
+            split_url[2] = quote(split_url[2])
+            url = urlunsplit(split_url)
             req = self.session.request('GET', url)
         except Exception as e:
             logger.exception(e)
