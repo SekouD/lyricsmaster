@@ -13,6 +13,7 @@ from abc import ABCMeta, abstractmethod
 
 import re
 import urllib3
+from urllib.parse import quote, urlsplit, urlunsplit
 import certifi
 from bs4 import BeautifulSoup
 
@@ -222,7 +223,9 @@ class LyricsProvider:
         if not self.__socket_is_patched():
             gevent.monkey.patch_socket()
         try:
-            # FIXME: In Python3 throws an 'ascii' encoding error...
+            split_url = list(urlsplit(url))
+            split_url[2] = quote(split_url[2])
+            url = urlunsplit(split_url)
             req = self.session.request('GET', url)
         except Exception as e:
             logger.exception(e)
@@ -302,14 +305,15 @@ class LyricsProvider:
                 # Renew Tor circuit before starting downloads.
                 self.tor_controller.renew_tor_circuit()
                 self.session = self.tor_controller.get_tor_session()
-            logger.info('Downloading {0}'.format(album_title))
-            pool = Pool(25)  # Sets the worker pool for async requests. 25 is a nice value to not annoy site owners ;)
-            results = [pool.spawn(self.create_song, *(link, artist, album_title)) for link in song_links]
-            pool.join()  # Gathers results from the pool
-            songs = [song.value for song in results]
-            album_obj = Album(album_title, artist, songs, release_date)
-            album_objects.append(album_obj)
-            logger.info('{0} succesfully downloaded'.format(album_title))
+            if song_links:
+                logger.info('Downloading {0}'.format(album_title))
+                pool = Pool(25)  # Sets the worker pool for async requests. 25 is a nice value to not annoy site owners ;)
+                results = [pool.spawn(self.create_song, *(link, artist, album_title)) for link in song_links]
+                pool.join()  # Gathers results from the pool
+                songs = [song.value for song in results]
+                album_obj = Album(album_title, artist, songs, release_date)
+                album_objects.append(album_obj)
+                logger.info('{0} successfully downloaded'.format(album_title))
         discography = Discography(artist, album_objects)
         return discography
 
