@@ -298,6 +298,7 @@ class LyricsProvider:
                 logger.warning('Error {0} while downloading {1}'.format(e, album_title))
                 continue
             song_links = self.get_songs(elmt)
+            song_links = [link for link in song_links if link]
             if song:
                 # If user supplied a specific song
                 song_links = [link for link in song_links if song.lower() in link.text.lower()]

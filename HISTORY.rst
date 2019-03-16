@@ -3,6 +3,13 @@ History
 =======
 
 
+2.7.24 (2019-03-16)
+-------------------
+
+* Fixed bug when trying to download lyrics from urls containing unicode characters. (see https://github.com/SekouD/lyricsmaster/issues/211)
+* Replaced use of print() with Python logging facilities.
+* Updated dependencies.
+
 2.7.23 (2019-02-28)
 -------------------
 
