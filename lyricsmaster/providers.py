@@ -247,7 +247,7 @@ class LyricsProvider:
         if not url:
             return None
         raw_html = self.get_page(url).data
-        artist_page = BeautifulSoup(raw_html, 'lxml')
+        artist_page = BeautifulSoup(raw_html.decode('utf-8', 'ignore'), 'lxml')
         if not self._has_artist(artist_page):
             return None
         return raw_html
@@ -262,7 +262,7 @@ class LyricsProvider:
             Lyrics's raw html page. None if the lyrics page was not found.
         """
         raw_html = self.get_page(url).data
-        lyrics_page = BeautifulSoup(raw_html, 'lxml')
+        lyrics_page = BeautifulSoup(raw_html.decode('utf-8', 'ignore'), 'lxml')
         if not self._has_lyrics(lyrics_page):
             return None
         return raw_html
@@ -311,10 +311,13 @@ class LyricsProvider:
                 pool = Pool(25)  # Sets the worker pool for async requests. 25 is a nice value to not annoy site owners ;)
                 results = [pool.spawn(self.create_song, *(link, artist, album_title)) for link in song_links]
                 pool.join()  # Gathers results from the pool
-                songs = [song.value for song in results]
-                album_obj = Album(album_title, artist, songs, release_date)
-                album_objects.append(album_obj)
-                logger.info('{0} successfully downloaded'.format(album_title))
+                songs = [song.value for song in results if song.value]
+                if songs:
+                    album_obj = Album(album_title, artist, songs, release_date)
+                    album_objects.append(album_obj)
+                    logger.info('{0} successfully downloaded'.format(album_title))
+                else:
+                    logger.info('Skipped downloading {0} as no lyrics matched.'.format(album_title))
         discography = Discography(artist, album_objects)
         return discography
 
@@ -1052,10 +1055,10 @@ class MusixMatch(LyricsProvider):
         :return: list.
             List of BeautifulSoup objects.
         """
-        artist_page = BeautifulSoup(raw_artist_page, 'lxml')
+        artist_page = BeautifulSoup(raw_artist_page.decode('utf-8', 'ignore'), 'lxml')
         albums_link = artist_page.find("li", {'id': 'albums'})
         albums_link = albums_link.find('a').attrs['href']
-        albums_page = BeautifulSoup(self.get_page(self.base_url + albums_link).data, 'lxml')
+        albums_page = BeautifulSoup(self.get_page(self.base_url + albums_link).data.decode('utf-8', 'ignore'), 'lxml')
         albums = [tag for tag in albums_page.find_all("div", {'class': 'media-card-text'})]
         return albums
 
@@ -1081,7 +1084,7 @@ class MusixMatch(LyricsProvider):
         :param album: BeautifulSoup object.
         :return: List of BeautifulSoup Link objects.
         """
-        album_page = BeautifulSoup(self.get_page(self.base_url + album.find('a').attrs['href']).data, 'lxml')
+        album_page = BeautifulSoup(self.get_page(self.base_url + album.find('a').attrs['href']).data.decode('utf-8', 'ignore'), 'lxml')
         album_div = album_page.find("div", {'class': 'mxm-album__tracks mxm-collection-container'})
         song_links = album_div.find_all("li", {'class': re.compile("^mui-collection__item")})
         song_links = [song.find('a') for song in song_links]
@@ -1104,8 +1107,10 @@ class MusixMatch(LyricsProvider):
         raw_lyrics_page = self.get_lyrics_page(song_url)
         if not raw_lyrics_page:
             return None
-        lyrics_page = BeautifulSoup(raw_lyrics_page, 'lxml')
+        lyrics_page = BeautifulSoup(raw_lyrics_page.decode('utf-8', 'ignore'), 'lxml')
         lyrics = self.extract_lyrics(lyrics_page)
+        if not lyrics:
+            return None
         writers = self.extract_writers(lyrics_page)
         song = Song(song_title, album_title, artist, lyrics, writers)
         return song
@@ -1119,8 +1124,11 @@ class MusixMatch(LyricsProvider):
         :return: string.
             Formatted lyrics.
         """
-        lyric_box = lyrics_page.find("p", {'class': re.compile("^mxm-lyrics__content")})
-        lyrics = '\n'.join(lyric_box.strings)
+        lyric_box = lyrics_page.find_all("p", {'class': re.compile("^mxm-lyrics__content")})
+        if lyric_box:
+            lyrics = '\n'.join((elmt.string for elmt in lyric_box))
+        else:
+            lyrics = None
         return lyrics
 
     def extract_writers(self, lyrics_page):
