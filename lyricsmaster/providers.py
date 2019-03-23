@@ -224,7 +224,7 @@ class LyricsProvider:
             gevent.monkey.patch_socket()
         try:
             split_url = list(urlsplit(url))
-            split_url[2] = quote(split_url[2])
+            split_url[2:] = [quote(elmt, safe='/=')for elmt in split_url[2:]]
             url = urlunsplit(split_url)
             req = self.session.request('GET', url)
         except Exception as e:
