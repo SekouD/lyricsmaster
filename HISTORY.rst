@@ -3,6 +3,14 @@ History
 =======
 
 
+2.7.25 (2019-03-23)
+-------------------
+
+* Enhanced support for utf-8 characters even when the html encoding has wrong information. (see https://github.com/SekouD/lyricsmaster/issues/211)
+* Fixed MusixMatch bug when only the first sentence of some lyrics was parsed.
+* updated logger configuration to avoid repeated logs when lyricsmaster was used as a library instead of standalone.
+* Updated dependencies.
+
 2.7.24 (2019-03-16)
 -------------------
 
