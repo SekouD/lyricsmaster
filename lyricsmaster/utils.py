@@ -35,14 +35,9 @@ except NameError:
 
 logger = logging.getLogger(__name__.split('.')[0])
 
-# create console and error handler and set level to debug
-console_handler = logging.StreamHandler(sys.stdout)
-error_handler = logging.StreamHandler(sys.stderr)
-console_handler.setLevel(logging.INFO)
-error_handler.setLevel(logging.ERROR)
-logger.addHandler(console_handler)
-logger.addHandler(error_handler)
-logger.setLevel(logging.INFO)
+level = 'WARNING'
+fmt = '\r%(asctime)s%(levelname)8s%(filename)15s %(lineno)4s: %(message)s'
+logging.basicConfig(format=fmt, level=level)
 
 
 def normalize(value):
