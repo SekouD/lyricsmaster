@@ -13,4 +13,6 @@ https://github.com/SekouD/
 Contributors
 ------------
 
-None yet. Why not be the first?
+* The logo was designed by estribiyo_.
+
+.. _estribiyo: https://github.com/estribiyo
