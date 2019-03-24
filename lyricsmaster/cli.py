@@ -8,17 +8,6 @@ from .utils import TorController
 import sys
 import logging
 
-logger = logging.getLogger(__name__.split('.')[0])
-
-# create console handler and set level to debug
-console_handler = logging.StreamHandler(sys.stdout)
-error_handler = logging.StreamHandler(sys.stderr)
-console_handler.setLevel(logging.INFO)
-error_handler.setLevel(logging.ERROR)
-logger.addHandler(console_handler)
-logger.addHandler(error_handler)
-logger.setLevel(logging.INFO)
-
 
 @click.command()
 @click.argument('artist_name')
@@ -33,6 +22,16 @@ logger.setLevel(logging.INFO)
 @click.option('--password', default='', help='Password for Tor ControlPort.', type=click.STRING)
 def main(artist_name, provider, album, song, folder, tor, socksport, controlport, controlpath, password):
     """Console script for lyricsmaster."""
+    logger = logging.getLogger(__name__.split('.')[0])
+
+    # create console handler and set level to debug
+    console_handler = logging.StreamHandler(sys.stdout)
+    error_handler = logging.StreamHandler(sys.stderr)
+    console_handler.setLevel(logging.INFO)
+    error_handler.setLevel(logging.ERROR)
+    logger.addHandler(console_handler)
+    logger.addHandler(error_handler)
+    logger.setLevel(logging.INFO)
     provider = getattr(lyricsmaster, provider)
     if tor:
         if controlport:
