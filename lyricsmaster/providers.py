@@ -494,6 +494,7 @@ class AzLyrics(LyricsProvider):  # pragma: no cover
     base_url = 'https://www.azlyrics.com'
     search_url = 'https://search.azlyrics.com/search.php?q='
     name = 'AzLyrics'
+    # TODO: Fix bug due to change in AzLyrics layout.
 
     def _has_lyrics(self, lyrics_page):
         """
