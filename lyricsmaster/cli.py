@@ -5,7 +5,19 @@
 import click
 import lyricsmaster
 from .utils import TorController
+import sys
+import logging
 
+logger = logging.getLogger(__name__.split('.')[0])
+
+# create console handler and set level to debug
+console_handler = logging.StreamHandler(sys.stdout)
+error_handler = logging.StreamHandler(sys.stderr)
+console_handler.setLevel(logging.INFO)
+error_handler.setLevel(logging.ERROR)
+logger.addHandler(console_handler)
+logger.addHandler(error_handler)
+logger.setLevel(logging.INFO)
 
 
 @click.command()
