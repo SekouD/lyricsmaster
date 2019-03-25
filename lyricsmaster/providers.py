@@ -261,7 +261,10 @@ class LyricsProvider:
         :return: string or None.
             Lyrics's raw html page. None if the lyrics page was not found.
         """
-        raw_html = self.get_page(url).data
+        try:
+            raw_html = self.get_page(url).data
+        except AttributeError:
+            return None
         lyrics_page = BeautifulSoup(raw_html.decode('utf-8', 'ignore'), 'lxml')
         if not self._has_lyrics(lyrics_page):
             return None
@@ -494,7 +497,6 @@ class AzLyrics(LyricsProvider):  # pragma: no cover
     base_url = 'https://www.azlyrics.com'
     search_url = 'https://search.azlyrics.com/search.php?q='
     name = 'AzLyrics'
-    # TODO: Fix bug due to change in AzLyrics layout.
 
     def _has_lyrics(self, lyrics_page):
         """
@@ -557,6 +559,8 @@ class AzLyrics(LyricsProvider):  # pragma: no cover
         search_results = self.get_page(url).data
         results_page = BeautifulSoup(search_results.decode('utf-8', 'ignore'), 'lxml')
         if not self._has_artist_result(results_page):
+            # TODO: The bug with AzLyrics occurs when an artist doesn't have an artist page but has songs on the service
+            # TODO: Handle case of Song Results only. Raise exception and treat Song results as an album.
             return None
         target_node = results_page.find("div", {'class': 'panel-heading'}).find_next_sibling("table")
         artist_url = target_node.find('a').attrs['href']
@@ -646,9 +650,9 @@ class AzLyrics(LyricsProvider):  # pragma: no cover
         :return: string or None.
             Song writers or None.
         """
-        writers_box = lyrics_page.find("div", {'class': 'smt'})
+        writers_box = lyrics_page.find_all("div", {'class': 'smt'})
         if writers_box:
-            writers = writers_box.text.strip()
+            writers = writers_box[-1].text.strip()
         else:
             writers = None
         return writers
