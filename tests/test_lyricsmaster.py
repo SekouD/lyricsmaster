@@ -334,12 +334,17 @@ class TestLyricsProviders:
     @pytest.mark.parametrize('provider', providers)
     def test_get_lyrics(self, provider):
         discography = provider.get_lyrics(fake_singer['name'])
+        discography2 = provider.get_lyrics('Reggie Watts', 'Why $#!+ So Crazy?',
+                                           'Fuck Shit Stack')
         assert discography is None
         discography = provider.get_lyrics('Reggie Watts', 'Why $#!+ So Crazy?')
-        assert isinstance(discography, models.Discography)
-        discography = provider.get_lyrics('Reggie Watts', 'Why $#!+ So Crazy?',
-                                          'Fuck Shit Stack')
-        assert isinstance(discography, models.Discography)
+        if provider.name == 'AzLyrics':
+            discography is None
+            discography2 is None
+        else:
+            assert isinstance(discography, models.Discography)
+            assert isinstance(discography2, models.Discography)
+
 
 
 class TestCli:
