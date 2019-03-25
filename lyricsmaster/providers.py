@@ -896,6 +896,7 @@ class Lyrics007(LyricsProvider):
         search_results = self.get_page(url).data
         results_page = BeautifulSoup(search_results.decode('utf-8', 'ignore'), 'lxml')
         if not self._has_artist_result(results_page):
+            # TODO: Lyrics007 disabled the search interface. Fix or remove from library.
             return None
         artist_url = results_page.find("div", {'id': 'search_result'}).find('a').attrs['href']
         if not artist_url:
