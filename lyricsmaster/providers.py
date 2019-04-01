@@ -535,6 +535,19 @@ class AzLyrics(LyricsProvider):
         else:
             return False
 
+    def _has_song_result(self, page):
+        """
+        Checks if the lyrics provider has the lyrics for the song or not.
+
+        :param page: BeautifulSoup object.
+        :return: bool.
+        """
+        artist_result = page.find("div", {'class': 'panel-heading'})
+        if artist_result.find('b').text == 'Song results:':
+            return True
+        else:
+            return False
+
     def _make_artist_url(self, artist):
         """
         Builds an url for the artist page of the lyrics provider.
@@ -559,8 +572,6 @@ class AzLyrics(LyricsProvider):
         search_results = self.get_page(url).data
         results_page = BeautifulSoup(search_results.decode('utf-8', 'ignore'), 'lxml')
         if not self._has_artist_result(results_page):
-            # TODO: The bug with AzLyrics occurs when an artist doesn't have an artist page but has songs on the service
-            # TODO: Handle case of Song Results only. Raise exception and treat Song results as an album.
             return None
         target_node = results_page.find("div", {'class': 'panel-heading'}).find_next_sibling("table")
         artist_url = target_node.find('a').attrs['href']
@@ -896,7 +907,6 @@ class Lyrics007(LyricsProvider):
         search_results = self.get_page(url).data
         results_page = BeautifulSoup(search_results.decode('utf-8', 'ignore'), 'lxml')
         if not self._has_artist_result(results_page):
-            # TODO: Lyrics007 disabled the search interface. Fix or remove from library.
             return None
         artist_url = results_page.find("div", {'id': 'search_result'}).find('a').attrs['href']
         if not artist_url:

@@ -32,7 +32,11 @@ def main(artist_name, provider, album, song, folder, tor, socksport, controlport
     logger.addHandler(console_handler)
     logger.addHandler(error_handler)
     logger.setLevel(logging.INFO)
-    provider = getattr(lyricsmaster, provider)
+    try:
+        provider = lyricsmaster.CURRENT_PROVIDERS[provider.lower()]
+    except KeyError as e:
+        logger.warning('The provider {0} is not supported'.format(provider))
+        return
     if tor:
         if controlport:
             provider_instance = provider(
