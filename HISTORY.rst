@@ -3,6 +3,13 @@ History
 =======
 
 
+2.8 (2019-03-31)
+-------------------
+
+* Enhanced support for utf-8 characters even when the html encoding has wrong information. (see https://github.com/SekouD/lyricsmaster/issues/211)
+* Fixed AzLyrics bug when Artist had song but no album on the service.
+* Updated dependencies.
+
 2.7.25 (2019-03-23)
 -------------------
 

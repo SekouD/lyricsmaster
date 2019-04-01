@@ -224,7 +224,7 @@ class LyricsProvider:
             gevent.monkey.patch_socket()
         try:
             split_url = list(urlsplit(url))
-            split_url[2] = quote(split_url[2])
+            split_url[2:] = [quote(elmt, safe='/=+&%') for elmt in split_url[2:]]
             url = urlunsplit(split_url)
             req = self.session.request('GET', url)
         except Exception as e:
@@ -261,7 +261,10 @@ class LyricsProvider:
         :return: string or None.
             Lyrics's raw html page. None if the lyrics page was not found.
         """
-        raw_html = self.get_page(url).data
+        try:
+            raw_html = self.get_page(url).data
+        except AttributeError:
+            return None
         lyrics_page = BeautifulSoup(raw_html.decode('utf-8', 'ignore'), 'lxml')
         if not self._has_lyrics(lyrics_page):
             return None
@@ -485,7 +488,7 @@ class LyricWiki(LyricsProvider):
         return text
 
 
-class AzLyrics(LyricsProvider):  # pragma: no cover
+class AzLyrics(LyricsProvider):
     """
     Class interfacing with https://azlyrics.com .
     This class is used to retrieve lyrics from AzLyrics.
@@ -528,6 +531,19 @@ class AzLyrics(LyricsProvider):  # pragma: no cover
         """
         artist_result = page.find("div", {'class': 'panel-heading'})
         if artist_result.find('b').text == 'Artist results:':
+            return True
+        else:
+            return False
+
+    def _has_song_result(self, page):
+        """
+        Checks if the lyrics provider has the lyrics for the song or not.
+
+        :param page: BeautifulSoup object.
+        :return: bool.
+        """
+        artist_result = page.find("div", {'class': 'panel-heading'})
+        if artist_result.find('b').text == 'Song results:':
             return True
         else:
             return False
@@ -645,9 +661,9 @@ class AzLyrics(LyricsProvider):  # pragma: no cover
         :return: string or None.
             Song writers or None.
         """
-        writers_box = lyrics_page.find("div", {'class': 'smt'})
+        writers_box = lyrics_page.find_all("div", {'class': 'smt'})
         if writers_box:
-            writers = writers_box.text.strip()
+            writers = writers_box[-1].text.strip()
         else:
             writers = None
         return writers

@@ -44,8 +44,7 @@ python_is_outdated = '2.7' in sys.version or '3.3' in sys.version
 is_appveyor = 'APPVEYOR' in os.environ
 is_travis = 'TRAVIS' in os.environ
 
-# TODO: Fix testing bugs with AZLyrics
-providers = [MusixMatch(), LyricWiki(), Genius(), Lyrics007()]
+providers = [AzLyrics(), MusixMatch(), LyricWiki(), Genius(), Lyrics007()]
 
 real_singer = {'name': 'The Notorious B.I.G.', 'album': 'Ready to Die (1994)',
                'songs': [{'song': 'Things Done Changed',
@@ -335,12 +334,17 @@ class TestLyricsProviders:
     @pytest.mark.parametrize('provider', providers)
     def test_get_lyrics(self, provider):
         discography = provider.get_lyrics(fake_singer['name'])
+        discography2 = provider.get_lyrics('Reggie Watts', 'Why $#!+ So Crazy?',
+                                           'Fuck Shit Stack')
         assert discography is None
         discography = provider.get_lyrics('Reggie Watts', 'Why $#!+ So Crazy?')
-        assert isinstance(discography, models.Discography)
-        discography = provider.get_lyrics('Reggie Watts', 'Why $#!+ So Crazy?',
-                                          'Fuck Shit Stack')
-        assert isinstance(discography, models.Discography)
+        if provider.name == 'AzLyrics':
+            discography is None
+            discography2 is None
+        else:
+            assert isinstance(discography, models.Discography)
+            assert isinstance(discography2, models.Discography)
+
 
 
 class TestCli:
