@@ -36,7 +36,7 @@ except ImportError:
 from .models import Song, Album, Discography
 from .utils import normalize, logger
 
-
+# TODO: advertise the fact that contributors can add new lyrics providers by conforming the Provider metaclass
 class LyricsProvider:
     """
     This is the base class for all Lyrics Providers. If you wish to subclass this class, you must implement all
