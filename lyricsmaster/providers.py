@@ -226,7 +226,7 @@ class LyricsProvider:
             split_url = list(urlsplit(url))
             split_url[2:] = [quote(elmt, safe='/=+&%') for elmt in split_url[2:]]
             url = urlunsplit(split_url)
-            req = self.session.request('GET', url, retries=10)
+            req = self.session.request('GET', url, retries=30)
         except Exception as e:
             logger.exception(e)
             req = None
