@@ -21,6 +21,10 @@ To use LyricsMaster in a project::
             print('Song: ', song.title)
             print('Lyrics: ', song.lyrics)
 
+    # New indexing and slicing support of Discography and Album Objects
+    first_song_of_first_album = discography.albums[0].songs[0]
+    lat_two_songs_of_first_album = discography.albums[0].songs[-2:]
+
     # Fetch all lyrics from 2pac's album 'All eyez on me'.
     album = provider.get_lyrics('2Pac', album='All eyes on me')
 
