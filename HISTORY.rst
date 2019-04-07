@@ -3,6 +3,14 @@ History
 =======
 
 
+2.8.1 (2019-04-07)
+-------------------
+
+* Implemented more fully the Python Data Model for the Discography and Album classes.
+* Now individual albums or songs in a Discography object can be individually accessed by indexing or slicing on top of previously being iterable.
+* For example Discography.albums[0].songs[0] or Discography.albums[0].songs[2:5]
+* Updated dependencies.
+
 2.8 (2019-03-31)
 -------------------
 
