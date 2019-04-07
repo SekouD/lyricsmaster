@@ -226,7 +226,7 @@ class LyricsProvider:
             split_url = list(urlsplit(url))
             split_url[2:] = [quote(elmt, safe='/=+&%') for elmt in split_url[2:]]
             url = urlunsplit(split_url)
-            req = self.session.request('GET', url, retries=10)
+            req = self.session.request('GET', url, retries=30)
         except Exception as e:
             logger.exception(e)
             req = None
@@ -488,7 +488,7 @@ class LyricWiki(LyricsProvider):
         return text
 
 
-class AzLyrics(LyricsProvider):
+class AzLyrics(LyricsProvider):  # TODO: Check why Qzlyrics randomly generates 'ProtocolError('Connection aborted.', BadStatusLine("''",))' (Caused by ProtocolError('Connection aborted.', BadStatusLine("''",)))
     """
     Class interfacing with https://azlyrics.com .
     This class is used to retrieve lyrics from AzLyrics.
