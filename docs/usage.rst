@@ -4,6 +4,7 @@ Usage
 
 To use LyricsMaster in a project::
 
+    .. code-block:: python
     from lyricsmaster import LyricWiki, TorController
 
 
