@@ -88,6 +88,20 @@ class Album(object):
     def __len__(self):
         return len(self.songs)
 
+    def __getitem__(self, key):
+        return self.songs[key]
+
+    def __setitem__(self, key, value):
+        if not isinstance(value, Song):
+            raise TypeError
+        else:
+            self.songs[key] = value
+        return
+
+    def __delitem__(self, key):
+        del self.songs[key]
+        return
+
     def __iter__(self):
         return self
 
@@ -138,6 +152,20 @@ class Discography(object):
 
     def __len__(self):
         return len(self.albums)
+
+    def __getitem__(self, key):
+        return self.albums[key]
+
+    def __setitem__(self, key, value):
+        if not isinstance(value, Song):
+            raise TypeError
+        else:
+            self.albums[key] = value
+        return
+
+    def __delitem__(self, key):
+        del self.albums[key]
+        return
 
     def __iter__(self):
         return self
