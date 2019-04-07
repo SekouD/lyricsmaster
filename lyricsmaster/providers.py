@@ -488,7 +488,7 @@ class LyricWiki(LyricsProvider):
         return text
 
 
-class AzLyrics(LyricsProvider):
+class AzLyrics(LyricsProvider):  # TODO: Check why Qzlyrics randomly generates 'ProtocolError('Connection aborted.', BadStatusLine("''",))' (Caused by ProtocolError('Connection aborted.', BadStatusLine("''",)))
     """
     Class interfacing with https://azlyrics.com .
     This class is used to retrieve lyrics from AzLyrics.
