@@ -19,14 +19,14 @@ gevent = "==1.4.0"
 stem = "==1.7.1"
 lxml = "==4.3.3"
 click = "==7.0"
-urllib3 = {extras = ["secure"],version = "==1.24.1"}
+urllib3 = {extras = ["secure"],version = "==1.24.2"}
 Sphinx = "==2.0.0"
 PyYAML = "==5.1"
 PySocks = "==1.6.8"
 bump2version = "==0.5.10"
 
 [packages]
-urllib3 = {extras = ["secure"],version = "==1.24.1"}
+urllib3 = {extras = ["secure"],version = "==1.24.2"}
 beautifulsoup4 = "==4.7.1"
 gevent = "==1.4.0"
 stem = "==1.7.1"
