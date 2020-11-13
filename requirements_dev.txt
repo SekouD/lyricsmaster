@@ -16,4 +16,4 @@ stem==1.7.1
 lxml==4.3.3
 click==7.0
 PySocks==1.6.8
-urllib3[secure]==1.25.2
+urllib3[secure]==1.26.1
