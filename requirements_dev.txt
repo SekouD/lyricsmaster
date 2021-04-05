@@ -8,7 +8,7 @@ coverage==4.5.3
 Sphinx==3.5.3
 docutils==0.14
 cryptography==3.4.7
-PyYAML==5.1
+PyYAML==5.4.1
 pytest==4.4.1
 beautifulsoup4==4.7.1
 gevent==1.4.0
