@@ -17,7 +17,7 @@ hypothesis = "==4.11.6"
 beautifulsoup4 = "==4.7.1"
 gevent = "==1.4.0"
 stem = "==1.7.1"
-lxml = "==4.3.3"
+lxml = "==4.6.5"
 click = "==7.0"
 urllib3 = {extras = ["secure"],version = "==1.24.1"}
 Sphinx = "==2.0.0"
@@ -30,7 +30,7 @@ urllib3 = {extras = ["secure"],version = "==1.24.1"}
 beautifulsoup4 = "==4.7.1"
 gevent = "==1.4.0"
 stem = "==1.7.1"
-lxml = "==4.3.3"
+lxml = "==4.6.5"
 click = "==7.0"
 PySocks = "==1.6.8"
 
