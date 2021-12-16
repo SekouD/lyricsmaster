@@ -3,5 +3,5 @@ beautifulsoup4==4.7.1
 PySocks==1.6.8
 gevent==1.4.0
 stem==1.7.1
-lxml==4.3.3
+lxml==4.6.5
 click==7.0
