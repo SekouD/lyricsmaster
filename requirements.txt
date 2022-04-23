@@ -4,4 +4,4 @@ PySocks==1.6.8
 gevent==1.4.0
 stem==1.7.1
 lxml==4.8.0
-click==7.0
+click==8.1.2
