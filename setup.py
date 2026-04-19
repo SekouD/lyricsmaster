@@ -19,7 +19,6 @@ requirements = [
     'lxml',
     'beautifulsoup4',
     'urllib3',
-    'urllib3[secure]',
     'pysocks',
     'gevent',
     'stem',

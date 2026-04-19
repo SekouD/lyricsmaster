@@ -66,3 +66,6 @@ target/
 
 # .pypirc
 .pypirc
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore
